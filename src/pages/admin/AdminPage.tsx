@@ -26,13 +26,15 @@ import { TicketAdminTicketsPage } from '@/pages/admin/TicketAdminTicketsPage';
 import { TicketSalesReportPage } from '@/pages/admin/TicketSalesReportPage';
 import { TicketCheckInReportPage } from '@/pages/admin/TicketCheckInReportPage';
 import { TicketGateSettingsPage } from '@/pages/admin/TicketGateSettingsPage';
+import { EventLineupManagementModal } from '@/pages/admin/EventLineupManagementModal';
 import { SearchableEventSelect } from '@/components/ui/SearchableEventSelect';
 import { AppCredit } from '@/components/AppCredit';
 import { MobileBottomNavPortal } from '@/components/nav/MobileBottomNavPortal';
 import { AnnualRecapAdminPage } from '@/pages/admin/AnnualRecapAdminPage';
+import { CcsScheduleAdminPage } from '@/pages/admin/CcsScheduleAdminPage';
 
 interface Props { router: Router; settings: SiteSettings; }
-type Section = 'dashboard' | 'open-mic' | 'registrants' | 'open-mic-list' | 'open-mic-performers' | 'open-mic-history' | 'event-participants' | 'events' | 'applications' | 'komika' | 'partners' | 'member-accounts' | 'admin-accounts' | 'evaluator' | 'annual-recap' | 'settings' | 'profile-settings' | 'ticket-orders' | 'tickets' | 'scan' | 'payment-info' | 'ticket-report' | 'ticket-gates' | 'check-in-report' | 'maintenance' | 'more';
+type Section = 'dashboard' | 'open-mic' | 'registrants' | 'open-mic-list' | 'open-mic-performers' | 'open-mic-history' | 'event-participants' | 'events' | 'applications' | 'komika' | 'partners' | 'member-accounts' | 'admin-accounts' | 'evaluator' | 'annual-recap' | 'settings' | 'profile-settings' | 'ticket-orders' | 'tickets' | 'scan' | 'payment-info' | 'ticket-report' | 'ticket-gates' | 'check-in-report' | 'maintenance' | 'ccs-schedule' | 'more';
 
 function getErrorMessage(error: unknown): string {
   if (error instanceof Error) return error.message;
@@ -84,6 +86,7 @@ function getSection(path: string): Section {
   if (parts[1] === 'check-in-report') return 'check-in-report';
   if (parts[1] === 'maintenance') return 'maintenance';
   if (parts[1] === 'annual-recap') return 'annual-recap';
+  if (parts[1] === 'ccs-schedule') return 'ccs-schedule';
   if (parts[1] === 'profile-settings') return 'profile-settings';
   const part = parts[1] as Section | undefined;
   if (part === 'more') return 'more';
@@ -93,6 +96,7 @@ function getSection(path: string): Section {
 
 function canAccessSection(section: Section, isAdmin: boolean, isOpenMicAdmin: boolean, isEventAdmin: boolean, isTicketAdmin: boolean, isQrScanner: boolean): boolean {
   if (isAdmin) return true;
+  if (section === 'ccs-schedule') return isOpenMicAdmin;
   if (section === 'annual-recap') return isAdmin;
   if (isTicketAdmin) return section === 'dashboard' || section === 'ticket-orders' || section === 'tickets' || section === 'events' || section === 'payment-info' || section === 'ticket-report' || section === 'ticket-gates' || (isQrScanner && section === 'check-in-report') || section === 'profile-settings' || section === 'more';
   if (isQrScanner) return section === 'dashboard' || section === 'scan' || section === 'events' || section === 'check-in-report' || section === 'profile-settings' || section === 'more';
@@ -183,6 +187,7 @@ function getWorkspaceBottomNav(isAdmin: boolean, isOpenMicAdmin: boolean, isEven
 
 function isMoreNavigationActive(section: Section, isTicketAdmin: boolean, isQrScanner: boolean) {
   return section === 'more' || section === 'settings'
+    || section === 'ccs-schedule'
     || (isTicketAdmin && (section === 'payment-info' || section === 'ticket-report' || section === 'profile-settings'))
     || (isQrScanner && (section === 'check-in-report' || section === 'profile-settings'));
 }
@@ -794,6 +799,7 @@ export function AdminPage({ router, settings }: Props) {
   const [ticketDeleteTarget, setTicketDeleteTarget] = useState<string | null>(null);
   const [ticketEvent, setTicketEvent] = useState<EventItem | null>(null);
   const [partnershipEvent, setPartnershipEvent] = useState<EventItem | null>(null);
+  const [lineupEvent, setLineupEvent] = useState<EventItem | null>(null);
   const [documentationEvent, setDocumentationEvent] = useState<EventItem | null>(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
@@ -1044,13 +1050,14 @@ export function AdminPage({ router, settings }: Props) {
           )}
 
           {section === 'dashboard' && (isAdmin ? <Dashboard openMics={openMics} registrations={registrations} events={events} komika={komika} loading={loading} onNavigate={navigateSection} /> : isTicketAdmin ? <TicketAdminDashboard orders={ticketOrders} events={events} loading={loading} onNavigate={navigateSection} /> : isQrScanner ? <QrScannerDashboard events={events} onNavigate={navigateSection} /> : <OperationalDashboard kind={isOpenMicAdmin ? 'open-mic' : 'event'} openMics={openMics} registrations={registrations} events={events} eventPendingCounts={eventPendingCounts} ticketOrders={ticketOrders} loading={loading} onNavigate={navigateSection} />)}
+          {section === 'ccs-schedule' && (isAdmin || isOpenMicAdmin) && <CcsScheduleAdminPage />}
           {section === 'open-mic' && <OpenMicManagement rows={openMics} registrations={registrations} loading={loading} showRegistrants={isAdmin} onAdd={() => { setEditing(null); setModal('open-mic'); }} onEdit={(row) => { setEditing(row); setModal('open-mic'); }} onDelete={(id) => deleteRow('open_mics', id)} onTogglePublish={(id, val) => togglePublish('open_mics', id, val)} onViewRegistrants={(m) => router.navigate(`/admin/pendaftar/${m.id}`)} />}
           {section === 'open-mic-list' && <PolishedOpenMicRosterView mode="registrants" openMics={openMics} registrations={registrations} komika={komika} loading={loading} onReload={load} />}
           {section === 'open-mic-performers' && <PolishedOpenMicRosterView mode="performers" openMics={openMics} registrations={registrations} komika={komika} loading={loading} onReload={load} />}
           {section === 'registrants' && <RegistrantsView openMicId={registrantOpenMicId} komika={komika} onBack={() => router.navigate(isAdmin ? '/admin/open-mic' : '/admin/open-mic-list')} />}
           {section === 'event-participants' && <EventParticipantsView eventId={router.path.split('/').filter(Boolean)[2] ?? ''} onBack={() => router.navigate('/admin/events')} />}
           {section === 'events' && (isAdmin || isEventAdmin
-            ? <EventManagement rows={events} loading={loading} pendingCounts={eventPendingCounts} canManageTickets={isAdmin} initialStatus={router.query.get('status') === 'completed' ? 'completed' : 'upcoming'} onAdd={() => { setEditing(null); setModal('event'); }} onEdit={(row) => { setEditing(row); setModal('event'); }} onManagePhotos={setDocumentationEvent} onDelete={(id) => deleteRow('events', id)} onTogglePublish={(id, val) => togglePublish('events', id, val)} onManageTickets={(row) => setTicketEvent(row)} onManagePartnerships={(row) => setPartnershipEvent(row)} onViewParticipants={(row) => router.navigate(`/admin/event-pendaftar/${row.id}`)} />
+            ? <EventManagement rows={events} loading={loading} pendingCounts={eventPendingCounts} canManageTickets={isAdmin} initialStatus={router.query.get('status') === 'completed' ? 'completed' : 'upcoming'} onAdd={() => { setEditing(null); setModal('event'); }} onEdit={(row) => { setEditing(row); setModal('event'); }} onManagePhotos={setDocumentationEvent} onDelete={(id) => deleteRow('events', id)} onTogglePublish={(id, val) => togglePublish('events', id, val)} onManageTickets={(row) => setTicketEvent(row)} onManagePartnerships={(row) => setPartnershipEvent(row)} onManageLineup={setLineupEvent} onViewParticipants={(row) => router.navigate(`/admin/event-pendaftar/${row.id}`)} />
             : <ScopedEventList events={events} loading={loading} onManageTickets={isTicketAdmin ? setTicketEvent : undefined} />)}
           {section === 'applications' && <ApplicationsView community={communityApplications} onNotice={setNotice} onReload={load} />}
           {section === 'open-mic-history' && <MemberOpenMicHistoryReview rows={memberHistory} komika={komika} onNotice={setNotice} onReload={load} />}
@@ -1144,6 +1151,7 @@ export function AdminPage({ router, settings }: Props) {
       {/* Ticket Management Modal */}
       <TicketManagementModal event={ticketEvent} onClose={() => setTicketEvent(null)} onNotice={setNotice} />
       <EventPartnershipManagementModal event={partnershipEvent} partners={partners} partnerships={eventPartnerships} onClose={() => setPartnershipEvent(null)} onNotice={setNotice} onReload={load} />
+      <EventLineupManagementModal event={lineupEvent} onClose={() => setLineupEvent(null)} />
 
       {/* Form Modal */}
       <EventDocumentationPhotosModal event={documentationEvent} onClose={() => setDocumentationEvent(null)} onNotice={setNotice} onSaved={async () => { setDocumentationEvent(null); await load(); }} />
@@ -2382,7 +2390,7 @@ function EventParticipantsView({ eventId, onBack }: { eventId: string; onBack: (
   );
 }
 
-function EventManagement({ rows, loading, pendingCounts, canManageTickets, initialStatus = 'upcoming', onAdd, onEdit, onManagePhotos, onDelete, onTogglePublish, onManageTickets, onManagePartnerships, onViewParticipants }: { rows: EventItem[]; loading: boolean; pendingCounts: Record<string, number>; canManageTickets: boolean; initialStatus?: 'upcoming' | 'completed' | 'cancelled'; onAdd: () => void; onEdit: (row: EventItem) => void; onManagePhotos: (row: EventItem) => void; onDelete: (id: string) => void; onTogglePublish: (id: string, current: boolean) => void; onManageTickets: (row: EventItem) => void; onManagePartnerships: (row: EventItem) => void; onViewParticipants: (row: EventItem) => void }) {
+function EventManagement({ rows, loading, pendingCounts, canManageTickets, initialStatus = 'upcoming', onAdd, onEdit, onManagePhotos, onDelete, onTogglePublish, onManageTickets, onManagePartnerships, onManageLineup, onViewParticipants }: { rows: EventItem[]; loading: boolean; pendingCounts: Record<string, number>; canManageTickets: boolean; initialStatus?: 'upcoming' | 'completed' | 'cancelled'; onAdd: () => void; onEdit: (row: EventItem) => void; onManagePhotos: (row: EventItem) => void; onDelete: (id: string) => void; onTogglePublish: (id: string, current: boolean) => void; onManageTickets: (row: EventItem) => void; onManagePartnerships: (row: EventItem) => void; onManageLineup: (row: EventItem) => void; onViewParticipants: (row: EventItem) => void }) {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<'upcoming' | 'completed' | 'cancelled'>(initialStatus);
   useEffect(() => { setStatusFilter(initialStatus); }, [initialStatus]);
@@ -2442,6 +2450,7 @@ function EventManagement({ rows, loading, pendingCounts, canManageTickets, initi
                       {getEventStatus(e.status, e.date) !== 'completed' && e.registration_status === 'open' && <button onClick={() => onViewParticipants(e)} className="relative rounded-lg p-2 text-slate-500 hover:bg-green-50 hover:text-green-700" title="Lihat Pendaftar" aria-label={`Lihat pendaftar ${e.title}`}><UserPlus className="h-4 w-4" />{pendingCounts[e.id] > 0 && <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-600 px-1 text-[9px] font-extrabold leading-none text-white">{pendingCounts[e.id]}</span>}</button>}
                       {canManageTickets && getEventStatus(e.status, e.date) !== 'completed' && <button onClick={() => onManageTickets(e)} className="rounded-lg p-2 text-slate-500 hover:bg-amber-50 hover:text-amber-700" title="Kelola Tiket" aria-label={`Kelola tiket ${e.title}`}><TicketIcon className="h-4 w-4" /></button>}
                       <button onClick={() => onManagePartnerships(e)} className="rounded-lg p-2 text-slate-500 hover:bg-violet-50 hover:text-violet-700" title="Kelola Partner" aria-label={`Kelola partner ${e.title}`}><Users className="h-4 w-4" /></button>
+                      <button onClick={() => onManageLineup(e)} className="rounded-lg p-2 text-slate-500 hover:bg-amber-50 hover:text-amber-700" title="Pengisi Acara" aria-label={`Pengisi Acara ${e.title}`}><Mic className="h-4 w-4" /></button>
                       {getEventStatus(e.status, e.date) === 'completed' && <button onClick={() => onManagePhotos(e)} className="rounded-lg p-2 text-slate-500 hover:bg-emerald-50 hover:text-emerald-700" title="Kelola Foto Dokumentasi" aria-label={`Kelola foto dokumentasi ${e.title}`}><ImagePlus className="h-4 w-4" /></button>}
                       <button onClick={() => onEdit(e)} className="rounded-lg p-2 text-slate-500 hover:bg-blue-50 hover:text-blue-700" title="Edit" aria-label={`Edit ${e.title}`}><Pencil className="h-4 w-4" /></button>
                       <button onClick={() => onDelete(e.id)} className="rounded-lg p-2 text-slate-500 hover:bg-red-50 hover:text-red-700" title="Hapus" aria-label={`Hapus ${e.title}`}><Trash2 className="h-4 w-4" /></button>
@@ -2482,6 +2491,7 @@ function EventManagement({ rows, loading, pendingCounts, canManageTickets, initi
                 {!completed && e.registration_status === 'open' && <button onClick={() => onViewParticipants(e)} aria-label={`Lihat pendaftar ${e.title}`} title={`Pendaftar${pendingCounts[e.id] > 0 ? ` (${pendingCounts[e.id]} menunggu)` : ''}`} className="relative flex h-10 min-w-0 flex-1 items-center justify-center rounded-lg bg-green-50 text-green-700 transition hover:bg-green-100"><UserPlus className="h-4 w-4" />{pendingCounts[e.id] > 0 && <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-600 px-1 text-[9px] font-extrabold leading-none text-white">{pendingCounts[e.id]}</span>}</button>}
                 {!completed && canManageTickets && <button onClick={() => onManageTickets(e)} aria-label={`Kelola tiket ${e.title}`} title="Kelola tiket" className="flex h-10 min-w-0 flex-1 items-center justify-center rounded-lg bg-amber-50 text-amber-700 transition hover:bg-amber-100"><TicketIcon className="h-4 w-4" /></button>}
                 <button onClick={() => onManagePartnerships(e)} aria-label={`Kelola partner ${e.title}`} title="Kelola partner" className="flex h-10 min-w-0 flex-1 items-center justify-center rounded-lg bg-violet-50 text-violet-700 transition hover:bg-violet-100"><Users className="h-4 w-4" /></button>
+                <button onClick={() => onManageLineup(e)} aria-label={`Pengisi Acara ${e.title}`} title="Pengisi Acara" className="flex h-10 min-w-0 flex-1 items-center justify-center rounded-lg bg-amber-50 text-amber-700 transition hover:bg-amber-100"><Mic className="h-4 w-4" /></button>
                 {completed && <button onClick={() => onManagePhotos(e)} aria-label={`Kelola foto dokumentasi ${e.title}`} title="Foto dokumentasi" className="flex h-10 min-w-0 flex-1 items-center justify-center rounded-lg bg-emerald-50 text-emerald-700 transition hover:bg-emerald-100"><ImagePlus className="h-4 w-4" /></button>}
                 <button onClick={() => onEdit(e)} aria-label={`Edit ${e.title}`} title="Edit" className="flex h-10 min-w-0 flex-1 items-center justify-center rounded-lg bg-blue-50 text-blue-700 transition hover:bg-blue-100"><Pencil className="h-4 w-4" /></button>
                 <button onClick={() => onDelete(e.id)} aria-label={`Hapus ${e.title}`} title="Hapus" className="flex h-10 min-w-0 flex-1 items-center justify-center rounded-lg bg-red-50 text-red-700 transition hover:bg-red-100"><Trash2 className="h-4 w-4" /></button>
@@ -3519,6 +3529,7 @@ function EvaluatorAssignmentView({ openMics, komika, assignments, currentUserId,
 
 function MorePage({ onNavigate, onSignOut, ticketOrderUnreadCount, applicationUnreadCount, isAdmin, isOpenMicAdmin, isEventAdmin, isTicketAdmin, isQrScanner }: { onNavigate: (s: Section) => void; onSignOut: () => void; ticketOrderUnreadCount: number; applicationUnreadCount: number; isAdmin: boolean; isOpenMicAdmin: boolean; isEventAdmin: boolean; isTicketAdmin: boolean; isQrScanner: boolean }) {
   const items: { label: string; icon: typeof BarChart3; onClick: () => void; section?: Section; badge?: number }[] = [
+    ...((isAdmin || isOpenMicAdmin) ? [{ label: 'Jadwal Cilegon Comedy Sharing (CCS)', icon: CalendarDays, onClick: () => onNavigate('ccs-schedule'), section: 'ccs-schedule' as Section }] : []),
     ...(isEventAdmin ? [{ label: 'Akun Admin Tiket / QR', icon: ShieldPlus, onClick: () => onNavigate('admin-accounts'), section: 'admin-accounts' as Section }] : []),
     ...(isTicketAdmin ? [{ label: 'Informasi Pembayaran', icon: TicketIcon, onClick: () => onNavigate('payment-info'), section: 'payment-info' as Section }] : []),
     ...(isTicketAdmin ? [{ label: 'Laporan Tiket', icon: Printer, onClick: () => onNavigate('ticket-report'), section: 'ticket-report' as Section }] : []),
@@ -3534,7 +3545,7 @@ function MorePage({ onNavigate, onSignOut, ticketOrderUnreadCount, applicationUn
   ];
   return (
     <div className="space-y-5">
-      <WorkspacePageHeader title={isTicketAdmin ? 'Lainnya' : 'More'} subtitle="Menu lainnya." eyebrow={isTicketAdmin ? 'Admin Tiket' : undefined} />
+      <WorkspacePageHeader title={isTicketAdmin || isOpenMicAdmin || isAdmin ? 'Lainnya' : 'More'} subtitle="Menu lainnya." eyebrow={isTicketAdmin ? 'Admin Tiket' : undefined} />
       <div className="overflow-hidden rounded-2xl bg-white shadow-soft ring-1 ring-slate-200/70">
         <div className="divide-y divide-slate-100">
           {items.filter((item) => !item.section || canAccessSection(item.section, isAdmin, isOpenMicAdmin, isEventAdmin, isTicketAdmin, isQrScanner)).map((item) => {

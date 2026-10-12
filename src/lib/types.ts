@@ -64,6 +64,20 @@ export interface EventItem {
   updated_at: string;
 }
 
+export interface CcsSchedule {
+  id: string;
+  title: string;
+  event_date: string;
+  date_override: boolean;
+  start_time: string | null;
+  venue: string | null;
+  maps_url: string | null;
+  poster_url: string | null;
+  is_published: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface Partner {
   id: string;
   name: string;
@@ -190,6 +204,40 @@ export interface EventParticipant {
   instagram: string | null;
   notes: string | null;
   status: ApplicationStatus;
+  created_at: string;
+  updated_at: string;
+}
+
+export type EventLineupRole = 'lineup' | 'opener' | 'guest_star' | 'mc_host' | 'judge' | 'special_show' | 'other';
+
+export interface EventLineupEntry {
+  id: string;
+  event_id: string;
+  komika_id: string | null;
+  performer_name: string;
+  role_category: EventLineupRole;
+  role_title: string | null;
+  photo_url: string | null;
+  external_url: string | null;
+  sort_order: number;
+  created_at: string;
+  updated_at: string;
+  komika?: Pick<Komika, 'stage_name' | 'slug' | 'photo' | 'photo_card' | 'instagram_url'> | Pick<Komika, 'stage_name' | 'slug' | 'photo' | 'photo_card' | 'instagram_url'>[] | null;
+}
+
+export type MemberStageRole = 'Opener' | 'Guest Star' | 'MC / Host' | 'Penampil Utama' | 'Solo Show' | 'Lineup / Penampil' | 'Lainnya';
+
+export interface MemberStageExperience {
+  id: string;
+  komika_id: string;
+  event_date: string;
+  event_name: string;
+  event_type: string | null;
+  role: MemberStageRole;
+  custom_role: string | null;
+  organizer: string | null;
+  city: string;
+  external_url: string | null;
   created_at: string;
   updated_at: string;
 }

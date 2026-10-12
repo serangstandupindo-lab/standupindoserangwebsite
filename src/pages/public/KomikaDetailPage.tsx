@@ -9,7 +9,26 @@ import { EmptyState } from '@/components/ui/EmptyState';
 import { SocialIconButton } from '@/components/ui/SocialIconButton';
 import { ImageLightbox } from '@/components/ui/ImageLightbox';
 import { ShareButton } from '@/components/ui/ShareButton';
-import { normalizeSpecialties, safeExternalUrl } from '@/lib/format';
+import { formatDate, getEventStatus, normalizeSpecialties, safeExternalUrl } from '@/lib/format';
+
+interface OfficialStageHistoryEntry {
+  id: string;
+  role_category: 'lineup' | 'opener' | 'guest_star' | 'mc_host' | 'judge' | 'special_show' | 'other';
+  role_title: string | null;
+  event: { id: string; title: string; slug: string; date: string; status: 'upcoming' | 'completed' | 'cancelled'; published: boolean };
+}
+
+interface ExternalStageHistoryEntry {
+  id: string;
+  event_date: string;
+  event_name: string;
+  event_type: string | null;
+  role: string;
+  custom_role: string | null;
+  organizer: string | null;
+  city: string;
+  external_url: string | null;
+}
 
 interface Props {
   router: Router;
@@ -32,6 +51,9 @@ export function KomikaDetailPage({ router, slug }: Props) {
   const [loading, setLoading] = useState(true);
   const [komika, setKomika] = useState<Komika | null>(null);
   const [lightbox, setLightbox] = useState(false);
+  const [officialHistory, setOfficialHistory] = useState<OfficialStageHistoryEntry[]>([]);
+  const [externalHistory, setExternalHistory] = useState<ExternalStageHistoryEntry[]>([]);
+  const [journeyError, setJourneyError] = useState('');
 
   useEffect(() => {
     (async () => {
@@ -60,6 +82,29 @@ export function KomikaDetailPage({ router, slug }: Props) {
         }
 
         setKomika(k);
+
+        const [officialResult, externalResult] = await Promise.all([
+          supabase.from('event_lineups')
+            .select('id, role_category, role_title, event:events!inner(id, title, slug, date, status, published)')
+            .eq('komika_id', k.id)
+            .eq('events.published', true),
+          supabase.from('member_stage_experiences')
+            .select('id, event_date, event_name, event_type, role, custom_role, organizer, city, external_url')
+            .eq('komika_id', k.id)
+            .order('event_date', { ascending: false })
+            .order('created_at', { ascending: false }),
+        ]);
+        if (officialResult.error || externalResult.error) {
+          console.error('Failed to load public stage journey', officialResult.error ?? externalResult.error);
+          setJourneyError('Perjalanan panggung belum dapat dimuat. Coba segarkan halaman.');
+        } else {
+          const completed = ((officialResult.data ?? []) as unknown as OfficialStageHistoryEntry[])
+            .filter((entry) => entry.event.published && getEventStatus(entry.event.status, entry.event.date) === 'completed')
+            .sort((first, second) => second.event.date.localeCompare(first.event.date));
+          setOfficialHistory(completed);
+          setExternalHistory((externalResult.data ?? []) as ExternalStageHistoryEntry[]);
+          setJourneyError('');
+        }
 
         const pageUrl = `${window.location.origin}/komika/${k.slug}`;
         setOgTags(
@@ -98,6 +143,15 @@ export function KomikaDetailPage({ router, slug }: Props) {
   const pageUrl = `${window.location.origin}/komika/${komika.slug}`;
   const karyaUrl = safeExternalUrl(komika.karya_url);
   const specialties = normalizeSpecialties(komika.specialties);
+  const officialRoleLabels: Record<OfficialStageHistoryEntry['role_category'], string> = {
+    lineup: 'Lineup / Penampil',
+    opener: 'Opener',
+    guest_star: 'Guest Star',
+    mc_host: 'MC / Host',
+    judge: 'Juri',
+    special_show: 'Special Show',
+    other: 'Lainnya',
+  };
 
   return (
     <div className="animate-fade-in">
@@ -172,6 +226,68 @@ export function KomikaDetailPage({ router, slug }: Props) {
             </div>
           </div>
         </div>
+
+        {(journeyError || officialHistory.length > 0 || externalHistory.length > 0) && (
+          <section data-scroll-reveal className="scroll-reveal mt-6 rounded-2xl border border-blue-200/80 bg-gradient-to-br from-blue-50/70 via-white to-slate-50 p-3.5 shadow-[0_10px_24px_rgba(30,64,175,0.06)] sm:p-4">
+            <div className="flex items-start gap-3">
+              <span className="mt-0.5 h-7 w-1 shrink-0 rounded-full bg-gradient-to-b from-blue-600 to-indigo-500" />
+              <div className="min-w-0 flex-1">
+                <p className="text-[10px] font-extrabold uppercase tracking-[0.16em] text-blue-700">Pengalaman Tampil</p>
+                <h2 className="mt-0.5 text-base font-extrabold tracking-tight text-slate-900 sm:text-lg">Perjalanan Panggung</h2>
+              </div>
+            </div>
+            {journeyError && <p role="alert" className="mt-3 rounded-xl border border-blue-200 bg-blue-50 px-3 py-2 text-sm font-semibold text-blue-900">{journeyError}</p>}
+            <div className="mt-4 grid gap-3.5">
+              {!journeyError && officialHistory.length > 0 && <div className="rounded-xl border border-blue-100 bg-white/90 p-3 shadow-sm sm:p-3.5">
+                <h3 className="mb-2.5 flex items-center gap-2 text-[11px] font-extrabold uppercase tracking-[0.1em] text-blue-800">
+                  <span className="h-2 w-2 rounded-full bg-blue-600" />
+                  Standupindo Cilegon
+                  <span className="ml-auto rounded-full bg-blue-50 px-2 py-0.5 text-[10px] font-bold text-blue-800">{officialHistory.length}</span>
+                </h3>
+                <ul className="divide-y divide-slate-100">
+                  {officialHistory.map((entry) => <li key={entry.id}>
+                    <button
+                      type="button"
+                      onClick={() => router.navigate(`/event/${encodeURIComponent(entry.event.slug)}`)}
+                      aria-label={`Buka event selesai ${entry.event.title}`}
+                      className="group grid w-full grid-cols-[5rem_minmax(0,1fr)_auto] items-center gap-2 rounded-lg px-2 py-2.5 text-left transition hover:bg-blue-50/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-500 sm:grid-cols-[6.5rem_minmax(0,1fr)_auto] sm:gap-3 sm:px-2.5"
+                    >
+                      <span className="text-[10px] font-semibold leading-4 text-slate-500 sm:text-xs">{formatDate(entry.event.date)}</span>
+                      <span className="truncate text-xs font-extrabold text-slate-900 transition-colors group-hover:text-blue-800 sm:text-sm">{entry.event.title}</span>
+                      <span className="inline-flex max-w-24 truncate rounded-full bg-blue-50 px-2 py-1 text-[9px] font-bold text-blue-800 ring-1 ring-blue-100 sm:max-w-32 sm:px-2.5 sm:text-[10px]">
+                          {entry.role_category === 'other' && entry.role_title ? entry.role_title : officialRoleLabels[entry.role_category]}
+                      </span>
+                    </button>
+                  </li>)}
+                </ul>
+              </div>}
+              {!journeyError && externalHistory.length > 0 && <div className="rounded-xl border border-slate-200 bg-white/90 p-3 shadow-sm sm:p-3.5">
+                <h3 className="mb-2.5 flex items-center gap-2 text-[11px] font-extrabold uppercase tracking-[0.1em] text-slate-700">
+                  <span className="h-2 w-2 rounded-full bg-slate-500" />
+                  Perjalanan Lainnya
+                  <span className="ml-auto rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-700">{externalHistory.length}</span>
+                </h3>
+                <ul className="divide-y divide-slate-100">
+                  {externalHistory.map((entry) => {
+                    const url = safeExternalUrl(entry.external_url);
+                    return <li key={entry.id}>
+                      <div className="grid grid-cols-[5rem_minmax(0,1fr)_auto] items-center gap-2 px-2 py-2.5 sm:grid-cols-[6.5rem_minmax(0,1fr)_auto] sm:gap-3 sm:px-2.5">
+                      <p className="text-[10px] font-semibold leading-4 text-slate-500 sm:text-xs">{formatDate(entry.event_date)}</p>
+                      <span className="min-w-0">
+                        {url
+                          ? <a href={url} target="_blank" rel="noopener noreferrer" className="block truncate text-xs font-extrabold text-slate-900 transition hover:text-blue-800 sm:text-sm">{entry.event_name}</a>
+                          : <span className="block truncate text-xs font-extrabold text-slate-900 sm:text-sm">{entry.event_name}</span>}
+                        {(entry.organizer || entry.city) && <span className="mt-0.5 block truncate text-[10px] leading-4 text-slate-500 sm:text-[11px]">{[entry.organizer, entry.city].filter(Boolean).join(' · ')}</span>}
+                      </span>
+                      <span className="inline-flex max-w-24 truncate rounded-full bg-slate-100 px-2 py-1 text-[9px] font-bold text-slate-700 sm:max-w-32 sm:px-2.5 sm:text-[10px]">{entry.role === 'Lainnya' ? entry.custom_role : entry.role}</span>
+                      </div>
+                    </li>;
+                  })}
+                </ul>
+              </div>}
+            </div>
+          </section>
+        )}
       </div>
 
       {komika.photo && (

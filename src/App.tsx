@@ -12,6 +12,7 @@ import { OpenMicDetailPage } from '@/pages/public/OpenMicDetailPage';
 import { OpenMicRegisterPage } from '@/pages/public/OpenMicRegisterPage';
 import { EventPage } from '@/pages/public/EventPage';
 import { EventDetailPage } from '@/pages/public/EventDetailPage';
+import { EventDocumentationPage } from '@/pages/public/EventDocumentationPage';
 import { TicketOrderPage } from '@/pages/public/TicketOrderPage';
 import { TicketAccessPage } from '@/pages/public/TicketAccessPage';
 import { TicketSelectionPage } from '@/pages/public/TicketSelectionPage';
@@ -221,6 +222,7 @@ function RoutedApp() {
 
   const openMicRegister = matchRoute(router.path, '/open-mic/[slug]/daftar');
   const openMicDetail = matchRoute(router.path, '/open-mic/[slug]');
+  const eventDocumentation = matchRoute(router.path, '/event/[slug]/dokumentasi');
   const eventDetail = matchRoute(router.path, '/event/[slug]');
   const ticketOrder = matchRoute(router.path, '/event/[slug]/tiket/[ticketId]');
   const ticketSelection = matchRoute(router.path, '/event/[slug]/tiket');
@@ -235,6 +237,7 @@ function RoutedApp() {
   else if (openMicRegister) content = <OpenMicRegisterPage router={router} slug={openMicRegister.slug} />;
   else if (openMicDetail) content = <OpenMicDetailPage router={router} slug={openMicDetail.slug} showFloatingRegister />;
   else if (router.path === '/event') content = <EventPage router={router} />;
+  else if (eventDocumentation) content = <EventDocumentationPage router={router} slug={eventDocumentation.slug} settings={settings} />;
   else if (ticketOrder) content = <TicketOrderPage router={router} slug={ticketOrder.slug} ticketId={ticketOrder.ticketId} />;
   else if (ticketSelection) content = <TicketSelectionPage router={router} slug={ticketSelection.slug} />;
   else if (eventRegister) content = <EventRegisterPage router={router} slug={eventRegister.slug} />;

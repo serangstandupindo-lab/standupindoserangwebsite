@@ -2,18 +2,17 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { ArrowRight, Calendar, ChevronDown, ClipboardList, Clock, Info, MessageCircle } from 'lucide-react';
 import type { Router } from '@/lib/router';
-import type { EventItem, EventTicket, EventPartnership, Partner, SiteSettings } from '@/lib/types';
+import type { EventItem, EventLineupEntry, EventLineupRole, EventTicket, EventPartnership, Partner, SiteSettings } from '@/lib/types';
 import { supabase } from '@/lib/supabase';
 import { PageHeader } from '@/components/PageHeader';
 import { LoadingSkeleton } from '@/components/ui/LoadingSkeleton';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { StatusBadge } from '@/components/ui/StatusBadge';
-import { SocialIconButton } from '@/components/ui/SocialIconButton';
 import { LocationLink } from '@/components/ui/LocationLink';
 import { ImageLightbox } from '@/components/ui/ImageLightbox';
 import { ShareButton } from '@/components/ui/ShareButton';
 import { NoSmokeAreaNotice } from '@/components/ui/NoSmokeAreaNotice';
-import { formatDate, formatPrice, getEventStatus, waLink } from '@/lib/format';
+import { formatDate, formatPrice, getEventStatus, safeExternalUrl, waLink } from '@/lib/format';
 
 interface Props {
   router: Router;
@@ -69,12 +68,10 @@ function EventPartnerMarquee({ partners, logoSize, role }: { partners: Partner[]
   </div>;
 }
 
-function EventDocumentationGallery({ photos, eventTitle, eventDate, eventVenue, eventLocation, lightboxIndex, onLightboxIndexChange }: { photos: string[]; eventTitle: string; eventDate: string; eventVenue: string; eventLocation: string; lightboxIndex: number | null; onLightboxIndexChange: (index: number | null) => void }) {
+function EventDocumentationGallery({ photos, eventTitle, eventDate, eventVenue, eventLocation, onOpenGallery }: { photos: string[]; eventTitle: string; eventDate: string; eventVenue: string; eventLocation: string; onOpenGallery: () => void }) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [photoTransition, setPhotoTransition] = useState<{ from: string; to: string; visible: boolean } | null>(null);
   const [autoplayPaused, setAutoplayPaused] = useState(false);
-  const thumbnailStripRef = useRef<HTMLDivElement>(null);
-  const thumbnailRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const touchStart = useRef<{ x: number; y: number } | null>(null);
   const didSwipe = useRef(false);
   const resumeTimer = useRef<number | null>(null);
@@ -101,31 +98,12 @@ function EventDocumentationGallery({ photos, eventTitle, eventDate, eventVenue, 
   }, [activeIndex, photos]);
 
   useEffect(() => {
-    if (photos.length < 2 || autoplayPaused || lightboxIndex !== null || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (photos.length < 2 || autoplayPaused || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     const timer = window.setInterval(() => {
       changeActivePhoto((activeIndex + 1) % photos.length);
     }, 4000);
     return () => window.clearInterval(timer);
-  }, [activeIndex, autoplayPaused, changeActivePhoto, lightboxIndex, photos.length]);
-
-  useEffect(() => {
-    if (lightboxIndex === null) return;
-    changeActivePhoto(lightboxIndex);
-    setAutoplayPaused(true);
-  }, [changeActivePhoto, lightboxIndex]);
-
-  useEffect(() => {
-    const strip = thumbnailStripRef.current;
-    const activeThumbnail = thumbnailRefs.current[activeIndex];
-    if (!strip || !activeThumbnail) return;
-    const left = activeThumbnail.offsetLeft - strip.offsetLeft;
-    const right = left + activeThumbnail.offsetWidth;
-    if (left < strip.scrollLeft) {
-      strip.scrollTo({ left, behavior: 'smooth' });
-    } else if (right > strip.scrollLeft + strip.clientWidth) {
-      strip.scrollTo({ left: right - strip.clientWidth, behavior: 'smooth' });
-    }
-  }, [activeIndex]);
+  }, [activeIndex, autoplayPaused, changeActivePhoto, photos.length]);
 
   useEffect(() => () => {
     if (resumeTimer.current !== null) window.clearTimeout(resumeTimer.current);
@@ -146,15 +124,9 @@ function EventDocumentationGallery({ photos, eventTitle, eventDate, eventVenue, 
     }, 1600);
   }
 
-  function selectPhoto(index: number) {
-    changeActivePhoto(index);
-    resumeAutoplaySoon();
-  }
-
   function movePhoto(direction: -1 | 1) {
     const nextIndex = (activeIndex + direction + photos.length) % photos.length;
     changeActivePhoto(nextIndex);
-    if (lightboxIndex !== null) onLightboxIndexChange(nextIndex);
   }
 
   function finishSwipe(deltaX: number, deltaY: number) {
@@ -196,10 +168,9 @@ function EventDocumentationGallery({ photos, eventTitle, eventDate, eventVenue, 
                 didSwipe.current = false;
                 return;
               }
-              pauseAutoplay();
-              onLightboxIndexChange(activeIndex);
+              onOpenGallery();
             }}
-            aria-label={`Perbesar foto dokumentasi ${activeIndex + 1}`}
+            aria-label={`Lihat semua foto dokumentasi ${eventTitle}`}
             className="absolute inset-0 h-full w-full touch-pan-y focus:outline-none focus-visible:ring-4 focus-visible:ring-inset focus-visible:ring-blue-500"
           >
             {photoTransition ? (
@@ -233,65 +204,12 @@ function EventDocumentationGallery({ photos, eventTitle, eventDate, eventVenue, 
               <p className="line-clamp-1">{eventVenue}{eventLocation ? `, ${eventLocation}` : ''}</p>
             </div>
           </div>
-          {event.poster && (
-            <ImageLightbox
-              src={event.poster}
-              alt={`${event.title} poster`}
-              open={posterLightboxOpen}
-              onClose={() => setPosterLightboxOpen(false)}
-            />
-          )}
         </div>
-
-        {photos.length > 1 && (
-          <div
-            ref={thumbnailStripRef}
-            className="flex gap-2 overflow-x-auto overscroll-x-contain scroll-smooth py-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-            onPointerDown={pauseAutoplay}
-            onPointerUp={resumeAutoplaySoon}
-            onPointerCancel={resumeAutoplaySoon}
-            onTouchStart={pauseAutoplay}
-            onTouchEnd={resumeAutoplaySoon}
-            onTouchCancel={resumeAutoplaySoon}
-            onFocusCapture={pauseAutoplay}
-            onBlurCapture={(event) => {
-              if (!event.currentTarget.contains(event.relatedTarget as Node | null)) resumeAutoplaySoon();
-            }}
-          >
-            {photos.map((photo, index) => (
-              <button
-                key={`${photo}-${index}`}
-                ref={(element) => { thumbnailRefs.current[index] = element; }}
-                type="button"
-                onClick={() => selectPhoto(index)}
-                aria-label={`Tampilkan foto dokumentasi ${index + 1}`}
-                aria-current={activeIndex === index ? 'true' : undefined}
-                className={`h-14 w-[4.5rem] shrink-0 overflow-hidden rounded-lg border-2 bg-slate-100 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 sm:h-16 sm:w-24 ${activeIndex === index ? 'border-blue-600 opacity-100' : 'border-transparent opacity-70 hover:opacity-100'}`}
-              >
-                <img src={photo} alt="" loading="lazy" className="h-full w-full object-cover" />
-              </button>
-            ))}
-          </div>
-        )}
 
         <div className="flex justify-end">
-          <p className="text-xs font-medium text-slate-500">Pilih foto untuk memperbesar</p>
+          <p className="text-xs font-medium text-slate-500">Ketuk foto untuk membuka album dokumentasi lengkap</p>
         </div>
       </div>
-
-      {lightboxIndex !== null && photos[lightboxIndex] && (
-        <ImageLightbox
-          src={photos[lightboxIndex]}
-          alt={`${eventTitle} — dokumentasi ${lightboxIndex + 1}`}
-          open
-          onClose={() => {
-            onLightboxIndexChange(null);
-            resumeAutoplaySoon();
-          }}
-          onPrevious={() => movePhoto(-1)}
-          onNext={() => movePhoto(1)}
-        />
-      )}
     </>
   );
 }
@@ -299,11 +217,11 @@ function EventDocumentationGallery({ photos, eventTitle, eventDate, eventVenue, 
 export function EventDetailPage({ router, slug, settings }: Props) {
   const [loading, setLoading] = useState(true);
   const [event, setEvent] = useState<EventItem | null>(null);
-  const [documentationLightboxIndex, setDocumentationLightboxIndex] = useState<number | null>(null);
   const [posterLightboxOpen, setPosterLightboxOpen] = useState(false);
   const [tickets, setTickets] = useState<EventTicket[]>([]);
   const [ticketLoadError, setTicketLoadError] = useState('');
-  const [lineup, setLineup] = useState<{ id: string; stage_name: string; community: string | null; instagram: string | null }[]>([]);
+  const [lineup, setLineup] = useState<EventLineupEntry[]>([]);
+  const [lineupLoadError, setLineupLoadError] = useState('');
   const [partnersByRole, setPartnersByRole] = useState<Record<'sponsor' | 'support' | 'media_partner', Partner[]>>({ sponsor: [], support: [], media_partner: [] });
   const [infoTab, setInfoTab] = useState<'about' | 'rules'>('about');
   const [infoExpanded, setInfoExpanded] = useState(false);
@@ -319,13 +237,19 @@ export function EventDetailPage({ router, slug, settings }: Props) {
         if (ticketError) setTicketLoadError('Informasi tiket belum dapat dimuat. Coba segarkan halaman.');
         setTickets((ticketData as EventTicket[]) ?? []);
 
-        const { data: participantData } = await supabase
-          .from('event_participants')
-          .select('id, stage_name, community, instagram')
+        const { data: lineupData, error: lineupError } = await supabase
+          .from('event_lineups')
+          .select('id, event_id, komika_id, performer_name, role_category, role_title, photo_url, external_url, sort_order, created_at, updated_at, komika:komika_id(stage_name, slug, photo, photo_card, instagram_url)')
           .eq('event_id', ev.id)
-          .eq('status', 'approved')
+          .order('sort_order', { ascending: true })
           .order('created_at', { ascending: true });
-        setLineup((participantData as { id: string; stage_name: string; community: string | null; instagram: string | null }[]) ?? []);
+        if (lineupError) {
+          console.error('Failed to load event lineup', lineupError);
+          setLineupLoadError('Informasi pengisi acara belum dapat dimuat. Coba segarkan halaman.');
+        } else {
+          setLineup((lineupData as unknown as EventLineupEntry[] | null) ?? []);
+          setLineupLoadError('');
+        }
 
         const { data: partnershipData } = await supabase
           .from('event_partnerships')
@@ -405,23 +329,32 @@ export function EventDetailPage({ router, slug, settings }: Props) {
     ...(event.poster ? [event.poster] : []),
     ...(event.documentation_photos ?? []),
   ];
+  const lineupCategories: { key: EventLineupRole; label: string }[] = [
+    { key: 'special_show', label: 'Special Show' },
+    { key: 'guest_star', label: 'Guest Star' },
+    { key: 'lineup', label: 'Lineup / Penampil' },
+    { key: 'judge', label: 'Juri' },
+    { key: 'opener', label: 'Opener' },
+    { key: 'mc_host', label: 'MC / Host' },
+    { key: 'other', label: 'Lainnya' },
+  ];
 
   return (
     <div className="animate-fade-in">
       <PageHeader router={router} title={event.title} />
 
-      <div className="container-app py-8 space-y-10">
+      <div className="container-app space-y-6 py-6 sm:space-y-8 sm:py-8">
         {/* Poster + meta */}
         <div className="grid gap-6 lg:grid-cols-5">
           <div className="lg:col-span-2">
             <div className="max-h-[18rem] overflow-hidden rounded-2xl bg-slate-100 shadow-soft sm:max-h-none">
               {event.poster ? (
                 <button
-                  onClick={() => currentStatus === 'completed' ? setDocumentationLightboxIndex(0) : setPosterLightboxOpen(true)}
+                  onClick={() => currentStatus === 'completed' ? router.navigate(`/event/${encodeURIComponent(event.slug)}/dokumentasi`) : setPosterLightboxOpen(true)}
                   aria-label={currentStatus === 'completed' ? `Lihat dokumentasi ${event.title}` : `Lihat poster ${event.title}`}
                   className="block w-full"
                 >
-                  <img src={event.poster} alt={`${event.title} poster`} className={`aspect-[4/3] max-h-[18rem] w-full object-contain transition-transform duration-500 hover:scale-105 sm:max-h-none ${currentStatus === 'completed' ? 'grayscale' : ''}`} />
+                  <img src={event.poster} alt={`${event.title} poster`} className="aspect-[4/3] max-h-[18rem] w-full object-contain transition-transform duration-500 hover:scale-105 sm:max-h-none" />
                 </button>
               ) : (
                 <div className="aspect-[4/3] w-full" />
@@ -482,7 +415,7 @@ export function EventDetailPage({ router, slug, settings }: Props) {
           document.body,
         )}
 
-        <section data-scroll-reveal className="scroll-reveal">
+        <section data-scroll-reveal className="scroll-reveal !mt-2">
           <div className="overflow-hidden rounded-2xl border border-slate-300 bg-white shadow-[0_8px_24px_rgba(15,23,42,0.05)]">
             <div className="flex gap-1 bg-slate-100 p-1" role="tablist" aria-label="Informasi event">
             <button
@@ -522,22 +455,86 @@ export function EventDetailPage({ router, slug, settings }: Props) {
           </div>
         </section>
 
+        {lineupLoadError && <p role="alert" className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-800">{lineupLoadError}</p>}
         {lineup.length > 0 && (
           <section data-scroll-reveal className="scroll-reveal">
-            <h2 className="text-xl font-bold text-slate-900 mb-4">Lineup</h2>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {lineup.map((k) => (
-                <div key={k.id} className="card flex items-center gap-3 p-4">
-                  <div className="h-14 w-14 shrink-0 overflow-hidden rounded-full bg-slate-100">
-                    <div className="flex h-full w-full items-center justify-center bg-blue-100 text-lg font-bold text-blue-700">{k.stage_name.charAt(0)}</div>
+            <div className="mb-5 flex items-end justify-between gap-3">
+              <div>
+                <p className="text-[10px] font-extrabold uppercase tracking-[0.18em] text-blue-700 sm:text-xs">Lineup Resmi</p>
+                <h2 className="mt-1 text-xl font-black tracking-tight text-slate-900 sm:text-2xl">Pengisi Acara</h2>
+              </div>
+              <span className="shrink-0 rounded-full border border-blue-100 bg-blue-50 px-3 py-1 text-xs font-bold text-blue-700">
+                {lineup.length} pengisi
+              </span>
+            </div>
+            <div className="space-y-6 sm:space-y-7">
+              {lineupCategories.map(({ key, label }) => {
+                const categoryLineup = lineup.filter((entry) => entry.role_category === key);
+                if (categoryLineup.length === 0) return null;
+                return <div key={key} className="space-y-3">
+                  <div className="flex items-center gap-2.5">
+                    <span className="h-5 w-1 shrink-0 rounded-full bg-gradient-to-b from-blue-600 to-violet-500" />
+                    <h3 className="text-sm font-extrabold text-slate-800 sm:text-base">{label}</h3>
+                    <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-bold tabular-nums text-slate-500">{categoryLineup.length}</span>
+                    <span className="h-px flex-1 bg-gradient-to-r from-slate-200 to-transparent" />
                   </div>
-                  <div className="min-w-0">
-                    <h3 className="truncate font-bold text-slate-900">{k.stage_name}</h3>
-                    {k.community && <p className="mt-0.5 truncate text-xs text-slate-500">{k.community}</p>}
-                    <div className="mt-1.5"><SocialIconButton instagram={k.instagram} size="sm" /></div>
+                  <div className="grid grid-cols-3 gap-2.5 sm:grid-cols-4 sm:gap-3 lg:grid-cols-5">
+                    {categoryLineup.map((entry) => {
+                      const member = Array.isArray(entry.komika) ? entry.komika[0] : entry.komika;
+                      const name = member?.stage_name ?? entry.performer_name;
+                      const photo = member?.photo_card || member?.photo || entry.photo_url;
+                      const externalUrl = safeExternalUrl(entry.external_url);
+                      const performerCard = (
+                        <>
+                          {photo ? (
+                            <img
+                              src={photo}
+                              alt={name}
+                              loading="lazy"
+                              className="absolute inset-0 h-full w-full object-cover object-top transition-transform duration-500 group-hover:scale-[1.04]"
+                            />
+                          ) : (
+                            <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-blue-300 via-blue-600 to-indigo-950 text-6xl font-black text-white">
+                              {name.charAt(0).toUpperCase()}
+                            </div>
+                          )}
+                          <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_bottom,rgba(30,64,175,0.02)_18%,rgba(29,78,216,0.2)_48%,rgba(30,58,138,0.82)_72%,rgba(15,23,80,0.98)_100%)]" />
+                          <div className="absolute inset-x-0 bottom-0 min-w-0 p-2.5 text-center text-white sm:p-3">
+                            <p className="line-clamp-2 break-words text-base font-black leading-tight tracking-[-0.025em] text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] sm:text-lg">{name}</p>
+                            {key === 'other' && entry.role_title && <p className="mt-1 line-clamp-2 text-xs font-semibold text-white [text-shadow:0_1px_5px_rgba(0,0,0,0.9)]">{entry.role_title}</p>}
+                          </div>
+                        </>
+                      );
+                      return member?.slug ? (
+                        <button
+                          key={entry.id}
+                          type="button"
+                          onClick={() => router.navigate(`/komika/${member.slug}`)}
+                          aria-label={`Lihat profil ${name}`}
+                          className="group relative isolate aspect-[4/5] min-w-0 cursor-pointer overflow-hidden rounded-[22px] border-[3px] border-violet-200/80 bg-slate-900 text-left shadow-[inset_2px_0_8px_rgba(255,255,255,0.55),inset_-2px_0_10px_rgba(192,132,252,0.62),inset_0_-3px_12px_rgba(167,139,250,0.48),0_0_12px_rgba(168,85,247,0.28),0_10px_22px_rgba(76,29,149,0.2)] ring-1 ring-violet-300/60 transition-[transform,box-shadow] duration-300 active:scale-[0.98] hover:-translate-y-1 hover:shadow-[inset_2px_0_10px_rgba(255,255,255,0.68),inset_-2px_0_12px_rgba(216,180,254,0.74),inset_0_-3px_14px_rgba(196,181,253,0.58),0_0_20px_rgba(168,85,247,0.52),0_16px_30px_rgba(76,29,149,0.3)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2"
+                        >
+                          {performerCard}
+                        </button>
+                      ) : externalUrl ? (
+                        <a
+                          key={entry.id}
+                          href={externalUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          aria-label={`Buka link ${name}`}
+                          className="group relative isolate aspect-[4/5] min-w-0 cursor-pointer overflow-hidden rounded-[22px] border-[3px] border-violet-200/80 bg-slate-900 text-left shadow-[inset_2px_0_8px_rgba(255,255,255,0.55),inset_-2px_0_10px_rgba(192,132,252,0.62),inset_0_-3px_12px_rgba(167,139,250,0.48),0_0_12px_rgba(168,85,247,0.28),0_10px_22px_rgba(76,29,149,0.2)] ring-1 ring-violet-300/60 transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-[0_16px_30px_rgba(76,29,149,0.3)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2"
+                        >
+                          {performerCard}
+                        </a>
+                      ) : (
+                        <div key={entry.id} className="relative isolate aspect-[4/5] min-w-0 overflow-hidden rounded-[22px] border-[3px] border-violet-200/80 bg-slate-900 shadow-[inset_2px_0_8px_rgba(255,255,255,0.55),inset_-2px_0_10px_rgba(192,132,252,0.62),inset_0_-3px_12px_rgba(167,139,253,0.48),0_0_12px_rgba(168,85,247,0.28),0_10px_22px_rgba(76,29,149,0.2)] ring-1 ring-violet-300/60">
+                          {performerCard}
+                        </div>
+                      );
+                    })}
                   </div>
-                </div>
-              ))}
+                </div>;
+              })}
             </div>
           </section>
         )}
@@ -557,8 +554,7 @@ export function EventDetailPage({ router, slug, settings }: Props) {
                 eventDate={event.date}
                 eventVenue={event.venue}
                 eventLocation={event.location}
-                lightboxIndex={documentationLightboxIndex}
-                onLightboxIndexChange={setDocumentationLightboxIndex}
+                onOpenGallery={() => router.navigate(`/event/${encodeURIComponent(event.slug)}/dokumentasi`)}
               />
             ) : (
               <EmptyState title="Foto dokumentasi belum tersedia." />

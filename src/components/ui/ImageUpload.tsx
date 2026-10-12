@@ -10,6 +10,7 @@ interface ImageUploadProps {
   value: string;
   onChange: (url: string) => void;
   aspect?: 'square' | 'portrait' | 'landscape' | 'auto';
+  objectFit?: 'cover' | 'contain';
   required?: boolean;
   onUploadingChange?: (uploading: boolean) => void;
   compact?: boolean;
@@ -21,7 +22,7 @@ interface ImageUploadProps {
   onSaveImmediately?: (photoUrl: string, cardPhotoUrl: string | null) => Promise<void>;
 }
 
-export function ImageUpload({ label, folder, value, onChange, aspect = 'auto', required = false, onUploadingChange, compact = false, avatar = false, onPreview, skipCrop = false, processingProfile, cropToFrame = false, onSaveImmediately }: ImageUploadProps) {
+export function ImageUpload({ label, folder, value, onChange, aspect = 'auto', objectFit = 'cover', required = false, onUploadingChange, compact = false, avatar = false, onPreview, skipCrop = false, processingProfile, cropToFrame = false, onSaveImmediately }: ImageUploadProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState('');
@@ -32,6 +33,7 @@ export function ImageUpload({ label, folder, value, onChange, aspect = 'auto', r
     ?? (avatar ? 'avatar' : folder.toLowerCase().includes('history') ? 'history-proof' : folder === 'partners' ? 'logo' : 'poster');
 
   const aspectClass = aspect === 'square' ? 'aspect-square' : aspect === 'portrait' ? 'aspect-[3/4]' : aspect === 'landscape' ? 'aspect-video' : 'aspect-[4/3]';
+  const objectFitClass = objectFit === 'contain' ? 'object-contain' : 'object-cover';
 
   function validate(file: File): string | null {
     return validateImageFile(file);
@@ -104,7 +106,7 @@ export function ImageUpload({ label, folder, value, onChange, aspect = 'auto', r
       ) : compact ? (
         <div className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-3">
           <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-white ring-1 ring-slate-200">
-            {value ? <img src={value} alt={`Preview ${label}`} className="h-full w-full object-cover" /> : <ImageIcon className="h-6 w-6 text-slate-300" />}
+            {value ? <img src={value} alt={`Preview ${label}`} className={`h-full w-full ${objectFitClass}`} /> : <ImageIcon className="h-6 w-6 text-slate-300" />}
           </div>
           <div className="min-w-0 flex-1">
             <p className="text-sm font-bold text-slate-700">{label}</p>
@@ -118,7 +120,7 @@ export function ImageUpload({ label, folder, value, onChange, aspect = 'auto', r
       ) : value ? (
         <div className="space-y-3">
           <div className={`relative overflow-hidden rounded-xl ring-1 ring-slate-200 ${aspectClass} bg-slate-50`}>
-            <img src={value} alt="Preview" className="h-full w-full object-cover" />
+            <img src={value} alt="Preview" className={`h-full w-full ${objectFitClass}`} />
           </div>
           <div className="flex gap-2">
             <button type="button" onClick={() => inputRef.current?.click()} disabled={uploading} className="flex-1 rounded-lg bg-slate-100 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-200 disabled:opacity-50">

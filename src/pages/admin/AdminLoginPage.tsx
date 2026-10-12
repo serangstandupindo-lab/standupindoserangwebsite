@@ -62,7 +62,11 @@ export function AdminLoginPage({ router }: { router: Router }) {
     <div className="admin-login-page flex min-h-screen items-center justify-center px-4">
       <div className="w-full max-w-md animate-scale-in">
         <div className="mb-6 text-center">
-          <img src={LOGO_URL} alt="Logo Standupindo Cilegon" className="mx-auto h-16 w-16 rounded-2xl object-contain shadow-lg ring-2 ring-white/20" />
+          <span className="relative mx-auto flex w-fit shrink-0 items-center justify-center rounded-lg border border-blue-100 bg-gradient-to-br from-blue-50 to-white p-0.5 shadow-[0_5px_14px_rgba(29,94,219,0.1)]">
+            <span className="site-brand-logo-light-leak relative isolate block h-12 w-auto overflow-hidden rounded-md sm:h-14">
+              <img src={LOGO_URL} alt="Logo Standupindo Cilegon" className="block h-full w-auto rounded-md object-contain" />
+            </span>
+          </span>
           <h1 className="mt-4 text-xl font-extrabold text-white">Admin Panel</h1>
           <p className="mt-1 text-sm text-blue-200">Standupindo Cilegon</p>
         </div>

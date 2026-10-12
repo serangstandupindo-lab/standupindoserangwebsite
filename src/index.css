@@ -1507,9 +1507,19 @@
   100% { transform: translateX(180%) skewX(-18deg); opacity: 0; }
 }
 
+.event-documentation-hero-motion {
+  transition: transform 6.2s cubic-bezier(0.42, 0, 0.28, 1);
+  will-change: transform, opacity;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .home-stagger[data-light-leak-active="true"] > [data-carousel-highlight] > article::after {
     animation: none;
     opacity: 0;
+  }
+
+  .event-documentation-hero-motion {
+    transition: none;
+    will-change: auto;
   }
 }

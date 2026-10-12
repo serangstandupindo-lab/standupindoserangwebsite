@@ -34,6 +34,7 @@ export function AppShell({ router, settings, children }: AppShellProps) {
   const shellRef = useRef<HTMLDivElement>(null);
   const year = new Date().getFullYear();
   const isTicketAccessPage = router.path === '/tiket';
+  const isEventDocumentationPage = /^\/event\/[^/]+\/dokumentasi$/.test(router.path);
 
   useEffect(() => {
     const root = shellRef.current;
@@ -73,13 +74,13 @@ export function AppShell({ router, settings, children }: AppShellProps) {
   }, [router.path]);
 
   return (
-    <div ref={shellRef} className={`flex min-h-screen flex-col ${isTicketAccessPage ? 'bg-slate-200' : 'bg-slate-50'}`}>
-      {!isTicketAccessPage && <DesktopNavbar router={router} settings={settings} />}
+    <div ref={shellRef} className={`flex min-h-screen flex-col ${isTicketAccessPage ? 'bg-slate-200' : isEventDocumentationPage ? 'bg-[#030712]' : 'bg-slate-50'}`}>
+      {!isTicketAccessPage && !isEventDocumentationPage && <DesktopNavbar router={router} settings={settings} />}
 
       <main className={`flex-1 ${isTicketAccessPage ? '' : 'pb-safe-nav md:pb-0'}`}>{children}</main>
 
       {/* Footer (desktop + mobile compact) */}
-      {!isTicketAccessPage && <footer className="border-t border-slate-200 bg-white pb-14 md:pb-0">
+      {!isTicketAccessPage && !isEventDocumentationPage && <footer className="border-t border-slate-200 bg-white pb-14 md:pb-0">
         <div className="container-app py-10">
           <div className="grid gap-8 md:grid-cols-4">
             <div className="md:col-span-2">
@@ -157,7 +158,7 @@ export function AppShell({ router, settings, children }: AppShellProps) {
       </footer>}
 
       {!isTicketAccessPage && <MobileBottomNav router={router} />}
-      <FollowInstagramPopup router={router} settings={settings} />
+      {!isEventDocumentationPage && <FollowInstagramPopup router={router} settings={settings} />}
     </div>
   );
 }

@@ -11,6 +11,7 @@ import { SectionHeader } from '@/components/ui/SectionHeader';
 import { LoadingSkeleton } from '@/components/ui/LoadingSkeleton';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { getOpenMicNumbers } from '@/lib/format';
+import { CcsScheduleHighlights } from '@/components/CcsScheduleHighlights';
 
 interface Props {
   router: Router;
@@ -359,6 +360,10 @@ export function HomePage({ router }: Props) {
               </AutoSlideRow>
             )}
           </div>
+        </section>
+
+        <section data-home-reveal className="home-reveal">
+          <CcsScheduleHighlights />
         </section>
 
         {/* PARTNERS */}

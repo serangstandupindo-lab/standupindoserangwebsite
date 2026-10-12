@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
 import { ArrowRight, CalendarDays, CheckCircle2, CircleDashed, Mic, UserRound, Sparkles } from 'lucide-react';
 import type { Router } from '@/lib/router';
-import type { MemberOpenMicHistorySubmission, OpenMic, OpenMicRegistration } from '@/lib/types';
+import type { MemberOpenMicHistorySubmission, MemberStageExperience, OpenMic, OpenMicRegistration } from '@/lib/types';
 import { useAuth } from '@/lib/auth-context';
 import { PageHeader } from '@/components/PageHeader';
 import { supabase } from '@/lib/supabase';
-import { formatDate, getOpenMicNumbers, getOpenMicStatus } from '@/lib/format';
+import { formatDate, getEventStatus, getOpenMicNumbers, getOpenMicStatus } from '@/lib/format';
+import { CcsScheduleHighlights } from '@/components/CcsScheduleHighlights';
 
 export function MemberDashboardPage({ router }: { router: Router }) {
   const { user } = useAuth();
@@ -13,7 +14,10 @@ export function MemberDashboardPage({ router }: { router: Router }) {
   const [registrations, setRegistrations] = useState<OpenMicRegistration[]>([]);
   const [loading, setLoading] = useState(true);
   const [displayName, setDisplayName] = useState('Member');
-  const [externalHistory, setExternalHistory] = useState<MemberOpenMicHistorySubmission[]>([]);
+  const [openMicHistory, setOpenMicHistory] = useState<MemberOpenMicHistorySubmission[]>([]);
+  const [stageExperienceCount, setStageExperienceCount] = useState(0);
+  const [officialEventCount, setOfficialEventCount] = useState(0);
+  const [journeyLoadError, setJourneyLoadError] = useState(false);
 
   useEffect(() => {
     if (!user?.id) {
@@ -45,20 +49,47 @@ export function MemberDashboardPage({ router }: { router: Router }) {
       let regData: OpenMicRegistration[] = [];
       let historyData: MemberOpenMicHistorySubmission[] = [];
       if (memberKomikaId) {
-        const [{ data }, { data: history }] = await Promise.all([
+        const [
+          { data, error: registrationError },
+          { data: history, error: openMicHistoryError },
+          { data: lineup, error: lineupError },
+          { data: experiences, error: experienceError },
+        ] = await Promise.all([
           supabase.from('open_mic_registrations').select('*').eq('komika_id', memberKomikaId).order('created_at', { ascending: false }),
-          supabase.from('member_open_mic_history_submissions').select('*').eq('komika_id', memberKomikaId).eq('status', 'approved').eq('activity_type', 'performance').order('event_date', { ascending: false }),
+          supabase.from('member_open_mic_history_submissions').select('*').eq('komika_id', memberKomikaId).eq('status', 'approved').order('event_date', { ascending: false }),
+          supabase.from('event_lineups')
+            .select('event_id, event:events!inner(id, slug, date, status, published)')
+            .eq('komika_id', memberKomikaId)
+            .eq('events.published', true),
+          supabase.from('member_stage_experiences').select('*').eq('komika_id', memberKomikaId),
         ]);
+        if (registrationError || openMicHistoryError || lineupError || experienceError) {
+          console.error('Failed to load member performance summary', registrationError ?? openMicHistoryError ?? lineupError ?? experienceError);
+          setJourneyLoadError(true);
+        } else {
+          setJourneyLoadError(false);
+        }
         regData = (data as OpenMicRegistration[]) ?? [];
         historyData = (history as MemberOpenMicHistorySubmission[]) ?? [];
+        setStageExperienceCount(((experiences as MemberStageExperience[]) ?? []).length);
+        const completedEventIds = new Set(
+          ((lineup ?? []) as unknown as { event: { id: string; date: string; status: 'upcoming' | 'completed' | 'cancelled'; published: boolean } }[])
+            .filter((entry) => entry.event.published && getEventStatus(entry.event.status, entry.event.date) === 'completed')
+            .map((entry) => entry.event.id),
+        );
+        setOfficialEventCount(completedEventIds.size);
+      } else {
+        setJourneyLoadError(false);
+        setStageExperienceCount(0);
+        setOfficialEventCount(0);
       }
 
       setOpenMics((micData as OpenMic[]) ?? []);
       setRegistrations(regData);
-      setExternalHistory(historyData);
+      setOpenMicHistory(historyData);
       setLoading(false);
     })();
-  }, [user?.id]);
+  }, [user?.email, user?.id]);
 
   const latestRegistration = registrations[0];
   const attendedCount = registrations.filter((item) => item.attendance_status === 'attended').length;
@@ -67,9 +98,12 @@ export function MemberDashboardPage({ router }: { router: Router }) {
     && item.attendance_status === 'unmarked'
     && openMics.some((mic) => mic.id === item.open_mic_id),
   ).length;
-  const approvedExternalCount = externalHistory.length;
-  const totalPerformances = attendedCount + approvedExternalCount;
-  const nextOpenMicNumber = totalPerformances + 1;
+  const externalOpenMicCount = openMicHistory.filter((item) => !item.activity_type || item.activity_type === 'performance').length;
+  const internalMcCount = openMicHistory.filter((item) => item.activity_type === 'mc_internal').length;
+  const externalMcCount = openMicHistory.filter((item) => item.activity_type === 'mc_external').length;
+  const totalOpenMicCount = attendedCount + externalOpenMicCount;
+  const totalJourneyCount = officialEventCount + stageExperienceCount;
+  const nextOpenMicNumber = totalOpenMicCount + 1;
   const upcomingMic = useMemo(() => openMics.find((mic) => getOpenMicStatus(mic.status, mic.date) === 'upcoming'), [openMics]);
   const openMicNumbers = useMemo(() => getOpenMicNumbers(openMics), [openMics]);
 
@@ -85,7 +119,7 @@ export function MemberDashboardPage({ router }: { router: Router }) {
                 <div className="min-w-0">
                   <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-blue-100">Member</p>
                   <h2 className="mt-2 text-2xl font-black leading-tight tracking-[-0.04em] sm:text-[2rem]">Halo, {displayName}</h2>
-                  <p className="mt-2 inline-flex rounded-full bg-white/15 px-2.5 py-1 text-[11px] font-bold text-white ring-1 ring-white/20">{upcomingMic ? `Open Mic kamu ke-${nextOpenMicNumber}` : attendedCount > 0 ? `Sudah tampil ${attendedCount} kali` : 'Siap untuk Open Mic pertama'}</p>
+                  <p className="mt-2 inline-flex rounded-full bg-white/15 px-2.5 py-1 text-[11px] font-bold text-white ring-1 ring-white/20">{journeyLoadError ? 'Ringkasan belum dapat dimuat' : upcomingMic ? `Open Mic kamu ke-${nextOpenMicNumber}` : totalOpenMicCount > 0 ? `${totalOpenMicCount} Open Mic tercatat` : 'Siap untuk Open Mic pertama'}</p>
                 </div>
                 <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-white/15 ring-1 ring-white/30">
                   <UserRound className="h-5 w-5" />
@@ -110,14 +144,36 @@ export function MemberDashboardPage({ router }: { router: Router }) {
                   <p className="mt-1 truncate text-lg font-black capitalize leading-tight">{latestRegistration?.status ?? 'Belum'}</p>
                 </div>
                 <div className="rounded-xl bg-white/10 p-2.5 ring-1 ring-white/10">
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-blue-100">Total tampil</p>
-                  <p className="mt-1 text-2xl font-black leading-none">{totalPerformances}</p>
-                  <div className="mt-2 flex flex-wrap gap-x-2.5 gap-y-1 text-xs font-semibold text-blue-50">
-                    <span>Resmi {attendedCount}x</span>
-                    <span>Luar {approvedExternalCount}x</span>
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-blue-100">Total Open Mic</p>
+                  <p className="mt-1 text-2xl font-black leading-none">{journeyLoadError ? '—' : totalOpenMicCount}</p>
+                  <div className="mt-2 space-y-1 text-[10px] font-semibold leading-4 text-blue-50">
+                    <p>Internal {journeyLoadError ? '—' : attendedCount}x <span className="px-1 text-white/60">·</span> Eksternal {journeyLoadError ? '—' : externalOpenMicCount}x</p>
+                    <p>MC Internal {journeyLoadError ? '—' : internalMcCount}x <span className="px-1 text-white/60">·</span> MC Eksternal {journeyLoadError ? '—' : externalMcCount}x</p>
                   </div>
                 </div>
               </div>
+              <button
+                type="button"
+                onClick={() => router.navigate('/member/profile')}
+                className="mt-2 w-full rounded-xl bg-white/10 p-3 text-left ring-1 ring-white/10 transition hover:bg-white/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
+              >
+                <span className="flex items-center justify-between gap-3">
+                  <span className="text-[10px] font-bold uppercase tracking-[0.12em] text-blue-100">Perjalanan Panggung</span>
+                  <ArrowRight className="h-4 w-4 shrink-0 text-white" />
+                </span>
+                <span className="mt-2 grid grid-cols-3 gap-2">
+                  {[
+                    { label: 'Total', value: totalJourneyCount },
+                    { label: 'Internal', value: officialEventCount },
+                    { label: 'Eksternal', value: stageExperienceCount },
+                  ].map(({ label, value }) => (
+                    <span key={label} className="rounded-lg bg-white/10 px-2.5 py-2 ring-1 ring-white/10">
+                      <span className="block text-[9px] font-semibold uppercase tracking-[0.1em] text-blue-100">{label}</span>
+                      <span className="mt-0.5 block text-lg font-black leading-none text-white">{journeyLoadError ? '—' : value}</span>
+                    </span>
+                  ))}
+                </span>
+              </button>
             </div>
 
             <div className="rounded-[28px] border border-slate-200 bg-white p-4 shadow-[0_10px_28px_rgba(15,23,42,0.04)] sm:p-5">
@@ -150,6 +206,8 @@ export function MemberDashboardPage({ router }: { router: Router }) {
                 <div className="mt-4 rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-5 text-sm text-slate-500">Belum ada open mic mendatang.</div>
               )}
             </div>
+
+            <CcsScheduleHighlights compact />
           </div>
 
           <div className="space-y-4">

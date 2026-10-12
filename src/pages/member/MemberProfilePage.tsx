@@ -9,6 +9,8 @@ import { ImageUpload } from '@/components/ui/ImageUpload';
 import { ImageLightbox } from '@/components/ui/ImageLightbox';
 import { SocialIconButton } from '@/components/ui/SocialIconButton';
 import { safeExternalUrl } from '@/lib/format';
+import { MemberStageExperienceModal } from '@/pages/member/MemberStageExperienceModal';
+import { MemberStageJourneySummary } from '@/pages/member/MemberStageJourneySummary';
 
 function handleValue(value: string, prefix: string): string {
   return value.trim().replace(new RegExp(`^https?://(www\\.)?${prefix}\\.com/`, 'i'), '').replace(/^@/, '').replace(/\/.*$/, '').replace(/\s/g, '');
@@ -27,6 +29,8 @@ export function MemberProfilePage({ router }: { router: Router }) {
   const [profileError, setProfileError] = useState('');
   const [profileNotice, setProfileNotice] = useState('');
   const [previewPhoto, setPreviewPhoto] = useState(false);
+  const [stageExperienceOpen, setStageExperienceOpen] = useState(false);
+  const [journeyRefresh, setJourneyRefresh] = useState(0);
   const [editingProfile, setEditingProfile] = useState(false);
   const [form, setForm] = useState({ stage_name: '', full_name: '', whatsapp: '', bio: '', karya_url: '', instagram_url: '', tiktok_url: '', youtube_url: '', photo: '' });
 
@@ -228,6 +232,13 @@ export function MemberProfilePage({ router }: { router: Router }) {
 
           {profileNotice && <div role="status" className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700">{profileNotice}</div>}
 
+          {!editingProfile && <MemberStageJourneySummary
+            key={journeyRefresh}
+            komikaId={profile.id}
+            router={router}
+            onManage={() => setStageExperienceOpen(true)}
+          />}
+
           {editingProfile ? (
             <div className="rounded-[28px] border border-slate-200 bg-white p-4 shadow-[0_10px_28px_rgba(15,23,42,0.04)] sm:p-5">
               <div className="space-y-4">
@@ -305,6 +316,10 @@ export function MemberProfilePage({ router }: { router: Router }) {
         </div>
       </div>
       {form.photo && <ImageLightbox src={form.photo} alt={profileSummary} open={previewPhoto} onClose={() => setPreviewPhoto(false)} closeAriaLabel="Tutup foto profil" />}
+      {stageExperienceOpen && <MemberStageExperienceModal komikaId={profile.id} onClose={() => {
+        setStageExperienceOpen(false);
+        setJourneyRefresh((current) => current + 1);
+      }} />}
     </div>
   );
 }
