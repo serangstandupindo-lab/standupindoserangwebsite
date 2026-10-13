@@ -35,6 +35,9 @@ export function AppShell({ router, settings, children }: AppShellProps) {
   const year = new Date().getFullYear();
   const isTicketAccessPage = router.path === '/tiket';
   const isEventDocumentationPage = /^\/event\/[^/]+\/dokumentasi$/.test(router.path);
+  const isPublicMainPage = ['/', '/open-mic', '/event', '/komika', '/more'].includes(router.path);
+  const isPublicDetailPage = /^\/(open-mic|event|komika)\/[^/]+$/.test(router.path);
+  const isPublicNavyPage = isPublicMainPage || isPublicDetailPage;
 
   useEffect(() => {
     const root = shellRef.current;
@@ -74,10 +77,10 @@ export function AppShell({ router, settings, children }: AppShellProps) {
   }, [router.path]);
 
   return (
-    <div ref={shellRef} className={`flex min-h-screen flex-col ${isTicketAccessPage ? 'bg-slate-200' : isEventDocumentationPage ? 'bg-[#030712]' : 'bg-slate-50'}`}>
+    <div ref={shellRef} className={`flex min-h-screen flex-col ${isTicketAccessPage ? 'bg-slate-200' : isEventDocumentationPage ? 'bg-[#030712]' : isPublicNavyPage ? 'bg-[#0B1F44]' : 'bg-slate-50'}`}>
       {!isTicketAccessPage && !isEventDocumentationPage && <DesktopNavbar router={router} settings={settings} />}
 
-      <main className={`flex-1 ${isTicketAccessPage ? '' : 'pb-safe-nav md:pb-0'}`}>{children}</main>
+      <main className={`flex-1 ${isTicketAccessPage ? '' : 'pb-safe-nav md:pb-0'} ${isPublicNavyPage ? 'text-slate-100' : ''}`}>{children}</main>
 
       {/* Footer (desktop + mobile compact) */}
       {!isTicketAccessPage && !isEventDocumentationPage && <footer className="border-t border-slate-200 bg-white pb-14 md:pb-0">

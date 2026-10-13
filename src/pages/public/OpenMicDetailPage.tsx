@@ -338,11 +338,11 @@ export function OpenMicDetailPage({ router, slug, showFloatingRegister = false }
         <section id="lineup" data-scroll-reveal className="scroll-reveal is-visible scroll-mt-24">
           <div className="mb-3 flex items-end justify-between gap-3">
             <div>
-              <h2 className="text-lg font-bold text-slate-900 sm:text-xl">{currentStatus === 'completed' ? 'DAFTAR LINEUP' : 'LINEUP SEMENTARA'}</h2>
-              <p className="mt-1 text-sm font-semibold text-slate-800">{currentStatus === 'completed' ? `${confirmed.length} KOMIKA PERFORM` : `${confirmed.length} KOMIKA TERDAFTAR`}</p>
+              <h2 className="text-lg font-bold text-white sm:text-xl">{currentStatus === 'completed' ? 'DAFTAR LINEUP' : 'LINEUP SEMENTARA'}</h2>
+              <p className="mt-1 text-sm font-semibold text-slate-300">{currentStatus === 'completed' ? `${confirmed.length} KOMIKA PERFORM` : `${confirmed.length} KOMIKA TERDAFTAR`}</p>
             </div>
-            <button onClick={() => currentStatus === 'completed' ? setShareLineupOpen(true) : void shareLineup()} aria-label={copied ? 'Link lineup berhasil disalin' : 'Bagikan lineup'} title={copied ? 'Link lineup berhasil disalin' : 'Bagikan lineup'} className="inline-flex shrink-0 items-center justify-center rounded-full bg-blue-50 p-2.5 text-blue-700 transition hover:bg-blue-100 active:scale-[0.98]">
-              {copied ? <Check className="h-4 w-4 text-green-600" /> : <Send className="h-4 w-4" />}
+            <button onClick={() => currentStatus === 'completed' ? setShareLineupOpen(true) : void shareLineup()} aria-label={copied ? 'Link lineup berhasil disalin' : 'Bagikan lineup'} title={copied ? 'Link lineup berhasil disalin' : 'Bagikan lineup'} className="inline-flex h-11 w-11 shrink-0 items-center justify-center text-white transition active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70">
+              {copied ? <Check className="h-5 w-5 text-white" /> : <Send className="h-5 w-5 text-white" />}
             </button>
           </div>
           {confirmed.length === 0 ? (
@@ -363,12 +363,11 @@ export function OpenMicDetailPage({ router, slug, showFloatingRegister = false }
               {filteredLineup.length === 0 ? (
                 <p className="rounded-xl border border-slate-200 bg-white px-4 py-6 text-center text-sm text-slate-500">Tidak ada komika di lineup ini yang cocok dengan pencarian.</p>
               ) : (
-            <div className="overflow-x-auto rounded-2xl border border-slate-300 bg-white shadow-[0_8px_22px_rgba(15,23,42,0.08)] ring-1 ring-slate-200/70">
-              <table className="w-full min-w-[500px] table-fixed text-left">
+            <div className="overflow-hidden rounded-2xl border border-slate-300 bg-white shadow-[0_8px_22px_rgba(15,23,42,0.08)] ring-1 ring-slate-200/70">
+              <table className="w-full table-fixed text-left">
                 <thead className="border-b-2 border-blue-800 bg-blue-700 text-[10px] font-extrabold uppercase tracking-[0.12em] text-white">
                   <tr>
-                    <th className="w-[38%] px-3 py-2.5 sm:px-4">Komika</th>
-                    <th className="w-[37%] px-3 py-2.5 sm:px-4">Instagram</th>
+                    <th className="w-[75%] px-3 py-2.5 sm:px-4">Komika</th>
                     <th className="w-[25%] px-3 py-2.5 text-center sm:px-4">Status</th>
                   </tr>
                 </thead>
@@ -380,14 +379,10 @@ export function OpenMicDetailPage({ router, slug, showFloatingRegister = false }
                         <td className="px-3 py-3 sm:px-4">
                           <p className="truncate font-bold text-slate-900">{r.stage_name}</p>
                           {r.community && <p className="truncate text-xs text-slate-500">{r.community}</p>}
-                        </td>
-                        <td className="px-3 py-3 sm:px-4">
-                          {ig ? (
-                            <a href={ig.url} target="_blank" rel="noopener noreferrer" className="group/instagram inline-flex max-w-full items-center gap-2 text-xs font-semibold text-slate-700 transition-colors hover:text-[#9f1857]">
+                          {ig && <a href={ig.url} target="_blank" rel="noopener noreferrer" className="group/instagram mt-1 inline-flex max-w-full items-center gap-2 text-xs font-semibold text-slate-700 transition-colors hover:text-[#9f1857]">
                               <Instagram className="h-4 w-4 shrink-0 text-[#c13584] transition-transform group-hover/instagram:scale-110" />
                               <span className="truncate">{ig.label}</span>
-                            </a>
-                          ) : <span className="text-xs text-slate-400">-</span>}
+                            </a>}
                         </td>
                         <td className="px-3 py-3 text-center sm:px-4">
                           <span className={`inline-flex ${currentStatus === 'completed' ? 'text-green-600' : 'text-blue-600'}`} title={currentStatus === 'completed' ? 'Tampil' : 'Terdaftar'} aria-label={currentStatus === 'completed' ? 'Tampil' : 'Terdaftar'}>

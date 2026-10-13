@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Instagram, Music2, Pencil, Save, UserRound, X, Youtube } from 'lucide-react';
+import { Instagram, Music2, Pencil, Plus, Save, Trash2, UserRound, X, Youtube } from 'lucide-react';
 import type { Router } from '@/lib/router';
 import { PageHeader } from '@/components/PageHeader';
 import { useAuth } from '@/lib/auth-context';
@@ -32,7 +32,8 @@ export function MemberProfilePage({ router }: { router: Router }) {
   const [stageExperienceOpen, setStageExperienceOpen] = useState(false);
   const [journeyRefresh, setJourneyRefresh] = useState(0);
   const [editingProfile, setEditingProfile] = useState(false);
-  const [form, setForm] = useState({ stage_name: '', full_name: '', whatsapp: '', bio: '', karya_url: '', instagram_url: '', tiktok_url: '', youtube_url: '', photo: '' });
+  const [form, setForm] = useState({ stage_name: '', full_name: '', whatsapp: '', bio: '', karya_url: '', instagram_url: '', tiktok_url: '', youtube_url: '', photo: '', specialties: [] as string[] });
+  const [newSpecialty, setNewSpecialty] = useState('');
 
   useEffect(() => {
     if (!user?.id) {
@@ -64,6 +65,7 @@ export function MemberProfilePage({ router }: { router: Router }) {
             tiktok_url: row.tiktok_url ?? '',
             youtube_url: row.youtube_url ?? '',
             photo: row.photo ?? '',
+            specialties: row.specialties ?? [],
           });
         }
       } catch (error) {
@@ -111,6 +113,7 @@ export function MemberProfilePage({ router }: { router: Router }) {
       tiktok_url: profileUrl(form.tiktok_url, 'tiktok'),
       youtube_url: profileUrl(form.youtube_url, 'youtube'),
       photo: form.photo.trim() || null,
+      specialties: form.specialties.map((specialty) => specialty.trim()).filter(Boolean),
       updated_at: new Date().toISOString(),
     };
 
@@ -121,6 +124,7 @@ export function MemberProfilePage({ router }: { router: Router }) {
 
     setSaving(false);
     if (!error) {
+      setProfile((current) => current ? { ...current, specialties: payload.specialties } : current);
       setEditingProfile(false);
       setProfileNotice('Profil berhasil disimpan.');
     } else {
@@ -157,8 +161,17 @@ export function MemberProfilePage({ router }: { router: Router }) {
       tiktok_url: profile.tiktok_url ?? '',
       youtube_url: profile.youtube_url ?? '',
       photo: profile.photo ?? '',
+      specialties: profile.specialties ?? [],
     });
+    setNewSpecialty('');
     setEditingProfile(false);
+  }
+
+  function addSpecialty() {
+    const specialty = newSpecialty.trim();
+    if (!specialty || form.specialties.some((item) => item.toLowerCase() === specialty.toLowerCase())) return;
+    setForm((current) => ({ ...current, specialties: [...current.specialties, specialty] }));
+    setNewSpecialty('');
   }
 
   if (loading) {
@@ -264,6 +277,20 @@ export function MemberProfilePage({ router }: { router: Router }) {
               </div>
 
               <div>
+                <label className="label-field" htmlFor="new-specialty">Spesialisasi</label>
+                <div className="flex gap-2">
+                  <input id="new-specialty" value={newSpecialty} onChange={(event) => setNewSpecialty(event.target.value)} onKeyDown={(event) => { if (event.key === 'Enter') { event.preventDefault(); addSpecialty(); } }} className="input-field" placeholder="Contoh: Observasi" />
+                  <button type="button" onClick={addSpecialty} className="btn-secondary shrink-0" aria-label="Tambah spesialisasi" title="Tambah spesialisasi"><Plus className="h-4 w-4" /></button>
+                </div>
+                {form.specialties.length > 0 && <ul className="mt-3 space-y-2">
+                  {form.specialties.map((specialty, index) => <li key={`${specialty}-${index}`} className="flex items-center gap-2">
+                    <input aria-label={`Spesialisasi ${index + 1}`} value={specialty} onChange={(event) => setForm((current) => ({ ...current, specialties: current.specialties.map((item, itemIndex) => itemIndex === index ? event.target.value : item) }))} className="input-field" />
+                    <button type="button" onClick={() => setForm((current) => ({ ...current, specialties: current.specialties.filter((_, itemIndex) => itemIndex !== index) }))} className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-rose-200 text-rose-600 transition hover:bg-rose-50" aria-label={`Hapus ${specialty || `spesialisasi ${index + 1}`}`} title="Hapus spesialisasi"><Trash2 className="h-4 w-4" /></button>
+                  </li>)}
+                </ul>}
+              </div>
+
+              <div>
                 <label className="label-field" htmlFor="karya_url">Karya Saya</label>
                 <input id="karya_url" type="url" value={form.karya_url} onChange={(e) => setForm({ ...form, karya_url: e.target.value })} className="input-field" placeholder="https://youtube.com/..." />
                 <p className="mt-1.5 text-xs text-slate-500">Tambahkan satu link karya yang ingin dilihat publik.</p>
@@ -302,6 +329,10 @@ export function MemberProfilePage({ router }: { router: Router }) {
                 <div className="rounded-2xl border border-slate-200 bg-slate-50/70 p-3"><p className="mb-1 text-xs font-bold text-slate-500">Nomor WhatsApp</p><p className="text-sm font-bold text-slate-900">{form.whatsapp || '-'}</p></div>
                 <div className="rounded-2xl border border-slate-200 bg-slate-50/70 p-3"><p className="mb-1 text-xs font-bold text-slate-500">Bio</p><p className="whitespace-pre-line text-sm font-medium leading-6 text-slate-700">{form.bio || '-'}</p></div>
                 <div className="rounded-2xl border border-slate-200 bg-slate-50/70 p-3"><p className="mb-1 text-xs font-bold text-slate-500">Karya Saya</p>{safeExternalUrl(form.karya_url) ? <a href={safeExternalUrl(form.karya_url) ?? undefined} target="_blank" rel="noopener noreferrer" className="break-all text-sm font-semibold text-blue-700 hover:text-blue-800">{form.karya_url}</a> : <p className="text-sm font-medium text-slate-700">-</p>}</div>
+              </div>
+              <div className="mt-4">
+                <p className="label-field">Spesialisasi</p>
+                {profile.specialties.length > 0 ? <div className="flex flex-wrap gap-2">{profile.specialties.map((specialty, index) => <span key={`${specialty}-${index}`} className="chip">{specialty}</span>)}</div> : <p className="text-sm font-medium text-slate-500">Belum ada spesialisasi.</p>}
               </div>
               <div className="mt-5 border-t border-slate-100 pt-4">
                 <p className="label-field">Media sosial</p>

@@ -227,7 +227,7 @@ export function EvaluatorEvaluationPage({ router, openMicId }: { router: Router;
             <div className="relative mt-4">
               <div className="relative">
                 <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-                <input value={selectedPerformer ? selectedPerformer.stage_name : performerSearch} onChange={(event) => { setSelectedPerformerId(null); setPerformerSearch(event.target.value); setPerformerPickerOpen(true); }} onFocus={() => setPerformerPickerOpen(true)} className="input-field !pr-10 !pl-10" placeholder="Cari performer atau komunitas..." autoComplete="off" aria-label="Cari performer" />
+                <input value={selectedPerformerId ? selectedPerformer?.stage_name ?? '' : performerSearch} onChange={(event) => { setSelectedPerformerId(null); setPerformerSearch(event.target.value); setPerformerPickerOpen(true); }} onFocus={() => setPerformerPickerOpen(true)} className="input-field !pr-10 !pl-10" placeholder="Cari performer atau komunitas..." autoComplete="off" aria-label="Cari performer" />
                 <button type="button" onClick={() => setPerformerPickerOpen((value) => !value)} className="absolute right-1.5 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100" aria-label="Buka daftar performer"><ChevronRight className={`h-4 w-4 transition-transform ${performerPickerOpen ? 'rotate-90 text-blue-600' : ''}`} /></button>
               </div>
               {performerPickerOpen && <>

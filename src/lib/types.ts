@@ -225,7 +225,7 @@ export interface EventLineupEntry {
   komika?: Pick<Komika, 'stage_name' | 'slug' | 'photo' | 'photo_card' | 'instagram_url'> | Pick<Komika, 'stage_name' | 'slug' | 'photo' | 'photo_card' | 'instagram_url'>[] | null;
 }
 
-export type MemberStageRole = 'Opener' | 'Guest Star' | 'MC / Host' | 'Penampil Utama' | 'Solo Show' | 'Lineup / Penampil' | 'Lainnya';
+export type MemberStageRole = 'Special Show' | 'Guest Star' | 'Lineup / Penampil' | 'Juri' | 'Opener' | 'MC / Host' | 'Lainnya' | 'Penampil Utama' | 'Solo Show';
 
 export interface MemberStageExperience {
   id: string;

@@ -10,7 +10,7 @@ const ITEMS = [
   { to: '/more/gabung', label: 'Gabung Komunitas', description: 'Jadi bagian dari komunitas Cilegon.', icon: Users },
   { to: '/more/tentang', label: 'Tentang Komunitas', description: 'Kenali Standupindo Cilegon.', icon: Info },
   { to: '/more/kerja-sama', label: 'Kerja Sama', description: 'Mari berkolaborasi bersama kami.', icon: Handshake },
-  { to: '/more/kontak', label: 'Kontak / Sosmed', description: 'Hubungi dan ikuti kami.', icon: MessageCircle },
+  { to: '/more/kontak', label: 'Kontak & Sosial Media', description: 'Hubungi dan ikuti kami.', icon: MessageCircle },
 ];
 
 export function MorePage({ router, settings }: { router: Router; settings: SiteSettings }) {

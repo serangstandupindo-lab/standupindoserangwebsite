@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Check, ChevronDown, ChevronRight, Clock3, LoaderCircle, MessageCircle, Printer, Search, Users } from 'lucide-react';
+import { Check, ChevronDown, ChevronRight, Clock3, Crown, Download, LoaderCircle, Medal, MessageCircle, Printer, Search, Users } from 'lucide-react';
 import { Modal } from '@/components/ui/Modal';
 import type { EventItem } from '@/lib/types';
 import { formatDate, getEventStatus, normalizeWhatsappNumber } from '@/lib/format';
 import { supabase } from '@/lib/supabase';
 import { TicketPagination } from '@/components/TicketPagination';
+import { SearchableEventSelect } from '@/components/ui/SearchableEventSelect';
+import { TicketWorkspaceHeader } from '@/pages/admin/TicketWorkspaceHeader';
 import { downloadXlsxTable } from '@/lib/xlsx';
 
 const PAGE_SIZE = 30;
@@ -86,6 +88,7 @@ export function TicketAudiencePage({ events }: { events: EventItem[] }) {
   const [search, setSearch] = useState('');
   const [eventFilter, setEventFilter] = useState('all');
   const [attendanceFilter, setAttendanceFilter] = useState<'all' | 'attended' | 'not-attended'>('all');
+  const [sortBy, setSortBy] = useState<'tickets' | 'combined' | 'events'>('tickets');
   const [page, setPage] = useState(1);
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
   const [messageTarget, setMessageTarget] = useState<{ guest: AudienceGuest; eventId: string } | null>(null);
@@ -118,7 +121,23 @@ export function TicketAudiencePage({ events }: { events: EventItem[] }) {
     const matchesAttendance = attendanceFilter === 'all' || (attendanceFilter === 'attended' ? guest.total_checked_in > 0 : guest.total_checked_in === 0);
     return matchesQuery && matchesAttendance;
   }), [attendanceFilter, guests, search]);
-  const audienceRows = useMemo(() => filteredGuests.flatMap((guest) => guest.events.map((event) => ({
+  const sortedGuests = useMemo(() => {
+    const maxTickets = Math.max(1, ...filteredGuests.map((guest) => guest.total_tickets));
+    const maxEvents = Math.max(1, ...filteredGuests.map((guest) => guest.event_count));
+    const combinedScore = (guest: AudienceGuest) => guest.total_tickets / maxTickets + guest.event_count / maxEvents;
+    return [...filteredGuests].sort((first, second) => {
+      const primaryDifference = sortBy === 'tickets'
+        ? second.total_tickets - first.total_tickets
+        : sortBy === 'events'
+          ? second.event_count - first.event_count
+          : combinedScore(second) - combinedScore(first);
+      const secondaryDifference = sortBy === 'tickets'
+        ? second.event_count - first.event_count
+        : second.total_tickets - first.total_tickets;
+      return primaryDifference || secondaryDifference || second.event_count - first.event_count || first.full_name.localeCompare(second.full_name, 'id-ID');
+    });
+  }, [filteredGuests, sortBy]);
+  const audienceRows = useMemo(() => sortedGuests.flatMap((guest) => guest.events.map((event) => ({
     id: `${guest.whatsapp}-${event.event_id}`,
     values: [
       guest.full_name,
@@ -130,11 +149,11 @@ export function TicketAudiencePage({ events }: { events: EventItem[] }) {
       event.not_checked_in,
       event.order_numbers.join(' | '),
     ] as Array<string | number>,
-  }))), [filteredGuests]);
-  const pageGuests = filteredGuests.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  }))), [sortedGuests]);
+  const pageGuests = sortedGuests.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
   const nearestUpcomingEvent = getNearestUpcomingEvent(events);
 
-  useEffect(() => { setPage(1); }, [attendanceFilter, eventFilter, search]);
+  useEffect(() => { setPage(1); }, [attendanceFilter, eventFilter, search, sortBy]);
   useEffect(() => {
     if (page > Math.max(1, Math.ceil(filteredGuests.length / PAGE_SIZE))) setPage(1);
   }, [filteredGuests.length, page]);
@@ -299,13 +318,31 @@ export function TicketAudiencePage({ events }: { events: EventItem[] }) {
 
   return (
     <div className="space-y-5">
-      <div className="flex flex-wrap items-start justify-between gap-3"><div><p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-blue-700">Event Workspace</p><h1 className="text-2xl font-black text-slate-950">Penonton</h1><p className="mt-1 text-sm text-slate-500">Pembeli dengan order lunas, dikelompokkan berdasarkan WhatsApp.</p></div><div className="flex gap-2"><button type="button" onClick={exportExcel} disabled={!filteredGuests.length} className="btn-secondary !min-h-10 !px-3 !py-2 text-xs">Unduh Excel</button><button type="button" onClick={printGuests} disabled={!filteredGuests.length} className="btn-secondary !h-10 !w-10 !p-0" aria-label="Cetak Penonton" title="Cetak Penonton"><Printer className="h-4 w-4" /></button></div></div>
+      <TicketWorkspaceHeader title="Penonton" subtitle="Pembeli dengan order lunas, dikelompokkan berdasarkan WhatsApp." eyebrow="Event Workspace" action={<div className="flex shrink-0 gap-2"><button type="button" onClick={exportExcel} disabled={!filteredGuests.length} className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-white text-blue-800 shadow-sm transition hover:bg-blue-50 disabled:cursor-not-allowed disabled:opacity-50" aria-label="Unduh Excel" title="Unduh Excel"><Download className="h-4 w-4" /></button><button type="button" onClick={printGuests} disabled={!filteredGuests.length} className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-white text-blue-800 shadow-sm transition hover:bg-blue-50 disabled:cursor-not-allowed disabled:opacity-50" aria-label="Cetak Penonton" title="Cetak Penonton"><Printer className="h-4 w-4" /></button></div>} />
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4"><div className="rounded-xl border border-slate-200 bg-white p-3"><p className="text-xs text-slate-500">Pembeli</p><p className="mt-1 text-xl font-black">{filteredGuests.length}</p></div><div className="rounded-xl border border-slate-200 bg-white p-3"><p className="text-xs text-slate-500">Tiket</p><p className="mt-1 text-xl font-black">{totalTickets}</p></div><div className="rounded-xl border border-slate-200 bg-white p-3"><p className="text-xs text-slate-500">Check-in</p><p className="mt-1 text-xl font-black text-emerald-700">{totalCheckIns}</p></div><div className="rounded-xl border border-slate-200 bg-white p-3"><p className="text-xs text-slate-500">Belum Check-in</p><p className="mt-1 text-xl font-black text-blue-700">{totalUnscanned}</p></div></div>
-      <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_220px_190px]"><div className="relative"><Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" /><input className="input-field pl-10" placeholder="Cari nama atau WhatsApp..." value={search} onChange={(event) => setSearch(event.target.value)} /></div><select className="input-field" value={eventFilter} onChange={(event) => setEventFilter(event.target.value)}><option value="all">Semua Event</option>{events.map((event) => <option key={event.id} value={event.id}>{event.title}</option>)}</select><select className="input-field" value={attendanceFilter} onChange={(event) => setAttendanceFilter(event.target.value as typeof attendanceFilter)}><option value="all">Semua Kehadiran</option><option value="attended">Hadir</option><option value="not-attended">Belum Hadir</option></select></div>
+      <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_220px_190px]"><div className="relative"><Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" /><input className="input-field pl-10" placeholder="Cari nama atau WhatsApp..." value={search} onChange={(event) => setSearch(event.target.value)} /></div><SearchableEventSelect options={events} value={eventFilter} onChange={setEventFilter} allLabel="Semua Event" ariaLabel="Filter Event Penonton" /><select className="input-field" value={attendanceFilter} onChange={(event) => setAttendanceFilter(event.target.value as typeof attendanceFilter)}><option value="all">Semua Kehadiran</option><option value="attended">Hadir</option><option value="not-attended">Belum Hadir</option></select></div>
+      <div className="rounded-xl border border-blue-200 bg-white p-3 shadow-sm sm:flex sm:items-center sm:justify-between sm:gap-4">
+        <div className="flex min-w-0 items-center gap-3">
+          {sortedGuests[0] && <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-amber-300 bg-amber-100 text-amber-700 shadow-sm" aria-label="Pembeli peringkat pertama"><Crown className="h-6 w-6 fill-amber-300" /></span>}
+          <div className="min-w-0">
+            <p className="text-[10px] font-extrabold uppercase tracking-[0.12em] text-blue-700">Pembeli teratas · {sortBy === 'tickets' ? 'Tiket' : sortBy === 'events' ? 'Event' : 'Gabungan'}</p>
+            {sortedGuests[0] ? <>
+              <p className="mt-1 truncate text-base font-extrabold text-slate-950">{sortedGuests[0].full_name}</p>
+              <p className="mt-0.5 text-xs font-medium text-slate-600"><strong className="font-extrabold text-slate-800">{sortedGuests[0].total_tickets} tiket dibeli</strong><span className="mx-1.5 text-slate-400">·</span>{sortedGuests[0].event_count} event berbeda</p>
+            </> : <p className="mt-1 text-sm text-slate-500">Belum ada data pembeli.</p>}
+          </div>
+        </div>
+        <div role="group" aria-label="Urutkan peringkat pembeli" className="mt-3 grid min-h-12 w-full grid-cols-3 rounded-lg bg-slate-200 p-1 sm:mt-0 sm:w-[340px] sm:shrink-0">
+          <button type="button" aria-pressed={sortBy === 'tickets'} onClick={() => setSortBy('tickets')} className={`min-h-11 rounded-md px-1 py-2 text-xs font-extrabold leading-tight transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 sm:px-2 ${sortBy === 'tickets' ? 'bg-blue-700 text-white shadow-md ring-1 ring-blue-800' : 'text-slate-800 hover:bg-white/70'}`}>Tiket Terbanyak</button>
+          <button type="button" aria-pressed={sortBy === 'combined'} onClick={() => setSortBy('combined')} className={`min-h-11 rounded-md px-1 py-2 text-xs font-extrabold leading-tight transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 sm:px-2 ${sortBy === 'combined' ? 'bg-blue-700 text-white shadow-md ring-1 ring-blue-800' : 'text-slate-800 hover:bg-white/70'}`}>Gabungan</button>
+          <button type="button" aria-pressed={sortBy === 'events'} onClick={() => setSortBy('events')} className={`min-h-11 rounded-md px-1 py-2 text-xs font-extrabold leading-tight transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 sm:px-2 ${sortBy === 'events' ? 'bg-blue-700 text-white shadow-md ring-1 ring-blue-800' : 'text-slate-800 hover:bg-white/70'}`}>Event Terbanyak</button>
+        </div>
+      </div>
       {error && <p role="alert" className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">{error}</p>}
-      {loading ? <div className="h-24 skeleton rounded-2xl" /> : !filteredGuests.length ? <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-8 text-center text-sm text-slate-500">Belum ada pembeli lunas untuk filter ini.</div> : <div className="space-y-2">{pageGuests.map((guest) => {
+      {loading ? <div className="h-24 skeleton rounded-2xl" /> : !filteredGuests.length ? <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-8 text-center text-sm text-slate-500">Belum ada pembeli lunas untuk filter ini.</div> : <div className="space-y-2">{pageGuests.map((guest, index) => {
         const isExpanded = expanded[guest.whatsapp];
-        return <article key={guest.whatsapp} className="overflow-hidden rounded-2xl border border-slate-200 bg-white"><button type="button" onClick={() => setExpanded((current) => ({ ...current, [guest.whatsapp]: !current[guest.whatsapp] }))} className="flex w-full items-center gap-3 p-4 text-left"><span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-700"><Users className="h-4 w-4" /></span><span className="min-w-0 flex-1"><span className="block truncate font-extrabold text-slate-900">{guest.full_name}</span><span className="mt-0.5 block text-xs text-slate-500">{guest.whatsapp} · {guest.event_count} Event</span></span><span className="hidden shrink-0 text-right text-xs sm:block"><span className="font-bold text-slate-800">{guest.total_tickets} tiket</span><span className="mt-0.5 block text-slate-500">{guest.total_checked_in} check-in · {guest.total_not_checked_in} belum</span></span>{isExpanded ? <ChevronDown className="h-4 w-4 text-slate-400" /> : <ChevronRight className="h-4 w-4 text-slate-400" />}</button>{isExpanded && <div className="space-y-2 border-t border-slate-100 p-3 sm:p-4">{guest.events.map((event) => <div key={event.event_id} className="flex flex-wrap items-center justify-between gap-2 rounded-xl bg-slate-50 p-3"><div className="min-w-0 flex-1"><p className="truncate text-sm font-bold text-slate-800">{event.title}</p><p className="mt-0.5 text-xs text-slate-500">{formatDate(event.date)} · {event.order_count} order · {event.order_numbers.join(', ') || 'Order lama'}</p><div className="mt-1 flex gap-3 text-xs font-semibold text-slate-600"><span>{event.ticket_count} tiket</span><span className="text-emerald-700">{event.checked_in} hadir</span><span>{event.not_checked_in} belum</span></div></div><button type="button" onClick={() => setMessageTarget({ guest, eventId: event.event_id })} aria-label={`Kirim pesan WhatsApp ke ${guest.full_name} untuk ${event.title}`} title="Kirim pesan WhatsApp" className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-blue-200 bg-white text-blue-700 transition hover:bg-blue-50"><MessageCircle className="h-4 w-4" /></button></div>)}</div>}</article>;
+        const rank = (page - 1) * PAGE_SIZE + index + 1;
+        return <article key={guest.whatsapp} className="overflow-hidden rounded-2xl border border-slate-200 bg-white"><button type="button" onClick={() => setExpanded((current) => ({ ...current, [guest.whatsapp]: !current[guest.whatsapp] }))} className="flex w-full items-center gap-3 p-4 text-left"><span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-700"><Users className="h-4 w-4" /></span><span className="min-w-0 flex-1"><span className="block truncate font-extrabold text-slate-900">{guest.full_name}</span><span className="mt-0.5 block text-xs text-slate-500">{guest.whatsapp} · {guest.event_count} Event</span></span><span className="hidden shrink-0 text-right text-xs sm:block"><span className="font-bold text-slate-800">{guest.total_tickets} tiket</span><span className="mt-0.5 block text-slate-500">{guest.total_checked_in} check-in · {guest.total_not_checked_in} belum</span></span><span className="ml-auto flex shrink-0 items-center gap-2">{rank <= 3 && <span aria-label={`Peringkat ${rank}`} title={`Peringkat ${rank}`} className={`flex h-9 w-9 flex-col items-center justify-center rounded-full border shadow-sm ${rank === 1 ? 'border-amber-300 bg-amber-100 text-amber-800' : rank === 2 ? 'border-slate-300 bg-slate-100 text-slate-700' : 'border-orange-300 bg-orange-100 text-orange-800'}`}>{rank === 1 ? <Crown className="h-3.5 w-3.5 fill-amber-300" /> : <Medal className="h-3.5 w-3.5" />}<span className="text-[9px] font-black leading-none">{rank}</span></span>}{isExpanded ? <ChevronDown className="h-4 w-4 text-slate-400" /> : <ChevronRight className="h-4 w-4 text-slate-400" />}</span></button>{isExpanded && <div className="space-y-2 border-t border-slate-100 p-3 sm:p-4">{guest.events.map((event) => <div key={event.event_id} className="flex flex-wrap items-center justify-between gap-2 rounded-xl bg-slate-50 p-3"><div className="min-w-0 flex-1"><p className="truncate text-sm font-bold text-slate-800">{event.title}</p><p className="mt-0.5 text-xs text-slate-500">{formatDate(event.date)} · {event.order_count} order · {event.order_numbers.join(', ') || 'Order lama'}</p><div className="mt-1 flex gap-3 text-xs font-semibold text-slate-600"><span>{event.ticket_count} tiket</span><span className="text-emerald-700">{event.checked_in} hadir</span><span>{event.not_checked_in} belum</span></div></div><button type="button" onClick={() => setMessageTarget({ guest, eventId: event.event_id })} aria-label={`Kirim pesan WhatsApp ke ${guest.full_name} untuk ${event.title}`} title="Kirim pesan WhatsApp" className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-blue-200 bg-white text-blue-700 transition hover:bg-blue-50"><MessageCircle className="h-4 w-4" /></button></div>)}</div>}</article>;
       })}</div>}
       <TicketPagination page={page} pageSize={PAGE_SIZE} total={filteredGuests.length} onPageChange={setPage} />
       <div className="print-sheet ticket-audience-print"><div className="print-brand"><h1>DATABASE PENONTON</h1><p>Standupindo Cilegon</p></div><table><thead><tr>{AUDIENCE_HEADERS.map((header) => <th key={header}>{header}</th>)}</tr></thead><tbody>{audienceRows.map((row) => <tr key={row.id}>{row.values.map((value, index) => <td key={`${row.id}-${index}`}>{value}</td>)}</tr>)}</tbody></table></div>

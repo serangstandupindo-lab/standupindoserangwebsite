@@ -6,12 +6,12 @@ import { Modal } from '@/components/ui/Modal';
 import { formatDate, safeExternalUrl } from '@/lib/format';
 
 const ROLE_OPTIONS: MemberStageRole[] = [
-  'Opener',
+  'Special Show',
   'Guest Star',
-  'MC / Host',
-  'Penampil Utama',
-  'Solo Show',
   'Lineup / Penampil',
+  'Juri',
+  'Opener',
+  'MC / Host',
   'Lainnya',
 ];
 

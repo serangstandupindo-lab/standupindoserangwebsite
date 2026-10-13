@@ -1,5 +1,5 @@
 import { cloneElement, isValidElement, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { Mic, CalendarDays, ArrowRight, Sparkles, Handshake, Drama } from 'lucide-react';
+import { Mic, CalendarDays, ArrowRight, Sparkles, Handshake, Drama, Inbox } from 'lucide-react';
 import type { Router } from '@/lib/router';
 import type { OpenMic, EventItem, Komika, EventTicket, Partner } from '@/lib/types';
 import { supabase } from '@/lib/supabase';
@@ -86,8 +86,8 @@ function PartnerMarqueeStrip({ partners, category }: { partners: Partner[]; cate
   if (partners.length === 0) return null;
 
   return (
-    <div className="rounded-[28px] border border-white/50 bg-white/20 p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.3)] backdrop-blur-sm sm:p-4">
-      <div className="mb-3 flex items-center justify-center"><span className="rounded-full border border-white/50 bg-white/20 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-slate-700 sm:text-[11px]">{labels[category]}</span></div>
+    <div className="rounded-[28px] border border-white/80 bg-white/95 p-3 shadow-[0_12px_28px_rgba(2,12,32,0.2)] sm:p-4">
+      <div className="mb-3 flex items-center justify-center"><span className="rounded-full border border-blue-100 bg-blue-50 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-blue-800 sm:text-[11px]">{labels[category]}</span></div>
       <div ref={shellRef} className="partner-marquee-shell home-partner-marquee-shell" onPointerDown={() => setPaused(true)} onPointerUp={() => setPaused(false)} onPointerCancel={() => setPaused(false)}>
         <div className="partner-marquee-track home-partner-marquee-track">
         {leading.map((partner, index) => <div key={`${partner.id}-${category}-${index}`} className={`partner-marquee-item ${sizeMap[category].item}`}>
@@ -318,7 +318,14 @@ export function HomePage({ router }: Props) {
                 <div className="min-w-[260px] max-w-[260px] snap-start sm:min-w-[300px] lg:min-w-0 lg:max-w-none"><LoadingSkeleton count={1} /></div>
               </div>
             ) : events.length === 0 ? (
-              <EmptyState title="Belum ada event mendatang." noSmokeArea />
+              <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-blue-200 bg-white px-6 py-12 text-center shadow-[0_8px_24px_rgba(37,99,235,0.05)] sm:py-16">
+                <div className="flex h-14 w-14 items-center justify-center rounded-full bg-slate-100 text-slate-400"><Inbox className="h-7 w-7" /></div>
+                <h3 className="mt-4 text-base font-semibold text-slate-800 sm:text-lg">Belum ada event baru untuk saat ini.</h3>
+                <p className="mt-1 max-w-lg text-sm leading-6 text-slate-500">Tapi tenang, keseruan berikutnya sedang dalam perjalanan. Sampai jumpa di tawa selanjutnya!</p>
+                <button type="button" onClick={() => router.navigate('/event#completed-events')} className="mt-4 inline-flex min-h-10 items-center gap-1.5 text-sm font-bold text-blue-700 transition hover:text-blue-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2">
+                  Lihat Event Sebelumnya <ArrowRight className="h-4 w-4" />
+                </button>
+              </div>
             ) : (
               <AutoSlideRow highlightActive highlightTone="amber" lightLeakSlot="event" activeLightLeakSlot={activeLightLeakSlot} className={`home-stagger -mx-4 flex gap-4 overflow-x-auto pl-4 ${carouselEndPadding(Math.min(events.length, 5))} pt-4 pb-8 snap-x snap-mandatory scroll-px-4 lg:mx-0 lg:grid lg:grid-cols-3 lg:gap-5 lg:overflow-visible lg:p-0 lg:scroll-p-0`}>
                 {events.map((e) => (

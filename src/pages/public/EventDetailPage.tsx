@@ -207,7 +207,7 @@ function EventDocumentationGallery({ photos, eventTitle, eventDate, eventVenue, 
         </div>
 
         <div className="flex justify-end">
-          <p className="text-xs font-medium text-slate-500">Ketuk foto untuk membuka album dokumentasi lengkap</p>
+          <p className="text-xs font-medium text-slate-300">Ketuk foto untuk membuka album dokumentasi lengkap</p>
         </div>
       </div>
     </>
@@ -460,11 +460,11 @@ export function EventDetailPage({ router, slug, settings }: Props) {
           <section data-scroll-reveal className="scroll-reveal">
             <div className="mb-5 flex items-end justify-between gap-3">
               <div>
-                <p className="text-[10px] font-extrabold uppercase tracking-[0.18em] text-blue-700 sm:text-xs">Lineup Resmi</p>
-                <h2 className="mt-1 text-xl font-black tracking-tight text-slate-900 sm:text-2xl">Pengisi Acara</h2>
+                <p className="text-[10px] font-extrabold uppercase tracking-[0.18em] text-blue-200 sm:text-xs">Lineup Resmi</p>
+                <h2 className="mt-1 text-xl font-black tracking-tight text-white sm:text-2xl">Pengisi Acara</h2>
               </div>
-              <span className="shrink-0 rounded-full border border-blue-100 bg-blue-50 px-3 py-1 text-xs font-bold text-blue-700">
-                {lineup.length} pengisi
+              <span className="shrink-0 text-sm font-black text-white sm:text-base">
+                {lineup.length} Pengisi
               </span>
             </div>
             <div className="space-y-6 sm:space-y-7">
@@ -474,9 +474,9 @@ export function EventDetailPage({ router, slug, settings }: Props) {
                 return <div key={key} className="space-y-3">
                   <div className="flex items-center gap-2.5">
                     <span className="h-5 w-1 shrink-0 rounded-full bg-gradient-to-b from-blue-600 to-violet-500" />
-                    <h3 className="text-sm font-extrabold text-slate-800 sm:text-base">{label}</h3>
+                    <h3 className="text-base font-extrabold text-slate-100 sm:text-lg">{label}</h3>
                     <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-bold tabular-nums text-slate-500">{categoryLineup.length}</span>
-                    <span className="h-px flex-1 bg-gradient-to-r from-slate-200 to-transparent" />
+                    <span className="h-px flex-1 bg-gradient-to-r from-white/30 to-transparent" />
                   </div>
                   <div className="grid grid-cols-3 gap-2.5 sm:grid-cols-4 sm:gap-3 lg:grid-cols-5">
                     {categoryLineup.map((entry) => {
@@ -484,6 +484,7 @@ export function EventDetailPage({ router, slug, settings }: Props) {
                       const name = member?.stage_name ?? entry.performer_name;
                       const photo = member?.photo_card || member?.photo || entry.photo_url;
                       const externalUrl = safeExternalUrl(entry.external_url);
+                      const performerCardClass = 'group relative isolate aspect-[3/5] min-w-0 overflow-hidden bg-slate-900 text-left shadow-[0_8px_18px_rgba(2,12,32,0.35)]';
                       const performerCard = (
                         <>
                           {photo ? (
@@ -511,7 +512,7 @@ export function EventDetailPage({ router, slug, settings }: Props) {
                           type="button"
                           onClick={() => router.navigate(`/komika/${member.slug}`)}
                           aria-label={`Lihat profil ${name}`}
-                          className="group relative isolate aspect-[4/5] min-w-0 cursor-pointer overflow-hidden rounded-[22px] border-[3px] border-violet-200/80 bg-slate-900 text-left shadow-[inset_2px_0_8px_rgba(255,255,255,0.55),inset_-2px_0_10px_rgba(192,132,252,0.62),inset_0_-3px_12px_rgba(167,139,250,0.48),0_0_12px_rgba(168,85,247,0.28),0_10px_22px_rgba(76,29,149,0.2)] ring-1 ring-violet-300/60 transition-[transform,box-shadow] duration-300 active:scale-[0.98] hover:-translate-y-1 hover:shadow-[inset_2px_0_10px_rgba(255,255,255,0.68),inset_-2px_0_12px_rgba(216,180,254,0.74),inset_0_-3px_14px_rgba(196,181,253,0.58),0_0_20px_rgba(168,85,247,0.52),0_16px_30px_rgba(76,29,149,0.3)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2"
+                          className={`${performerCardClass} cursor-pointer transition-transform duration-300 active:scale-[0.99] hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-300 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900`}
                         >
                           {performerCard}
                         </button>
@@ -522,12 +523,12 @@ export function EventDetailPage({ router, slug, settings }: Props) {
                           target="_blank"
                           rel="noopener noreferrer"
                           aria-label={`Buka link ${name}`}
-                          className="group relative isolate aspect-[4/5] min-w-0 cursor-pointer overflow-hidden rounded-[22px] border-[3px] border-violet-200/80 bg-slate-900 text-left shadow-[inset_2px_0_8px_rgba(255,255,255,0.55),inset_-2px_0_10px_rgba(192,132,252,0.62),inset_0_-3px_12px_rgba(167,139,250,0.48),0_0_12px_rgba(168,85,247,0.28),0_10px_22px_rgba(76,29,149,0.2)] ring-1 ring-violet-300/60 transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-[0_16px_30px_rgba(76,29,149,0.3)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2"
+                          className={`${performerCardClass} cursor-pointer transition-transform duration-300 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-300 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900`}
                         >
                           {performerCard}
                         </a>
                       ) : (
-                        <div key={entry.id} className="relative isolate aspect-[4/5] min-w-0 overflow-hidden rounded-[22px] border-[3px] border-violet-200/80 bg-slate-900 shadow-[inset_2px_0_8px_rgba(255,255,255,0.55),inset_-2px_0_10px_rgba(192,132,252,0.62),inset_0_-3px_12px_rgba(167,139,253,0.48),0_0_12px_rgba(168,85,247,0.28),0_10px_22px_rgba(76,29,149,0.2)] ring-1 ring-violet-300/60">
+                        <div key={entry.id} className={performerCardClass}>
                           {performerCard}
                         </div>
                       );
@@ -540,11 +541,11 @@ export function EventDetailPage({ router, slug, settings }: Props) {
         )}
 
         {currentStatus === 'completed' ? (
-          <section data-scroll-reveal className="scroll-reveal border-t border-slate-200 pt-8 sm:pt-10">
+          <section data-scroll-reveal className="scroll-reveal border-t border-white/20 pt-8 sm:pt-10">
             <div className="mb-4 flex items-end justify-between gap-4">
               <div>
-                <p className="text-xs font-bold uppercase tracking-[0.18em] text-blue-600">Kenangan acara</p>
-                <h2 className="mt-1 text-xl font-extrabold text-slate-900 sm:text-2xl">Foto Dokumentasi</h2>
+                <p className="text-xs font-bold uppercase tracking-[0.18em] text-blue-200">Kenangan acara</p>
+                <h2 className="mt-1 text-xl font-extrabold text-white sm:text-2xl">Foto Dokumentasi</h2>
               </div>
             </div>
             {documentationPhotos.length > 0 ? (
@@ -564,8 +565,8 @@ export function EventDetailPage({ router, slug, settings }: Props) {
 
         {/* Partnership */}
         {(['sponsor', 'support', 'media_partner'] as const).some((role) => partnersByRole[role].length > 0) && (
-          <section data-scroll-reveal className="scroll-reveal space-y-4 border-t border-slate-200 pt-8 sm:pt-10">
-            <h2 className="text-xl font-bold text-slate-900">Partner Event</h2>
+          <section data-scroll-reveal className="scroll-reveal space-y-4 border-t border-white/20 pt-8 sm:pt-10">
+            <h2 className="text-xl font-bold text-white">Partner Event</h2>
             <div className="space-y-4">
               {(['sponsor', 'support', 'media_partner'] as const).map((role) => {
                 const rolePartners = partnersByRole[role];

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ArrowRight, CalendarDays, Clock3, Eye, MapPin } from 'lucide-react';
+import { ArrowRight, CalendarDays, Clock3, MapPin } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { formatCcsDate, formatCcsTime, getCcsMapsUrl, getCcsOccurrenceDate, getCcsRecurrenceLabel, isUpcomingCcsSchedule } from '@/lib/ccs';
 import type { CcsSchedule } from '@/lib/types';
@@ -58,13 +58,9 @@ export function CcsScheduleHighlights({ compact = false }: { compact?: boolean }
                     type="button"
                     onClick={() => setPosterToView({ src: schedule.poster_url!, alt: `Poster ${schedule.title}` })}
                     aria-label={`Lihat poster ${schedule.title} ukuran penuh`}
-                    title="Lihat poster ukuran penuh"
                     className="group/poster relative flex h-full w-full items-center justify-center rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
                   >
                     <img src={schedule.poster_url} alt={`Poster ${schedule.title}`} loading="lazy" className="h-full w-full rounded-lg object-contain drop-shadow-[0_8px_14px_rgba(15,23,42,0.18)]" />
-                    <span className="absolute bottom-2 right-2 inline-flex items-center gap-1.5 rounded-full bg-slate-950/75 px-2.5 py-1.5 text-[10px] font-bold text-white opacity-0 shadow transition-opacity group-hover/poster:opacity-100 group-focus-visible/poster:opacity-100">
-                      <Eye className="h-3.5 w-3.5" /> Lihat poster
-                    </span>
                   </button>
                 </div>
               )}
