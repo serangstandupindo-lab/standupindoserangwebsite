@@ -1515,8 +1515,19 @@
 }
 
 .recap-slide-enter {
-  animation: recapSlideEnter 0.36s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: recapSlideEnter 0.65s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
+
+.recap-slide-enter > section > *:not([aria-hidden="true"]) {
+  animation: recapSlideEnter 0.72s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.recap-slide-enter > section > *:nth-child(2) { animation-delay: 120ms; }
+.recap-slide-enter > section > *:nth-child(3) { animation-delay: 240ms; }
+.recap-slide-enter > section > *:nth-child(4) { animation-delay: 360ms; }
+.recap-slide-enter > section > *:nth-child(5) { animation-delay: 480ms; }
+.recap-slide-enter > section > *:nth-child(6) { animation-delay: 600ms; }
+.recap-slide-enter > section > *:nth-child(7) { animation-delay: 720ms; }
 
 .recap-device main {
   scrollbar-width: none;
@@ -1532,7 +1543,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .recap-slide-enter { animation: none; }
+  .recap-slide-enter,
+  .recap-slide-enter > section > *:not([aria-hidden="true"]) { animation: none; }
 }
 
 .event-documentation-hero-motion {

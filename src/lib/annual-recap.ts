@@ -5,6 +5,7 @@ export type AnnualRecapRecord = {
   year: number;
   published: boolean;
   closing_narrative: string | null;
+  music_url?: string | null;
   created_by?: string | null;
   created_at?: string;
   updated_at?: string;
@@ -14,30 +15,32 @@ export type AnnualRecapStats = {
   openMicCount: number;
   eventCount: number;
   appearanceCount: number;
-  identifiedPerformerCount: number;
+  totalPerformerCount: number;
   firstTimePerformerCount: number;
   newMemberCount: number;
   monthlyActivity: Array<{ month: string; count: number }>;
-  topPerformers: Array<{ id: string; name: string; count: number; photo: string | null }>;
+  topInternalPerformers: Array<{ id: string; name: string; count: number; photo: string | null }>;
   topCommunities: Array<{ name: string; count: number }>;
   independentAppearanceCount: number;
-  topOpenMics: Array<{ id: string; title: string; poster: string | null; appearanceCount: number }>;
+  topOpenMics: Array<{ id: string; title: string; date: string; venue: string; location: string; poster: string | null; appearanceCount: number }>;
   eventPosters: Array<{ id: string; title: string; date: string; poster: string }>;
   eventPhotos: Array<{ id: string; eventId: string; eventTitle: string; date: string; url: string }>;
-  totalTicketCheckIns: number | null;
-  spotlightEvent: { id: string; title: string; date: string; poster: string | null; photo: string | null; checkedIn: number } | null;
+  totalTicketsSold: number | null;
+  spotlightEvent: { id: string; title: string; date: string; poster: string | null; photo: string | null; ticketsSold: number } | null;
 };
 
-type RecapOpenMic = { id: string; title: string; date: string; poster: string | null };
+type RecapOpenMic = { id: string; title: string; date: string; venue: string; location: string; poster: string | null };
 type RecapEvent = { id: string; title: string; date: string; poster: string | null; documentation_photos: string[] | null };
+type RecapEventLineup = { event_id: string; komika_id: string | null; performer_name: string; role_category: string };
 type AttendedRegistration = {
   open_mic_id: string;
   komika_id: string | null;
   stage_name: string;
   community: string | null;
 };
-type KomikaProfile = { id: string; stage_name: string; photo: string | null };
-type PublicCheckInStats = { totalCheckedIn: number; events: Array<{ eventId: string; checkedIn: number }> };
+type KomikaProfile = { id: string; stage_name: string; photo: string | null; photo_card: string | null };
+type PublicTicketSalesStats = { totalTicketsSold: number; events: Array<{ eventId: string; ticketsSold: number }> };
+const EVENT_PERFORMER_ROLES = ['lineup', 'opener', 'guest_star', 'special_show'];
 
 export const DEFAULT_RECAP_CLOSING = 'Untuk semua komika yang naik ke panggung, semua komunitas yang ikut meramaikan, dan semua orang yang datang, menonton, mendukung, serta membuat Standupindo Cilegon terus berjalan.';
 
@@ -74,7 +77,7 @@ export async function loadAnnualRecapStats(year: number): Promise<AnnualRecapSta
   const untilDate = year === currentYear ? getJakartaDate() : yearEnd;
 
   const [openMicResult, eventResult, attendanceHistoryResult, newMemberResult] = await Promise.all([
-    supabase.from('open_mics').select('id, title, date, poster')
+    supabase.from('open_mics').select('id, title, date, venue, location, poster')
       .eq('published', true).neq('status', 'cancelled').gte('date', fromDate).lt('date', untilDate).order('date', { ascending: true }),
     supabase.from('events').select('id, title, date, poster, documentation_photos')
       .eq('published', true).neq('status', 'cancelled').gte('date', fromDate).lt('date', untilDate).order('date', { ascending: true }),
@@ -108,15 +111,52 @@ export async function loadAnnualRecapStats(year: number): Promise<AnnualRecapSta
 
   const currentOpenMicIds = new Set(openMics.map((openMic) => openMic.id));
   const currentRegistrations = registrations.filter((registration) => currentOpenMicIds.has(registration.open_mic_id));
+  const eventLineups: RecapEventLineup[] = [];
+  for (const eventIds of chunkValues(events.map((event) => event.id))) {
+    const { data, error } = await supabase.from('event_lineups')
+      .select('event_id, komika_id, performer_name, role_category')
+      .in('event_id', eventIds)
+      .in('role_category', EVENT_PERFORMER_ROLES);
+    if (error) throw error;
+    eventLineups.push(...((data ?? []) as RecapEventLineup[]));
+  }
+
   const profilesById = new Map<string, KomikaProfile>();
   const komikaIds = [...new Set(currentRegistrations.map((registration) => registration.komika_id).filter((id): id is string => Boolean(id)))];
 
   for (const profileIds of chunkValues(komikaIds)) {
-    const { data, error } = await supabase.from('komika').select('id, stage_name, photo')
+    const { data, error } = await supabase.from('komika').select('id, stage_name, photo, photo_card')
       .in('id', profileIds).eq('published', true).eq('status', 'active');
     if (error) throw error;
     ((data ?? []) as KomikaProfile[]).forEach((profile) => profilesById.set(profile.id, profile));
   }
+
+  const normalizePerformerName = (name: string) => name.trim().replace(/\s+/g, ' ').toLocaleLowerCase('id-ID');
+  const komikaIdByName = new Map<string, string | null>();
+  currentRegistrations.forEach((registration) => {
+    if (!registration.komika_id) return;
+    const profileName = profilesById.get(registration.komika_id)?.stage_name;
+    [registration.stage_name, profileName ?? ''].forEach((name) => {
+      const normalizedName = normalizePerformerName(name);
+      if (!normalizedName) return;
+      const existingId = komikaIdByName.get(normalizedName);
+      if (komikaIdByName.has(normalizedName) && existingId !== registration.komika_id) {
+        komikaIdByName.set(normalizedName, null);
+      } else {
+        komikaIdByName.set(normalizedName, registration.komika_id);
+      }
+    });
+  });
+
+  const performerIdentities = new Set<string>();
+  const addPerformerIdentity = (komikaId: string | null, name: string) => {
+    const normalizedName = normalizePerformerName(name);
+    const linkedKomikaId = komikaId ?? (normalizedName ? komikaIdByName.get(normalizedName) : null);
+    if (!linkedKomikaId && !normalizedName) return;
+    performerIdentities.add(linkedKomikaId ? `komika:${linkedKomikaId}` : `name:${normalizedName}`);
+  };
+  currentRegistrations.forEach((registration) => addPerformerIdentity(registration.komika_id, registration.stage_name));
+  eventLineups.forEach((entry) => addPerformerIdentity(entry.komika_id, entry.performer_name));
 
   const monthlyCounts = Array.from({ length: 12 }, () => 0);
   [...openMics, ...events].forEach(({ date }) => {
@@ -129,6 +169,7 @@ export async function loadAnnualRecapStats(year: number): Promise<AnnualRecapSta
   const openMicAppearanceCounts = new Map<string, number>();
   const earliestPerformanceByKomika = new Map<string, string>();
   const independentLabels = new Set(['umum', 'independen', 'independent', 'tanpa komunitas']);
+  const internalCommunityLabels = new Set(['standupindo cilegon', 'komunitas standupindo cilegon']);
   let independentAppearanceCount = 0;
 
   registrations.forEach((registration) => {
@@ -143,26 +184,32 @@ export async function loadAnnualRecapStats(year: number): Promise<AnnualRecapSta
 
     if (registration.komika_id) {
       const profile = profilesById.get(registration.komika_id);
+      if (!profile) return;
       const performer = performerCounts.get(registration.komika_id) ?? {
         id: registration.komika_id,
         name: profile?.stage_name || registration.stage_name.trim(),
         count: 0,
-        photo: profile?.photo ?? null,
+        photo: profile.photo_card || profile.photo,
       };
       performer.count += 1;
       performerCounts.set(registration.komika_id, performer);
     }
 
-    const communityName = registration.community?.trim();
+    const communityName = registration.community?.trim().replace(/\s+/g, ' ');
     if (!communityName) return;
     const communityKey = communityName.toLocaleLowerCase('id-ID');
     if (independentLabels.has(communityKey)) {
       independentAppearanceCount += 1;
       return;
     }
-    const community = communityCounts.get(communityKey) ?? { name: communityName, count: 0 };
+    if (internalCommunityLabels.has(communityKey)) return;
+    const canonicalCommunityKey = communityKey.replace(/^standupindo\s+/, '');
+    const community = communityCounts.get(canonicalCommunityKey) ?? { name: communityName, count: 0 };
+    if (communityName.toLocaleLowerCase('id-ID').startsWith('standupindo ') && !community.name.toLocaleLowerCase('id-ID').startsWith('standupindo ')) {
+      community.name = communityName;
+    }
     community.count += 1;
-    communityCounts.set(communityKey, community);
+    communityCounts.set(canonicalCommunityKey, community);
   });
 
   const byCount = <T extends { count: number }>(first: T, second: T) => second.count - first.count;
@@ -201,16 +248,16 @@ export async function loadAnnualRecapStats(year: number): Promise<AnnualRecapSta
     return true;
   });
 
-  let totalTicketCheckIns: number | null = null;
-  let checkInsByEvent = new Map<string, number>();
-  const { data: ticketStats, error: ticketStatsError } = await supabase.functions.invoke<PublicCheckInStats>('annual-recap-public-stats', { body: { year } });
+  let totalTicketsSold: number | null = null;
+  let ticketsSoldByEvent = new Map<string, number>();
+  const { data: ticketStats, error: ticketStatsError } = await supabase.functions.invoke<PublicTicketSalesStats>('annual-recap-public-stats', { body: { year } });
   if (!ticketStatsError && ticketStats) {
-    totalTicketCheckIns = ticketStats.totalCheckedIn;
-    checkInsByEvent = new Map(ticketStats.events.map((event) => [event.eventId, event.checkedIn]));
+    totalTicketsSold = ticketStats.totalTicketsSold;
+    ticketsSoldByEvent = new Map(ticketStats.events.map((event) => [event.eventId, event.ticketsSold]));
   }
 
   const eventById = new Map(events.map((event) => [event.id, event]));
-  const spotlightEntry = [...checkInsByEvent.entries()].sort((first, second) => second[1] - first[1])[0];
+  const spotlightEntry = [...ticketsSoldByEvent.entries()].sort((first, second) => second[1] - first[1])[0];
   const spotlightEventRow = spotlightEntry && spotlightEntry[1] > 0 ? eventById.get(spotlightEntry[0]) : null;
   const spotlightDocumentation = eventPhotos.find((photo) => photo.eventId === spotlightEventRow?.id)?.url ?? null;
   const firstTimePerformerCount = [...earliestPerformanceByKomika.values()]
@@ -219,20 +266,25 @@ export async function loadAnnualRecapStats(year: number): Promise<AnnualRecapSta
   return {
     openMicCount: openMics.length,
     eventCount: events.length,
-    appearanceCount: currentRegistrations.length,
-    identifiedPerformerCount: performerCounts.size,
+    appearanceCount: currentRegistrations.length + eventLineups.length,
+    totalPerformerCount: performerIdentities.size,
     firstTimePerformerCount,
     newMemberCount: newMemberResult.count ?? 0,
     monthlyActivity: monthlyCounts.map((count, index) => ({
       month: new Intl.DateTimeFormat('id-ID', { month: 'short' }).format(new Date(2020, index, 1)),
       count,
     })),
-    topPerformers: [...performerCounts.values()].sort(byCount).slice(0, 5),
+    topInternalPerformers: [...performerCounts.values()]
+      .sort((first, second) => byCount(first, second) || first.name.localeCompare(second.name, 'id', { sensitivity: 'base' }))
+      .slice(0, 3),
     topCommunities: [...communityCounts.values()].sort(byCount).slice(0, 3),
     independentAppearanceCount,
     topOpenMics: openMics.map((openMic) => ({
       id: openMic.id,
       title: openMic.title,
+      date: openMic.date,
+      venue: openMic.venue,
+      location: openMic.location,
       poster: openMic.poster,
       appearanceCount: openMicAppearanceCounts.get(openMic.id) ?? 0,
     })).filter((openMic) => openMic.appearanceCount > 0)
@@ -240,14 +292,14 @@ export async function loadAnnualRecapStats(year: number): Promise<AnnualRecapSta
       .slice(0, 3),
     eventPosters,
     eventPhotos,
-    totalTicketCheckIns,
+    totalTicketsSold,
     spotlightEvent: spotlightEventRow ? {
       id: spotlightEventRow.id,
       title: spotlightEventRow.title,
       date: spotlightEventRow.date,
       poster: spotlightEventRow.poster,
       photo: spotlightDocumentation,
-      checkedIn: spotlightEntry?.[1] ?? 0,
+      ticketsSold: spotlightEntry?.[1] ?? 0,
     } : null,
   };
 }

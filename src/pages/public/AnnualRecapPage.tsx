@@ -26,14 +26,24 @@ export function AnnualRecapPage({ router, year }: { router: Router; year: string
     }
 
     void (async () => {
-      const { data, error } = await supabase
+      let recapResult = await supabase
         .from('annual_recaps')
-        .select('id, year, published, closing_narrative')
+        .select('id, year, published, closing_narrative, music_url')
         .eq('year', yearNumber)
         .eq('published', true)
         .maybeSingle();
 
+      if (recapResult.error?.code === '42703') {
+        recapResult = await supabase
+          .from('annual_recaps')
+          .select('id, year, published, closing_narrative')
+          .eq('year', yearNumber)
+          .eq('published', true)
+          .maybeSingle();
+      }
+
       if (!active) return;
+      const { data, error } = recapResult;
       if (error) {
         setLoadError(true);
         setLoading(false);
@@ -83,6 +93,7 @@ export function AnnualRecapPage({ router, year }: { router: Router; year: string
       year={record.year}
       stats={stats}
       closingNarrative={record.closing_narrative}
+      musicUrl={record.music_url ?? null}
       onClose={() => router.navigate('/')}
     />
   );

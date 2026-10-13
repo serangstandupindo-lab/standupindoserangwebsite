@@ -11,7 +11,7 @@ const corsHeaders = {
 type RequestBody = { year?: unknown };
 type EventRow = { id: string; date: string };
 type PaidOrder = { id: string; event_id: string };
-type CheckedInTicket = { event_id: string; ticket_order_id: string; checked_in_at: string | null };
+type ActiveTicket = { event_id: string; ticket_order_id: string; status: string };
 
 function json(body: Record<string, unknown>, status = 200) {
   return new Response(JSON.stringify(body), {
@@ -82,7 +82,7 @@ serve(async (request) => {
 
     const events = (eventRows ?? []) as EventRow[];
     const eventIds = events.map((event) => event.id);
-    if (eventIds.length === 0) return json({ year: body.year, totalCheckedIn: 0, events: [] });
+    if (eventIds.length === 0) return json({ year: body.year, totalTicketsSold: 0, events: [] });
 
     const paidOrders: PaidOrder[] = [];
     for (const ids of chunkValues(eventIds)) {
@@ -98,27 +98,27 @@ serve(async (request) => {
     }
 
     const orderEventById = new Map(paidOrders.map((order) => [order.id, order.event_id]));
-    const checkedInByEvent = new Map<string, number>();
+    const ticketsSoldByEvent = new Map<string, number>();
     for (const orderIds of chunkValues(paidOrders.map((order) => order.id))) {
       const { data, error } = await fetchAllPages((from, to) => serviceClient
         .from('ticket_instances')
-        .select('event_id, ticket_order_id, checked_in_at')
+        .select('event_id, ticket_order_id, status')
         .in('ticket_order_id', orderIds)
-        .not('checked_in_at', 'is', null)
+        .eq('status', 'active')
         .order('id', { ascending: true })
         .range(from, to));
-      if (error) return json({ error: 'Data check-in gagal dimuat.' }, 500);
+      if (error) return json({ error: 'Data tiket terjual gagal dimuat.' }, 500);
 
-      ((data ?? []) as CheckedInTicket[]).forEach((ticket) => {
-        if (!ticket.checked_in_at || orderEventById.get(ticket.ticket_order_id) !== ticket.event_id) return;
-        checkedInByEvent.set(ticket.event_id, (checkedInByEvent.get(ticket.event_id) ?? 0) + 1);
+      ((data ?? []) as ActiveTicket[]).forEach((ticket) => {
+        if (orderEventById.get(ticket.ticket_order_id) !== ticket.event_id) return;
+        ticketsSoldByEvent.set(ticket.event_id, (ticketsSoldByEvent.get(ticket.event_id) ?? 0) + 1);
       });
     }
 
-    const eventStats = events.map((event) => ({ eventId: event.id, checkedIn: checkedInByEvent.get(event.id) ?? 0 }));
+    const eventStats = events.map((event) => ({ eventId: event.id, ticketsSold: ticketsSoldByEvent.get(event.id) ?? 0 }));
     return json({
       year: body.year,
-      totalCheckedIn: eventStats.reduce((total, event) => total + event.checkedIn, 0),
+      totalTicketsSold: eventStats.reduce((total, event) => total + event.ticketsSold, 0),
       events: eventStats,
     });
   } catch (error) {

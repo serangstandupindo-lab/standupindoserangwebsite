@@ -1,8 +1,17 @@
-import { useEffect, useState } from 'react';
-import { CheckCircle2, Eye, EyeOff, FileText, Save, Sparkles } from 'lucide-react';
+import { useEffect, useRef, useState, type ChangeEvent } from 'react';
+import { CheckCircle2, Eye, EyeOff, FileText, Music2, Save, Sparkles, Trash2, Upload } from 'lucide-react';
 import { AnnualRecapStory } from '@/pages/public/AnnualRecapStoryView';
 import { DEFAULT_RECAP_CLOSING, loadAnnualRecapStats, type AnnualRecapRecord, type AnnualRecapStats } from '@/lib/annual-recap';
 import { supabase } from '@/lib/supabase';
+
+const AUDIO_CONTENT_TYPES: Record<string, string> = {
+  mp3: 'audio/mpeg',
+  m4a: 'audio/mp4',
+  aac: 'audio/aac',
+  ogg: 'audio/ogg',
+  wav: 'audio/wav',
+  webm: 'audio/webm',
+};
 
 export function AnnualRecapAdminPage({ onNotice, onBack }: { onNotice: (message: string) => void; onBack?: () => void }) {
   const currentYear = new Date().getFullYear();
@@ -11,6 +20,7 @@ export function AnnualRecapAdminPage({ onNotice, onBack }: { onNotice: (message:
   const [records, setRecords] = useState<AnnualRecapRecord[]>([]);
   const [record, setRecord] = useState<AnnualRecapRecord | null>(null);
   const [closingNarrative, setClosingNarrative] = useState(DEFAULT_RECAP_CLOSING);
+  const [musicUrl, setMusicUrl] = useState('');
   const [stats, setStats] = useState<AnnualRecapStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [recordsLoading, setRecordsLoading] = useState(true);
@@ -19,6 +29,8 @@ export function AnnualRecapAdminPage({ onNotice, onBack }: { onNotice: (message:
   const [saving, setSaving] = useState(false);
   const [publishing, setPublishing] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
+  const [musicUploading, setMusicUploading] = useState(false);
+  const musicInputRef = useRef<HTMLInputElement>(null);
 
   const validYearInput = /^\d{4}$/.test(yearInput)
     && Number(yearInput) >= 1900
@@ -50,6 +62,7 @@ export function AnnualRecapAdminPage({ onNotice, onBack }: { onNotice: (message:
       setStatsError(false);
       setRecord(null);
       setStats(null);
+      setMusicUrl('');
 
       const { data, error } = await supabase
         .from('annual_recaps')
@@ -66,6 +79,7 @@ export function AnnualRecapAdminPage({ onNotice, onBack }: { onNotice: (message:
       const nextRecord = (data as AnnualRecapRecord | null) ?? null;
       setRecord(nextRecord);
       setClosingNarrative(nextRecord?.closing_narrative?.trim() || DEFAULT_RECAP_CLOSING);
+      setMusicUrl(nextRecord?.music_url ?? '');
 
       try {
         const nextStats = await loadAnnualRecapStats(selectedYear);
@@ -87,13 +101,14 @@ export function AnnualRecapAdminPage({ onNotice, onBack }: { onNotice: (message:
   }
 
   async function saveRecord(nextPublished?: boolean) {
-    if (!validYearInput || saving) return;
+    if (!validYearInput || saving || musicUploading) return;
     setSaving(true);
 
-    const payload: { closing_narrative: string | null; updated_at: string; published?: boolean } = {
+    const payload: { closing_narrative: string | null; music_url?: string | null; updated_at: string; published?: boolean } = {
       closing_narrative: closingNarrative.trim() || null,
       updated_at: new Date().toISOString(),
     };
+    if ((record && 'music_url' in record) || musicUrl.trim()) payload.music_url = musicUrl.trim() || null;
     if (nextPublished !== undefined) payload.published = nextPublished;
 
     if (record?.id) {
@@ -114,6 +129,7 @@ export function AnnualRecapAdminPage({ onNotice, onBack }: { onNotice: (message:
       year: selectedYear,
       published: nextPublished ?? false,
       closing_narrative: payload.closing_narrative,
+      music_url: payload.music_url,
     }).select('*').single();
     setSaving(false);
     if (error) {
@@ -125,6 +141,40 @@ export function AnnualRecapAdminPage({ onNotice, onBack }: { onNotice: (message:
     setRecord(createdRecord);
     updateRecordList(createdRecord);
     onNotice(nextPublished ? 'Annual Recap berhasil dibuat dan dipublikasikan.' : 'Draft Annual Recap berhasil dibuat.');
+  }
+
+  async function handleMusicUpload(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    event.target.value = '';
+    if (!file) return;
+
+    const extension = file.name.split('.').pop()?.toLowerCase() ?? '';
+    const contentType = AUDIO_CONTENT_TYPES[extension];
+    if (!contentType) {
+      onNotice('Format musik harus MP3, M4A, AAC, OGG, WAV, atau WebM.');
+      return;
+    }
+    if (file.size > 25 * 1024 * 1024) {
+      onNotice('Ukuran musik maksimal 25 MB.');
+      return;
+    }
+
+    setMusicUploading(true);
+    try {
+      const path = `${selectedYear}/${crypto.randomUUID()}.${extension}`;
+      const { error } = await supabase.storage.from('annual-recap-audio').upload(path, file, {
+        cacheControl: '3600',
+        upsert: false,
+        contentType,
+      });
+      if (error) throw error;
+      setMusicUrl(supabase.storage.from('annual-recap-audio').getPublicUrl(path).data.publicUrl);
+      onNotice('Musik berhasil diunggah. Simpan perubahan untuk menerapkannya.');
+    } catch {
+      onNotice('Musik gagal diunggah. Pastikan bucket audio Annual Recap sudah disiapkan.');
+    } finally {
+      setMusicUploading(false);
+    }
   }
 
   async function handlePublish() {
@@ -170,6 +220,7 @@ export function AnnualRecapAdminPage({ onNotice, onBack }: { onNotice: (message:
           year={selectedYear}
           stats={stats}
           closingNarrative={closingNarrative}
+          musicUrl={musicUrl || null}
           onClose={() => setPreviewOpen(false)}
         />
       </div>
@@ -209,10 +260,10 @@ export function AnnualRecapAdminPage({ onNotice, onBack }: { onNotice: (message:
         </div>
 
         <div className="flex flex-wrap gap-2 border-t border-slate-200 pt-4">
-          <button type="button" onClick={() => void saveRecord()} disabled={saving || publishing || loading || !validYearInput} className="btn-secondary">
+          <button type="button" onClick={() => void saveRecord()} disabled={saving || publishing || musicUploading || loading || !validYearInput} className="btn-secondary">
             <Save className="h-4 w-4" /> {saving ? 'Menyimpan...' : record?.published ? 'Simpan perubahan' : 'Simpan draft'}
           </button>
-          <button type="button" onClick={() => void handlePublish()} disabled={saving || publishing || loading || statsError || !validYearInput} className="btn-primary">
+          <button type="button" onClick={() => void handlePublish()} disabled={saving || publishing || musicUploading || loading || statsError || !validYearInput} className="btn-primary">
             <CheckCircle2 className="h-4 w-4" /> {publishing ? 'Memproses...' : 'Publish'}
           </button>
           <button type="button" onClick={() => void handleUnpublish()} disabled={saving || publishing || loading || !record?.published} className="btn-secondary">
@@ -223,6 +274,17 @@ export function AnnualRecapAdminPage({ onNotice, onBack }: { onNotice: (message:
           </button>
         </div>
         {(loadError || statsError) && <p role="alert" className="text-sm text-red-700">{loadError ? 'Data database Annual Recap gagal dimuat.' : 'Sumber statistik gagal dibaca; preview dan publish dinonaktifkan.'}</p>}
+      </section>
+
+      <section className="space-y-3 border-b border-slate-200 pb-5" aria-label="Musik Annual Recap">
+        <div className="flex items-center gap-2 text-slate-700"><Music2 className="h-4 w-4 text-blue-600" /><h2 className="text-xs font-black uppercase tracking-[0.18em]">Musik Story</h2></div>
+        <p className="text-xs text-slate-500">MP3, M4A, AAC, OGG, WAV, atau WebM · Maks. 25 MB · musik berhenti setelah Story selesai.</p>
+        <input ref={musicInputRef} type="file" accept=".mp3,.m4a,.aac,.ogg,.wav,.webm,audio/mpeg,audio/mp4,audio/aac,audio/ogg,audio/wav,audio/webm" onChange={(event) => void handleMusicUpload(event)} className="hidden" />
+        <div className="flex flex-wrap items-center gap-2">
+          <button type="button" onClick={() => musicInputRef.current?.click()} disabled={loading || musicUploading} className="btn-secondary"><Upload className="h-4 w-4" />{musicUploading ? 'Mengunggah musik...' : musicUrl ? 'Ganti musik' : 'Upload musik'}</button>
+          {musicUrl && <button type="button" onClick={() => { setMusicUrl(''); onNotice('Musik dihapus dari perubahan. Simpan untuk menerapkan.'); }} disabled={musicUploading} className="btn-secondary"><Trash2 className="h-4 w-4" />Hapus musik</button>}
+        </div>
+        {musicUrl && <audio controls preload="metadata" src={musicUrl} className="h-10 w-full max-w-md" />}
       </section>
 
       <div className="grid gap-5 lg:grid-cols-[1.2fr_0.8fr]">
