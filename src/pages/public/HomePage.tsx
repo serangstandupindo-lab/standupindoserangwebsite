@@ -123,6 +123,7 @@ export function HomePage({ router }: Props) {
   const [numberedOpenMics, setNumberedOpenMics] = useState<OpenMic[]>([]);
   const [events, setEvents] = useState<EventItem[]>([]);
   const [komika, setKomika] = useState<Komika[]>([]);
+  const [publishedRecap, setPublishedRecap] = useState<{ year: number } | null>(null);
   const [partnersByCategory, setPartnersByCategory] = useState<Record<'sponsor' | 'support' | 'media_partner', Partner[]>>({ sponsor: [], support: [], media_partner: [] });
   const [ticketPrices, setTicketPrices] = useState<Record<string, number>>({});
   const [confirmedCounts, setConfirmedCounts] = useState<Record<string, number>>({});
@@ -171,13 +172,14 @@ export function HomePage({ router }: Props) {
   useEffect(() => {
     (async () => {
       const today = new Date().toISOString().slice(0, 10);
-      const [{ data: micData }, { data: allMicData }, { data: eventData }, { data: komikaData }, { data: ticketData }, { data: partnerData }] = await Promise.all([
+      const [{ data: micData }, { data: allMicData }, { data: eventData }, { data: komikaData }, { data: ticketData }, { data: partnerData }, { data: recapData }] = await Promise.all([
         supabase.from('open_mics').select('*').eq('published', true).eq('status', 'upcoming').gte('date', today).order('date', { ascending: true }),
         supabase.from('open_mics').select('*').eq('published', true),
         supabase.from('events').select('*').eq('published', true).eq('status', 'upcoming').gte('date', today).order('date', { ascending: true }).limit(5),
         supabase.from('komika').select('id, full_name, stage_name, slug, photo, photo_card, bio, instagram_url, tiktok_url, youtube_url, specialties, featured_order, status, published, created_at, updated_at').eq('published', true).eq('status', 'active'),
         supabase.from('event_tickets').select('event_id, price').eq('status', 'active').eq('available_public', true).order('price', { ascending: true }),
         supabase.from('partners').select('*').eq('is_published', true).order('sort_order', { ascending: true }).order('name', { ascending: true }),
+        supabase.from('annual_recaps').select('year').eq('published', true).order('year', { ascending: false }).limit(1).maybeSingle(),
       ]);
 
       const micsList = (micData as OpenMic[]) ?? [];
@@ -205,6 +207,7 @@ export function HomePage({ router }: Props) {
       setKomika(randomKomika);
       setPartnersByCategory(groupedPartners);
       setTicketPrices(prices);
+      setPublishedRecap((recapData as { year: number } | null) ?? null);
 
       if (micsList.length > 0) {
         const ids = micsList.map((m) => m.id);
@@ -267,6 +270,26 @@ export function HomePage({ router }: Props) {
       </section>
 
       <div className="container-app py-8 space-y-10 sm:py-12 sm:space-y-14">
+        {publishedRecap && (
+          <section data-home-reveal className="home-reveal">
+            <button
+              type="button"
+              onClick={() => router.navigate(`/recap/${publishedRecap.year}`)}
+              aria-label={`Buka Annual Recap ${publishedRecap.year}`}
+              className="group flex w-full items-center justify-between gap-4 overflow-hidden rounded-2xl border border-cyan-900/20 bg-gradient-to-r from-[#0B1F44] via-[#123B55] to-[#155E63] px-5 py-5 text-left text-white shadow-[0_12px_28px_rgba(11,31,68,0.16)] transition hover:shadow-[0_16px_34px_rgba(11,31,68,0.22)] sm:px-7 sm:py-6"
+            >
+              <span className="min-w-0">
+                <span className="inline-flex rounded-full border border-amber-200/40 bg-amber-300/15 px-2.5 py-1 text-[10px] font-bold uppercase text-amber-100">Cerita tahunan</span>
+                <span className="mt-2 block text-xl font-black sm:text-2xl">Annual Recap {publishedRecap.year}</span>
+                <span className="mt-1 block text-sm text-cyan-50/85">Lihat kembali panggung dan cerita komunitas tahun ini.</span>
+              </span>
+              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/25 bg-white/10 transition group-hover:bg-white/20">
+                <ArrowRight className="h-5 w-5" />
+              </span>
+            </button>
+          </section>
+        )}
+
         {/* OPEN MIC TERDEKAT */}
         <section data-home-reveal className="home-reveal">
           <div className="flex items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm sm:gap-4 sm:p-4">

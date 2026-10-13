@@ -1507,6 +1507,34 @@
   100% { transform: translateX(180%) skewX(-18deg); opacity: 0; }
 }
 
+.recap-device-texture {
+  background-image:
+    linear-gradient(145deg, rgba(37, 99, 235, 0.16), transparent 52%),
+    repeating-linear-gradient(132deg, transparent 0 38px, rgba(96, 165, 250, 0.055) 39px 40px, transparent 41px 78px);
+  opacity: 0.72;
+}
+
+.recap-slide-enter {
+  animation: recapSlideEnter 0.36s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.recap-device main {
+  scrollbar-width: none;
+}
+
+.recap-device main::-webkit-scrollbar {
+  display: none;
+}
+
+@keyframes recapSlideEnter {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .recap-slide-enter { animation: none; }
+}
+
 .event-documentation-hero-motion {
   transition: transform 6.2s cubic-bezier(0.42, 0, 0.28, 1);
   will-change: transform, opacity;

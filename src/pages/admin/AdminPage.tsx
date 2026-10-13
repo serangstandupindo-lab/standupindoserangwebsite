@@ -3528,8 +3528,9 @@ function EvaluatorAssignmentView({ openMics, komika, assignments, currentUserId,
 }
 
 function MorePage({ onNavigate, onSignOut, ticketOrderUnreadCount, applicationUnreadCount, isAdmin, isOpenMicAdmin, isEventAdmin, isTicketAdmin, isQrScanner }: { onNavigate: (s: Section) => void; onSignOut: () => void; ticketOrderUnreadCount: number; applicationUnreadCount: number; isAdmin: boolean; isOpenMicAdmin: boolean; isEventAdmin: boolean; isTicketAdmin: boolean; isQrScanner: boolean }) {
-  const items: { label: string; icon: typeof BarChart3; onClick: () => void; section?: Section; badge?: number }[] = [
+  const items: { label: string; icon: typeof BarChart3; onClick: () => void; section?: Section; badge?: number; mobileOnly?: boolean }[] = [
     ...((isAdmin || isOpenMicAdmin) ? [{ label: 'Jadwal Cilegon Comedy Sharing (CCS)', icon: CalendarDays, onClick: () => onNavigate('ccs-schedule'), section: 'ccs-schedule' as Section }] : []),
+    ...(isAdmin ? [{ label: 'Annual Recap', icon: BarChart3, onClick: () => onNavigate('annual-recap'), section: 'annual-recap' as Section, mobileOnly: true }] : []),
     ...(isEventAdmin ? [{ label: 'Akun Admin Tiket / QR', icon: ShieldPlus, onClick: () => onNavigate('admin-accounts'), section: 'admin-accounts' as Section }] : []),
     ...(isTicketAdmin ? [{ label: 'Informasi Pembayaran', icon: TicketIcon, onClick: () => onNavigate('payment-info'), section: 'payment-info' as Section }] : []),
     ...(isTicketAdmin ? [{ label: 'Laporan Tiket', icon: Printer, onClick: () => onNavigate('ticket-report'), section: 'ticket-report' as Section }] : []),
@@ -3551,7 +3552,7 @@ function MorePage({ onNavigate, onSignOut, ticketOrderUnreadCount, applicationUn
           {items.filter((item) => !item.section || canAccessSection(item.section, isAdmin, isOpenMicAdmin, isEventAdmin, isTicketAdmin, isQrScanner)).map((item) => {
             const Icon = item.icon;
             return (
-              <button key={item.label} onClick={item.onClick} className="flex w-full items-center gap-3 px-5 py-4 text-left transition hover:bg-slate-50">
+              <button key={item.label} onClick={item.onClick} className={`flex w-full items-center gap-3 px-5 py-4 text-left transition hover:bg-slate-50 ${item.mobileOnly ? 'lg:hidden' : ''}`}>
                 <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-50 text-blue-600"><Icon className="h-5 w-5" /></span>
                 <span className="flex-1 text-sm font-semibold text-slate-800">{item.label}</span>
                 {item.badge ? <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-red-600 px-1.5 text-[10px] font-extrabold text-white">{item.badge > 99 ? '99+' : item.badge}</span> : null}

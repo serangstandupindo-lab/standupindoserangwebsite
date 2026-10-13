@@ -64,25 +64,10 @@ TO authenticated
 USING (public.jwt_has_role('admin'))
 WITH CHECK (public.jwt_has_role('admin'));
 
-DROP POLICY IF EXISTS "admin_manage_annual_recaps_delete" ON public.annual_recaps;
-CREATE POLICY "admin_manage_annual_recaps_delete"
-ON public.annual_recaps
-FOR DELETE
-TO authenticated
-USING (public.jwt_has_role('admin'));
-
-DROP POLICY IF EXISTS "annual_recaps_delete_admin_guard" ON public.annual_recaps;
-CREATE POLICY "annual_recaps_delete_admin_guard"
-ON public.annual_recaps
-AS RESTRICTIVE
-FOR DELETE
-TO authenticated
-USING (public.jwt_has_role('admin'));
-
 REVOKE ALL ON TABLE public.annual_recaps FROM PUBLIC;
 REVOKE ALL ON TABLE public.annual_recaps FROM anon;
 REVOKE ALL ON TABLE public.annual_recaps FROM authenticated;
 GRANT SELECT ON TABLE public.annual_recaps TO anon, authenticated;
-GRANT INSERT, UPDATE, DELETE ON TABLE public.annual_recaps TO authenticated;
+GRANT INSERT, UPDATE ON TABLE public.annual_recaps TO authenticated;
 
 NOTIFY pgrst, 'reload schema';

@@ -254,6 +254,8 @@ function RoutedApp() {
   else if (router.path === '/more/gabung') content = <CommunityJoinPage router={router} />;
   else content = <div className="container-app py-16"><EmptyState title="Halaman tidak ditemukan" description="Kembali ke beranda untuk melanjutkan." /></div>;
 
+  if (annualRecap) return <div key={router.path} className="route-transition">{content}</div>;
+
   return <AppShell router={router} settings={settings}>
     <div key={router.path} className={router.path === '/tiket' ? '' : 'route-transition'}>{content}</div>
   </AppShell>;

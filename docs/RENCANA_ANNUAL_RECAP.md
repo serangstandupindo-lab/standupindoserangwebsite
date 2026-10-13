@@ -1,15 +1,15 @@
 # Rencana Annual Recap
 
-> **Status: PLANNED — NOT IMPLEMENTED**
+> **Status: IMPLEMENTED LOCALLY — ANNUAL RECAP MIGRATION APPLIED**
 
-Dokumen ini menjadi acuan utama saat pekerjaan dilanjutkan melalui permintaan **"Lanjutkan Rencana Annual Recap"**. Isinya merangkum keputusan produk, audit role/RLS, batas data, proposal database, dan gerbang verifikasi. Dokumen ini bukan persetujuan menjalankan migration.
+Dokumen ini menjadi acuan utama saat pekerjaan dilanjutkan melalui permintaan **"Lanjutkan Rencana Annual Recap"**. Isinya merangkum keputusan produk, audit role/RLS, batas data, status database, dan gerbang verifikasi.
 
 ## Status dan Artefak
 
-- Fitur belum disetujui sebagai implementasi final, belum diverifikasi menyeluruh, dan belum tersedia berbasis database produksi.
-- Migration [20261009100000_create_annual_recaps.sql](../supabase/migrations/20261009100000_create_annual_recaps.sql) adalah **proposal untuk ditinjau**. Migration belum dijalankan dan tidak boleh dijalankan sebelum pemilik proyek menyetujui isinya secara eksplisit.
-- Workspace memiliki artefak scaffold Annual Recap dari pekerjaan sebelumnya, termasuk helper, halaman admin/publik, dan wiring route. Artefak tersebut belum boleh dianggap fitur selesai atau disetujui. Tugas dokumentasi ini tidak mengubah atau menghapusnya; tinjau dan validasi sebelum menggunakannya sebagai implementasi.
-- Tidak ada perubahan Supabase, deployment, atau eksekusi migration dalam tahap perencanaan ini.
+- Halaman publik, Story, agregasi statistik, dan panel Admin Penuh sudah diimplementasikan lokal; typecheck masih melaporkan error di file non-Annual-Recap.
+- Migration [20261009100000_create_annual_recaps.sql](../supabase/migrations/20261009100000_create_annual_recaps.sql) diterapkan langsung melalui CLI ke project linked, lalu versinya dicatat sebagai applied. Tabel, kolom, policy, dan grants diverifikasi sesudahnya.
+- Hanya migration Annual Recap yang diterapkan. `supabase db push` tidak dijalankan karena migration history lokal/remote lain belum sinkron.
+- Tidak ada perubahan tabel sumber, role, fitur lain, atau deployment aplikasi.
 
 ## Tujuan dan Ruang Lingkup
 
@@ -18,6 +18,7 @@ Annual Recap adalah rangkuman tahunan komunitas Standupindo Cilegon dalam format
 Termasuk dalam rencana:
 
 - Halaman publik per tahun, dengan rancangan route `/recap/:year`.
+- Pintasan di Home untuk recap published terbaru; recap draft tidak ditampilkan.
 - Halaman pengelolaan untuk Admin Penuh/Superadmin: pilih tahun, simpan draft, publish/unpublish, edit narasi penutup, dan buka preview.
 - Slide cerita berisi ringkasan metrik yang telah diverifikasi, kilas balik aktivitas, komunitas/komika, serta penutup.
 - Pembatasan akses melalui pemeriksaan role di UI **dan** RLS Supabase.
@@ -25,7 +26,6 @@ Termasuk dalam rencana:
 Di luar ruang lingkup untuk saat ini:
 
 - Tidak menambah menu archive di bagian Lainnya publik.
-- Tidak menambah banner Annual Recap di Home.
 - Tidak menambah upload foto/video, tabel statistik, dependency Story baru, atau kolom database tanpa kebutuhan yang dijelaskan dan persetujuan terlebih dahulu.
 - Tidak mengubah autentikasi, role, Open Mic, Event, ticketing, QR Scanner, PWA, navigasi, atau fitur existing di luar kebutuhan integrasi Annual Recap yang disetujui.
 
@@ -62,11 +62,14 @@ Gunakan hanya data yang sudah ada dan dapat dibuktikan. Jangan mengubah status p
 
 ## Rancangan UI/UX
 
-- Pengalaman utama berupa Story fullscreen vertikal, bukan dashboard statistik berbentuk grid sebagai layar utama.
-- Rancangan slide: pembuka, ringkasan angka terverifikasi, cerita komika/komunitas, aktivitas sepanjang tahun, kilas balik, dan ucapan penutup. Urutan dan jumlah slide dapat disesuaikan setelah sumber data dipastikan.
+- Pengalaman utama berupa Story fullscreen vertikal sembilan layar, bukan dashboard statistik berbentuk grid sebagai layar utama.
+- Urutan layar: pembuka, angka setahun, komika yang sering tampil, komunitas, aktivitas bulanan, Open Mic dengan penampilan terbanyak, tiga Open Mic teraktif, kilas balik Event, dan penutup.
+- Kilas balik memilih maksimal tiga Event published/completed yang punya poster atau dokumentasi. Tiap Event menampilkan maksimal tiga aset unik; pilih satu gambar utama dan thumbnail untuk aset sisanya agar layar tidak padat.
 - Interaksi yang direncanakan: progress per slide, tap/aksi berikutnya dan sebelumnya, tahan untuk pause, kontrol pause/play, tombol tutup, serta dukungan `prefers-reduced-motion`.
 - Hindari dependency Story baru selama komponen sederhana yang ada mencukupi. Jangan menambah upload/media baru; gunakan aset yang memang telah tersedia bila diperlukan.
 - Admin dapat mengedit narasi penutup. Default copy yang pernah diusulkan hanyalah fallback dan perlu review produk sebelum dianggap final.
+- Preview draft berjalan di dalam panel admin dan tidak membuka akses publik ke data draft.
+- Simpan perubahan mempertahankan status publikasi. Publish dan unpublish adalah aksi eksplisit.
 - Sediakan state loading, recap unpublished/tidak tersedia, tahun tanpa data, serta tampilan mobile dan desktop.
 
 ## Rancangan Database
@@ -94,33 +97,33 @@ Proposal yang terakhir ditinjau menggunakan helper existing `public.jwt_has_role
 - SELECT visibility guard: policy restrictive untuk `anon, authenticated`, membatasi hasil ke published atau role eksak `admin`. Policy ini mencegah policy SELECT permissive lain pada tabel membuka draft.
 - INSERT: policy admin dengan `WITH CHECK`, ditambah restrictive guard admin.
 - UPDATE: policy admin memakai `USING` dan `WITH CHECK`, ditambah restrictive guard admin pada kedua tahap.
-- DELETE: policy admin dengan `USING`, ditambah restrictive guard admin.
-- Privilege tabel: proposal mencabut privilege pada tabel tersebut dari `PUBLIC`, `anon`, dan `authenticated`, lalu memberi SELECT ke `anon, authenticated` dan INSERT/UPDATE/DELETE ke `authenticated`. RLS tetap membatasi operasi; GRANT saja tidak memberi akses ke draft atau melewati policy.
+- DELETE: tidak diberikan untuk MVP; recap yang pernah dibuat dikelola lewat draft, publish, dan unpublish.
+- Privilege tabel: proposal mencabut privilege pada tabel tersebut dari `PUBLIC`, `anon`, dan `authenticated`, lalu memberi SELECT ke `anon, authenticated` dan INSERT/UPDATE ke `authenticated`. RLS tetap membatasi operasi; GRANT saja tidak memberi akses ke draft atau melewati policy.
 - `service_role` dan pemilik tabel adalah role backend istimewa yang dapat melewati RLS sesuai model Supabase; keduanya bukan role pengguna aplikasi yang diuji dalam tabel akses.
 
 Definisi helper aktual berasal dari [migration operational roles](../supabase/migrations/20260916100000_add_operational_admin_roles.sql). Repository tidak menunjukkan `GRANT`/`REVOKE EXECUTE` eksplisit untuk helper maupun `ALTER DEFAULT PRIVILEGES`. Secara default PostgreSQL memberi EXECUTE pada fungsi baru kepada `PUBLIC`, sehingga `anon` dan `authenticated` semestinya dapat memanggil helper. Namun ACL Supabase yang terpasang tidak dapat dipastikan dari source saja.
 
 ## Status Migration
 
-[20261009100000_create_annual_recaps.sql](../supabase/migrations/20261009100000_create_annual_recaps.sql) tetap **proposal review; belum disetujui untuk eksekusi dan belum boleh dijalankan**. Proposal mereferensikan helper global dan mengubah policy/privilege hanya pada `public.annual_recaps`. Policy bernama sama pada tabel itu akan diganti; policy permissive lain dibatasi oleh restrictive guard, sedangkan restrictive policy tak dikenal dapat mempersempit akses lebih lanjut.
+[20261009100000_create_annual_recaps.sql](../supabase/migrations/20261009100000_create_annual_recaps.sql) diterapkan dengan `supabase db query --linked --file ...`, lalu dicatat dengan `supabase migration repair --linked --status applied 20261009100000`. Verifikasi remote pada 13 Oktober 2026 menunjukkan tabel memiliki tujuh kolom yang direncanakan, tujuh policy SELECT/INSERT/UPDATE, anon dapat SELECT, authenticated dapat INSERT/UPDATE, dan DELETE tidak diberikan. Riwayat migration mencatat versi Annual Recap; tidak ada migration lain yang diterapkan dalam langkah tersebut.
 
-Sebelum persetujuan implementasi/database:
+Migration ini memakai helper global `public.jwt_has_role('admin')` dan hanya mengubah `public.annual_recaps`. Pemeriksaan remote mengonfirmasi helper tersedia, definisinya cocok, `anon` dan `authenticated` dapat menjalankannya, serta PostgreSQL remote versi 17.6 mendukung restrictive policy.
 
-1. Konfirmasi ACL `EXECUTE` aktual `public.jwt_has_role(text)` untuk role `anon` dan `authenticated` melalui pemeriksaan read-only yang disetujui. Jangan menyimpulkan ACL live hanya dari default PostgreSQL.
-2. Konfirmasi keberadaan, tipe objek, struktur, constraint, owner, grants, dan seluruh policy pada `public.annual_recaps` di target yang benar. Jika tabel sudah ada dengan bentuk berbeda, hentikan dan revisi proposal terlebih dahulu.
-3. Konfirmasi versi PostgreSQL target. Repository memasang `pgcrypto` pada migration awal dan memakai `gen_random_uuid()` secara luas; `AS RESTRICTIVE` memerlukan PostgreSQL 10 atau lebih baru.
-4. Minta persetujuan eksplisit atas isi SQL dan target environment sebelum migration apa pun dijalankan. Jangan deploy atau menerapkan perubahan database hanya berdasarkan dokumen ini.
+Peringatan operasional:
+
+1. Jangan menjalankan `supabase db push` sebelum migration history lokal/remote yang lain direkonsiliasi; banyak versi lokal masih belum tercatat di remote.
+2. Migration Annual Recap sudah diterapkan pada project linked yang diperiksa. Verifikasi ulang target sebelum mengulang SQL di environment lain.
 
 ## Langkah Verifikasi Sebelum Implementasi
 
 1. Audit ulang skema dan query sumber untuk Open Mic, Event, komika, tanggal, timezone, status cancelled, serta data null. Tulis definisi setiap metrik dan cocokkan beberapa hasil dengan data sumber.
 2. Pastikan helper ACL dan struktur/policy tabel memenuhi prasyarat di bagian Status Migration. Jalankan uji database hanya setelah lingkungan dan perubahan disetujui; mulai dari lingkungan non-produksi bila tersedia.
-3. Uji RLS secara terpisah untuk `anon`, role `admin`, `admin_ticket`, `admin_qr`, `open_mic_admin`, `event_admin`, dan `member`: published dapat dibaca sesuai aturan; draft hanya oleh `admin`; create/update/publish/unpublish/delete hanya oleh `admin`.
-4. Uji halaman admin membaca draft, simpan draft, publish, unpublish, dan preview. Uji route publik hanya menampilkan published dan tidak membocorkan isi draft melalui query, error, cache, atau state UI.
+3. Uji RLS secara terpisah untuk `anon`, role `admin`, `admin_ticket`, `admin_qr`, `open_mic_admin`, `event_admin`, dan `member`: published dapat dibaca sesuai aturan; draft hanya oleh `admin`; create/update/publish/unpublish hanya oleh `admin`; DELETE tidak diberikan.
+4. Uji halaman admin membaca semua tahun, membuat draft, mengubah narasi tanpa meng-unpublish, publish, unpublish, dan preview draft. Uji route publik hanya menampilkan published dan tidak membocorkan isi draft melalui query, error, cache, atau state UI.
 5. Uji Story: next/previous, progress dan auto-advance, pause/resume, hold, close, reduced motion, loading, unavailable/unpublished, tahun tanpa data, dan viewport mobile/desktop.
 6. Jalankan typecheck, lint, build, serta pemeriksaan regresi pada navigasi/fitur existing. Catatan audit sebelumnya: typecheck proyek gagal dengan 23 error pada 7 file non-Annual-Recap; ulangi pemeriksaan baseline dan pastikan perubahan Annual Recap tidak menambah error.
 7. Laporkan file yang berubah, hasil verifikasi role/RLS, publish/unpublish, Story, build, dan status migration. Jangan menyatakan database teruji jika hanya validasi statis yang dilakukan.
 
 ## Batas Perubahan
 
-Implementasi berikutnya harus tetap terisolasi pada Annual Recap dan hanya dimulai setelah proposal database serta prasyarat akses disetujui. Jangan mengubah perilaku existing di luar kebutuhan yang disetujui. Dokumen ini adalah catatan rencana, bukan otorisasi migration, deploy, atau perubahan fitur lain.
+Penerapan migration Annual Recap pada project linked sudah selesai. Deployment aplikasi dan penerapan migration lain tidak termasuk dalam pekerjaan ini; jangan jalankan `db push` sampai migration history direkonsiliasi.
