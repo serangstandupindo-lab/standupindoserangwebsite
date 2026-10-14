@@ -392,4 +392,4 @@ export interface SiteSettings {
   affiliation_logo_url?: string | null;
 }
 
-export const LOGO_URL = '/assets/images/Logo%20Standupindo%20Cilegon%20Biru.png';
+export const LOGO_URL = '/assets/images/pwa-public.png';

@@ -153,7 +153,7 @@ export function MemberStageExperienceModal({ komikaId, onClose }: { komikaId: st
   return (
     <Modal open onClose={onClose} title="Kelola Perjalanan Panggung" titleEyebrow="Perjalanan Lainnya" size="lg">
       <div className="space-y-5">
-        <p className="text-sm leading-6 text-slate-600">Catat penampilan di luar Event resmi Standupindo Cilegon. Pengalaman yang disimpan akan tampil pada profil publikmu.</p>
+        <p className="text-sm leading-6 text-slate-600">Catat penampilan di luar Event resmi Standupindo Serang. Pengalaman yang disimpan akan tampil pada profil publikmu.</p>
         {error && <p role="alert" className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm font-semibold text-red-700">{error}</p>}
         {notice && <p role="status" className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm font-semibold text-emerald-700">{notice}</p>}
 

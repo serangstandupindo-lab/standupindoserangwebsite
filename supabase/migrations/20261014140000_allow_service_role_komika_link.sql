@@ -1,0 +1,26 @@
+CREATE OR REPLACE FUNCTION public.prevent_member_komika_protected_changes()
+RETURNS trigger
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+BEGIN
+  IF COALESCE(auth.role(), '') <> 'service_role'
+    AND NOT public.jwt_has_role('admin') THEN
+    IF NEW.id IS DISTINCT FROM OLD.id
+      OR NEW.user_id IS DISTINCT FROM OLD.user_id
+      OR NEW.full_name IS DISTINCT FROM OLD.full_name
+      OR NEW.slug IS DISTINCT FROM OLD.slug
+      OR NEW.specialties IS DISTINCT FROM OLD.specialties
+      OR NEW.joined_at IS DISTINCT FROM OLD.joined_at
+      OR NEW.featured_order IS DISTINCT FROM OLD.featured_order
+      OR NEW.status IS DISTINCT FROM OLD.status
+      OR NEW.published IS DISTINCT FROM OLD.published
+      OR NEW.created_at IS DISTINCT FROM OLD.created_at
+    THEN
+      RAISE EXCEPTION 'Member hanya dapat mengubah data profil publik yang diizinkan';
+    END IF;
+  END IF;
+  RETURN NEW;
+END;
+$$;

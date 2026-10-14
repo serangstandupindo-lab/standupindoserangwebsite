@@ -18,18 +18,15 @@ export function DesktopNavbar({ router, settings }: { router: Router; settings: 
     <header className="relative sticky top-0 z-40 overflow-hidden border-b border-blue-900/40 bg-blue-700/95 text-white shadow-[0_4px_20px_rgba(15,23,42,0.16)] backdrop-blur-md before:absolute before:inset-x-0 before:top-0 before:h-0.5 before:bg-gradient-to-r before:from-sky-300 before:via-white before:to-yellow-300">
       <div className="container-app flex h-16 items-center justify-between md:h-[4.5rem]">
         <button onClick={() => router.navigate('/')} className="group flex min-w-0 items-center gap-2.5 sm:gap-3" aria-label={settings.site_name}>
-          <span className="relative flex shrink-0 items-center justify-center rounded-lg border border-blue-100 bg-gradient-to-br from-blue-50 to-white p-0.5 shadow-[0_5px_14px_rgba(29,94,219,0.1)] transition-transform duration-200 group-hover:scale-[1.03]">
-            <span className="site-brand-logo-light-leak relative isolate block h-12 w-auto overflow-hidden rounded-md sm:h-14">
-              <img src={settings.logo_url ?? '/assets/images/Logo%20Standupindo%20Cilegon%20Biru.png'} alt={settings.site_name} className="block h-full w-auto rounded-md object-contain" />
-            </span>
+          <span className="site-brand-logo-light-leak relative isolate block h-14 w-14 shrink-0 overflow-hidden transition-transform duration-200 group-hover:scale-[1.03]">
+            <img src="/assets/images/Standupindo%20Serang%20Logo.png" alt="Logo Standupindo Serang" className="block h-full w-full object-contain" />
           </span>
           <span className="hidden text-[15px] font-black tracking-[-0.02em] text-white sm:inline sm:text-[15px]">
-            <span className="site-brand-light-leak-text" data-light-leak={settings.site_short_name.replace(/\s+CILEGON$/i, '')}>{settings.site_short_name.replace(/\s+CILEGON$/i, '')}</span>{' '}
-            <span className="site-brand-light-leak-text text-yellow-300" data-light-leak="CILEGON">CILEGON</span>
+            <span className="site-brand-light-leak-text" data-light-leak={settings.site_short_name.replace(/\s+SERANG$/i, '')}>{settings.site_short_name.replace(/\s+SERANG$/i, '')}</span>
           </span>
           <span className="flex flex-col text-left text-[14px] font-black leading-[0.95] tracking-[-0.025em] text-white sm:hidden">
             <span className="site-brand-light-leak-text" data-light-leak="STANDUPINDO">STANDUPINDO</span>
-            <span className="site-brand-light-leak-text text-yellow-300" data-light-leak="CILEGON">CILEGON</span>
+            <span className="site-brand-light-leak-text text-yellow-300" data-light-leak="SERANG">SERANG</span>
           </span>
         </button>
 

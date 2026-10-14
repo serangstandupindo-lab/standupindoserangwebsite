@@ -41,7 +41,7 @@ export function CcsScheduleHighlights({ compact = false }: { compact?: boolean }
     <section className="space-y-5">
       <div className="flex items-center justify-between gap-3 rounded-2xl border border-blue-100 bg-white p-3 shadow-sm sm:p-4">
         <div className="min-w-0 flex-1 border-l-4 border-l-blue-700 pl-3 sm:pl-4">
-          <SectionHeader title="Jadwal CCS" subtitle="Cilegon Comedy Sharing berikutnya." />
+          <SectionHeader title="Jadwal CCS" subtitle="Serang Comedy Sharing berikutnya." />
         </div>
         <span className="shrink-0 rounded-full bg-blue-50 px-3 py-1 text-[10px] font-extrabold uppercase tracking-[0.12em] text-blue-700">CCS</span>
       </div>
@@ -53,7 +53,7 @@ export function CcsScheduleHighlights({ compact = false }: { compact?: boolean }
             <article key={schedule.id} className="overflow-hidden rounded-2xl border border-blue-100 bg-white shadow-[0_10px_26px_rgba(15,23,42,0.06)]">
               {schedule.poster_url && (
                 <div className="relative isolate flex aspect-[4/3] items-center justify-center overflow-hidden bg-gradient-to-br from-blue-50 via-slate-50 to-indigo-100 p-3 sm:p-4">
-                  <div aria-hidden="true" className="absolute inset-0 -z-10 opacity-60" style={{ backgroundImage: 'radial-gradient(circle at 20% 20%, rgba(59,130,246,0.16), transparent 45%), radial-gradient(circle at 80% 80%, rgba(30,64,175,0.12), transparent 45%)' }} />
+                  <div aria-hidden="true" className="absolute inset-0 -z-10 opacity-60" style={{ backgroundImage: 'radial-gradient(circle at 20% 20%, rgba(59,130,246,0.16), transparent 45%), radial-gradient(circle at 80% 80%, rgba(181,18,27,0.12), transparent 45%)' }} />
                   <button
                     type="button"
                     onClick={() => setPosterToView({ src: schedule.poster_url!, alt: `Poster ${schedule.title}` })}
@@ -65,7 +65,7 @@ export function CcsScheduleHighlights({ compact = false }: { compact?: boolean }
                 </div>
               )}
               <div className="p-4 sm:p-5">
-                <p className="text-[10px] font-extrabold uppercase tracking-[0.16em] text-blue-700">Cilegon Comedy Sharing</p>
+                <p className="text-[10px] font-extrabold uppercase tracking-[0.16em] text-blue-700">Serang Comedy Sharing</p>
                 <h3 className="mt-1 text-base font-black leading-snug text-slate-950">{schedule.title}</h3>
                 <p className="mt-2 inline-flex items-center rounded-full bg-blue-50 px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wide text-blue-700">{getCcsRecurrenceLabel(schedule)}</p>
                 <div className="mt-3 flex flex-wrap gap-x-4 gap-y-2 text-xs font-semibold text-slate-600">

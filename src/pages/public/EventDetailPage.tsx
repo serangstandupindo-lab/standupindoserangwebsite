@@ -285,9 +285,9 @@ export function EventDetailPage({ router, slug, settings }: Props) {
 
         const pageUrl = `${window.location.origin}/event/${ev.slug}`;
         setOgTags(
-          `${ev.title} — Standupindo Cilegon`,
-          `Yuk hadir di ${ev.title} bersama Standupindo Cilegon.`,
-          ev.poster ?? `${window.location.origin}/assets/images/Logo%20Standupindo%20Cilegon%20Biru.png`,
+          `${ev.title} — Standupindo Serang`,
+          `Yuk hadir di ${ev.title} bersama Standupindo Serang.`,
+          ev.poster ?? `${window.location.origin}/assets/images/pwa-public.png`,
           pageUrl,
         );
       }
@@ -313,7 +313,7 @@ export function EventDetailPage({ router, slug, settings }: Props) {
     );
   }
 
-  const defaultWaMessage = `Halo Admin Standupindo Cilegon, saya ingin membeli tiket ${event.title}.`;
+  const defaultWaMessage = `Halo Admin Standupindo Serang, saya ingin membeli tiket ${event.title}.`;
   const waMessage = event.whatsapp_message?.trim() ? event.whatsapp_message.trim() : defaultWaMessage;
   const buyTicketNumber = event.whatsapp_number || settings.whatsapp_ticket || settings.whatsapp_admin;
   const cheapestTicketPrice = tickets.length > 0 ? Math.min(...tickets.map((ticket) => ticket.price)) : null;
@@ -321,10 +321,10 @@ export function EventDetailPage({ router, slug, settings }: Props) {
   const pageUrl = `${window.location.origin}/event/${event.slug}`;
   const currentStatus = getEventStatus(event.status, event.date);
   const shareMessage = currentStatus === 'completed'
-    ? `Terima kasih sudah menjadi bagian dari keseruan *${event.title}* bersama Standupindo Cilegon! 🙌\n\nKenangan dan informasi lengkap event:\n${pageUrl}`
+    ? `Terima kasih sudah menjadi bagian dari keseruan *${event.title}* bersama Standupindo Serang! 🙌\n\nKenangan dan informasi lengkap event:\n${pageUrl}`
     : currentStatus === 'upcoming'
       ? `🔥 SIAP-SIAP KETAWA!\n\n*${event.title}* bakal hadir di *${event.venue}${event.location ? `, ${event.location}` : ''}*!\n\n📅 ${formatDate(event.date)}\n⏰ *${event.time} WIB*\n\n🎟️ Tiket & info lengkap:\n${pageUrl}`
-      : `Informasi *${event.title}* bersama Standupindo Cilegon.\n\nEvent ini dibatalkan. Informasi selengkapnya:\n${pageUrl}`;
+      : `Informasi *${event.title}* bersama Standupindo Serang.\n\nEvent ini dibatalkan. Informasi selengkapnya:\n${pageUrl}`;
   const documentationPhotos = [
     ...(event.poster ? [event.poster] : []),
     ...(event.documentation_photos ?? []),
@@ -365,7 +365,7 @@ export function EventDetailPage({ router, slug, settings }: Props) {
             <div className="flex flex-wrap items-center justify-between gap-2">
               <StatusBadge status={currentStatus} />
               <ShareButton
-                title={`${event.title} — Standupindo Cilegon`}
+                title={`${event.title} — Standupindo Serang`}
                 text={shareMessage}
                 url={pageUrl}
                 image={event.poster}
@@ -383,7 +383,7 @@ export function EventDetailPage({ router, slug, settings }: Props) {
             {currentStatus === 'upcoming' && (
               <div className="space-y-2">
                 {!ticketLoadError && tickets.length > 0 && (
-                  <button type="button" onClick={() => router.navigate(`/event/${event.slug}/tiket`)} className="btn-primary event-ticket-light-leak group hidden w-full !min-h-[4.5rem] items-center justify-between !rounded-2xl !bg-gradient-to-r !from-blue-700 !via-blue-600 !to-indigo-600 !px-5 !py-3 text-left shadow-[0_12px_26px_rgba(37,99,235,0.36)] ring-1 ring-blue-500/30 transition-all duration-200 hover:-translate-y-1 hover:shadow-[0_16px_32px_rgba(37,99,235,0.44)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-blue-300 focus-visible:ring-offset-2 active:translate-y-0 active:scale-[0.99] md:flex">
+                  <button type="button" onClick={() => router.navigate(`/event/${event.slug}/tiket`)} className="btn-primary event-ticket-light-leak group hidden w-full !min-h-[4.5rem] items-center justify-between !rounded-2xl !bg-gradient-to-r !from-blue-700 !via-blue-600 !to-indigo-600 !px-5 !py-3 text-left shadow-[0_12px_26px_rgba(215,25,32,0.36)] ring-1 ring-blue-500/30 transition-all duration-200 hover:-translate-y-1 hover:shadow-[0_16px_32px_rgba(215,25,32,0.44)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-blue-300 focus-visible:ring-offset-2 active:translate-y-0 active:scale-[0.99] md:flex">
                     <span className="min-w-0">
                       <span className="block text-[10px] font-extrabold uppercase tracking-[0.14em] text-blue-100">Harga Mulai Dari</span>
                       <span className="mt-0.5 block text-xl font-black leading-tight text-white">{formatPrice(cheapestTicketPrice ?? 0)}</span>
@@ -423,7 +423,7 @@ export function EventDetailPage({ router, slug, settings }: Props) {
               role="tab"
               aria-selected={infoTab === 'about'}
               onClick={() => { if (infoTab === 'about') setInfoExpanded((current) => !current); else { setInfoTab('about'); setInfoExpanded(true); } }}
-              className={`flex min-w-0 flex-1 items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-left transition-all sm:justify-start sm:px-4 ${infoTab === 'about' ? 'bg-blue-600 text-white shadow-[0_6px_14px_rgba(37,99,235,0.24)]' : 'text-slate-700 hover:bg-white'}`}
+              className={`flex min-w-0 flex-1 items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-left transition-all sm:justify-start sm:px-4 ${infoTab === 'about' ? 'bg-blue-600 text-white shadow-[0_6px_14px_rgba(215,25,32,0.24)]' : 'text-slate-700 hover:bg-white'}`}
             >
               <Info className="h-4 w-4 shrink-0" />
               <span className="truncate text-xs font-extrabold sm:text-sm">About Event</span>
@@ -434,7 +434,7 @@ export function EventDetailPage({ router, slug, settings }: Props) {
               role="tab"
               aria-selected={infoTab === 'rules'}
               onClick={() => { if (infoTab === 'rules') setInfoExpanded((current) => !current); else { setInfoTab('rules'); setInfoExpanded(true); } }}
-              className={`flex min-w-0 flex-1 items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-left transition-all sm:justify-start sm:px-4 ${infoTab === 'rules' ? 'bg-blue-600 text-white shadow-[0_6px_14px_rgba(37,99,235,0.24)]' : 'text-slate-700 hover:bg-white'}`}
+              className={`flex min-w-0 flex-1 items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-left transition-all sm:justify-start sm:px-4 ${infoTab === 'rules' ? 'bg-blue-600 text-white shadow-[0_6px_14px_rgba(215,25,32,0.24)]' : 'text-slate-700 hover:bg-white'}`}
             >
               <ClipboardList className="h-4 w-4 shrink-0" />
               <span className="truncate text-xs font-extrabold sm:text-sm">Peraturan</span>
@@ -499,7 +499,7 @@ export function EventDetailPage({ router, slug, settings }: Props) {
                               {name.charAt(0).toUpperCase()}
                             </div>
                           )}
-                          <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_bottom,rgba(30,64,175,0.02)_18%,rgba(29,78,216,0.2)_48%,rgba(30,58,138,0.82)_72%,rgba(15,23,80,0.98)_100%)]" />
+                          <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_bottom,rgba(181,18,27,0.02)_18%,rgba(29,78,216,0.2)_48%,rgba(30,58,138,0.82)_72%,rgba(15,23,80,0.98)_100%)]" />
                           <div className="absolute inset-x-0 bottom-0 min-w-0 p-2.5 text-center text-white sm:p-3">
                             <p className="line-clamp-2 break-words text-base font-black leading-tight tracking-[-0.025em] text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] sm:text-lg">{name}</p>
                             {key === 'other' && entry.role_title && <p className="mt-1 line-clamp-2 text-xs font-semibold text-white [text-shadow:0_1px_5px_rgba(0,0,0,0.9)]">{entry.role_title}</p>}

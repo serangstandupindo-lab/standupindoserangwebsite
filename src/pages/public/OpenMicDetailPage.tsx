@@ -67,9 +67,9 @@ export function OpenMicDetailPage({ router, slug, showFloatingRegister = false }
 
         const pageUrl = `${window.location.origin}/open-mic/${m.slug}`;
         setOgTags(
-          `${m.title} — Standupindo Cilegon`,
-          `Yuk ikut ${m.title} bersama Standupindo Cilegon. Lihat detail dan daftar sekarang.`,
-          m.poster ?? `${window.location.origin}/assets/images/Logo%20Standupindo%20Cilegon%20Biru.png`,
+          `${m.title} — Standupindo Serang`,
+          `Yuk ikut ${m.title} bersama Standupindo Serang. Lihat detail dan daftar sekarang.`,
+          m.poster ?? `${window.location.origin}/assets/images/pwa-public.png`,
           pageUrl,
         );
       }
@@ -158,7 +158,7 @@ export function OpenMicDetailPage({ router, slug, showFloatingRegister = false }
     const community = r.community?.trim();
     return `• ${r.stage_name}${community ? ` (${community})` : ''}`;
   }).join('\n');
-  const shareTitle = `${mic.title} — Standupindo Cilegon`;
+  const shareTitle = `${mic.title} — Standupindo Serang`;
   const openMicNumbers = getOpenMicNumbers(numberedMics.length > 0 ? numberedMics : [mic]);
   const normalizedLineupSearch = lineupSearch.trim().toLocaleLowerCase();
   const filteredLineup = normalizedLineupSearch
@@ -173,7 +173,7 @@ export function OpenMicDetailPage({ router, slug, showFloatingRegister = false }
       'Pecah banget! Terima kasih buat semua yang sudah hadir meramaikan dan para komika yang sudah sukses mengocok perut di acara kemarin! 🔥🎤',
       '',
       `Daftar Lineup Perform di *${mic.title}* (Selesai)`,
-      'Standupindo Cilegon',
+      'Standupindo Serang',
       '',
       'Komika:',
       lineupText || 'Belum ada komika yang dikonfirmasi hadir.',
@@ -188,7 +188,7 @@ export function OpenMicDetailPage({ router, slug, showFloatingRegister = false }
       'Siapin mental buat ketawa bareng! Datang langsung yuk tonton keseruannya, atau kalau mau ikutan tampil juga bisa banget lho! 👇',
       '',
       `Daftar Lineup Sementara di *${mic.title}*`,
-      'Standupindo Cilegon',
+      'Standupindo Serang',
       '',
       'Komika:',
       lineupText || 'Belum ada komika yang dikonfirmasi.',
@@ -254,8 +254,8 @@ export function OpenMicDetailPage({ router, slug, showFloatingRegister = false }
                   <StatusBadge status={registrationStatus} />
                 </div>
                 <ShareButton
-                  title={`${mic.title} — Standupindo Cilegon`}
-                  text={`🎤 OPEN MIC STANDUP COMEDY\n\nMau coba naik panggung dan ngetes materi?\nYuk daftar Open Mic *${mic.title}* di Standupindo Cilegon!\n\n📅 ${formatDate(mic.date)}\n⏰ *${mic.time} WIB*\n📍 *${mic.venue}${mic.location ? `, ${mic.location}` : ''}*\n\n🎟️ Daftar & lihat detail:\n${pageUrl}`}
+                  title={`${mic.title} — Standupindo Serang`}
+                  text={`🎤 OPEN MIC STANDUP COMEDY\n\nMau coba naik panggung dan ngetes materi?\nYuk daftar Open Mic *${mic.title}* di Standupindo Serang!\n\n📅 ${formatDate(mic.date)}\n⏰ *${mic.time} WIB*\n📍 *${mic.venue}${mic.location ? `, ${mic.location}` : ''}*\n\n🎟️ Daftar & lihat detail:\n${pageUrl}`}
                   url={pageUrl}
                   image={mic.poster}
                 />
@@ -318,7 +318,7 @@ export function OpenMicDetailPage({ router, slug, showFloatingRegister = false }
                 onClick={() => setStageInfoExpanded((expanded) => !expanded)}
                 className="flex w-full items-center gap-3 px-4 py-3.5 text-left transition-colors hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-600 sm:px-5"
               >
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-blue-600 text-white shadow-[0_5px_12px_rgba(37,99,235,0.2)]"><Info className="h-4 w-4" /></span>
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-blue-600 text-white shadow-[0_5px_12px_rgba(215,25,32,0.2)]"><Info className="h-4 w-4" /></span>
                 <div className="min-w-0 flex-1">
                   <p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-blue-700">Informasi panggung</p>
                   <h2 className="text-lg font-extrabold text-slate-950 sm:text-xl">Tentang Open Mic</h2>

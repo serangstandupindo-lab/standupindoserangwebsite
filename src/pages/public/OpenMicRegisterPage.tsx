@@ -88,7 +88,7 @@ export function OpenMicRegisterPage({ router, slug }: Props) {
         const { count } = await supabase.from('open_mic_registrations').select('id', { count: 'exact', head: true }).eq('komika_id', profile.id).eq('attendance_status', 'attended');
         setMemberOpenMicNumber((count ?? 0) + 1);
         setMemberProfile(profile);
-        setForm((current) => ({ ...current, full_name: profile.full_name, stage_name: profile.stage_name, community: 'Standupindo Cilegon', whatsapp: profile.whatsapp ?? '', instagram: formatInstagramInput(profile.instagram_url ?? '') }));
+        setForm((current) => ({ ...current, full_name: profile.full_name, stage_name: profile.stage_name, community: 'Standupindo Serang', whatsapp: profile.whatsapp ?? '', instagram: formatInstagramInput(profile.instagram_url ?? '') }));
       }
       const m = data as { id: string; title: string; poster: string | null; capacity: number; registration_status: string; status: 'upcoming' | 'completed' | 'cancelled'; date: string } | null;
       if (m) {
@@ -267,11 +267,11 @@ export function OpenMicRegisterPage({ router, slug }: Props) {
       <div className="container-app py-8">
         <div className="mx-auto max-w-xl">
           <form data-scroll-reveal onSubmit={handleSubmit} className="scroll-reveal is-visible card p-6 space-y-5" noValidate>
-            <div className="flex items-center gap-3 border-b border-slate-100 pb-5">{micPoster ? <img src={micPoster} alt={`Poster ${micTitle}`} className="h-14 w-20 shrink-0 rounded-xl object-cover ring-1 ring-slate-200" /> : <span className="flex h-14 w-20 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-white ring-1 ring-blue-100"><img src={LOGO_URL} alt="Logo Standupindo Cilegon" className="h-9 w-9 object-contain" /></span>}<div className="min-w-0"><h2 className="truncate font-bold text-slate-900">{micTitle}</h2><p className="text-sm text-slate-500">Isi data kamu untuk mendaftar.</p></div></div>
+            <div className="flex items-center gap-3 border-b border-slate-100 pb-5">{micPoster ? <img src={micPoster} alt={`Poster ${micTitle}`} className="h-14 w-20 shrink-0 rounded-xl object-cover ring-1 ring-slate-200" /> : <span className="flex h-14 w-20 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-white ring-1 ring-blue-100"><img src={LOGO_URL} alt="Logo Standupindo Serang" className="h-9 w-9 object-contain" /></span>}<div className="min-w-0"><h2 className="truncate font-bold text-slate-900">{micTitle}</h2><p className="text-sm text-slate-500">Isi data kamu untuk mendaftar.</p></div></div>
             {memberProfile ? (
               <div className="space-y-4 rounded-2xl border border-blue-100 bg-blue-50/70 p-4">
                 <div><p className="text-xs font-bold uppercase tracking-[0.14em] text-blue-700">Profil pendaftar</p><h3 className="mt-1 text-lg font-black text-slate-900">{memberProfile.stage_name}</h3><p className="text-sm text-slate-600">{memberProfile.full_name}</p></div>
-                <div className="grid gap-2 text-sm sm:grid-cols-2"><div className="rounded-xl bg-white/80 px-3 py-2"><span className="block text-xs text-slate-500">Komunitas</span><strong className="text-slate-800">Standupindo Cilegon</strong></div><div className="rounded-xl bg-white/80 px-3 py-2"><span className="block text-xs text-slate-500">WhatsApp</span><strong className="text-slate-800">{memberProfile.whatsapp || 'Belum diisi'}</strong></div><div className="rounded-xl bg-white/80 px-3 py-2 sm:col-span-2"><span className="block text-xs text-slate-500">Instagram</span><strong className="text-slate-800">{form.instagram || 'Belum diisi'}</strong></div></div>
+                <div className="grid gap-2 text-sm sm:grid-cols-2"><div className="rounded-xl bg-white/80 px-3 py-2"><span className="block text-xs text-slate-500">Komunitas</span><strong className="text-slate-800">Standupindo Serang</strong></div><div className="rounded-xl bg-white/80 px-3 py-2"><span className="block text-xs text-slate-500">WhatsApp</span><strong className="text-slate-800">{memberProfile.whatsapp || 'Belum diisi'}</strong></div><div className="rounded-xl bg-white/80 px-3 py-2 sm:col-span-2"><span className="block text-xs text-slate-500">Instagram</span><strong className="text-slate-800">{form.instagram || 'Belum diisi'}</strong></div></div>
                 <p className="text-xs leading-5 text-blue-700">Data diambil dari profil member kamu. Periksa kembali sebelum mengirim.</p>
               </div>
             ) : <div>
@@ -339,7 +339,7 @@ export function OpenMicRegisterPage({ router, slug }: Props) {
       <Modal open={reviewOpen} onClose={() => setReviewOpen(false)} title="Periksa Data Pendaftaran" size="md">
         <div className="space-y-4">
           <p className="text-sm text-slate-500">Pastikan data berikut sudah benar sebelum dikirim.</p>
-          {memberProfile && memberOpenMicNumber && <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-600 via-blue-600 to-sky-500 px-4 py-4 text-white shadow-[0_12px_28px_rgba(37,99,235,0.2)]"><div className="absolute -right-5 -top-8 h-24 w-24 rounded-full bg-white/10" /><div className="relative flex items-center gap-3"><span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/15 ring-1 ring-white/25"><Mic className="h-5 w-5" /></span><div className="min-w-0"><p className="text-[11px] font-bold uppercase tracking-[0.16em] text-blue-100">Perjalanan Komika</p><p className="mt-1 text-xl font-black leading-tight">Open Mic kamu ke-{memberOpenMicNumber}</p><p className="mt-1 text-xs font-medium text-blue-100">Satu langkah lagi menuju panggung. Gas terus!</p></div></div></div>}
+          {memberProfile && memberOpenMicNumber && <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-600 via-blue-600 to-sky-500 px-4 py-4 text-white shadow-[0_12px_28px_rgba(215,25,32,0.2)]"><div className="absolute -right-5 -top-8 h-24 w-24 rounded-full bg-white/10" /><div className="relative flex items-center gap-3"><span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/15 ring-1 ring-white/25"><Mic className="h-5 w-5" /></span><div className="min-w-0"><p className="text-[11px] font-bold uppercase tracking-[0.16em] text-blue-100">Perjalanan Komika</p><p className="mt-1 text-xl font-black leading-tight">Open Mic kamu ke-{memberOpenMicNumber}</p><p className="mt-1 text-xs font-medium text-blue-100">Satu langkah lagi menuju panggung. Gas terus!</p></div></div></div>}
           {memberProfile && <div><label className="label-field" htmlFor="member-registration-notes">Catatan <span className="font-normal text-slate-400">(opsional)</span></label><textarea id="member-registration-notes" value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} className="input-field min-h-[88px] resize-y" placeholder="Contoh: Materi 5 menit atau coba materi baru" /></div>}
           <div className="review-summary">
             <div className="review-row"><span className="review-label">Nama Lengkap</span><span className="review-value">{form.full_name}</span></div>
@@ -358,7 +358,7 @@ export function OpenMicRegisterPage({ router, slug }: Props) {
       </Modal>
       <Modal open={rulesOpen} onClose={() => setRulesOpen(false)} title="Peraturan Open Mic" size="md">
         <div className="space-y-3">
-          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-700 via-blue-700 to-indigo-800 px-4 py-3.5 text-white shadow-[0_10px_24px_rgba(37,99,235,0.18)]">
+          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-700 via-blue-700 to-indigo-800 px-4 py-3.5 text-white shadow-[0_10px_24px_rgba(215,25,32,0.18)]">
             <div className="pointer-events-none absolute -right-5 -top-8 h-20 w-20 rounded-full border-[10px] border-white/10" />
             <div className="relative flex items-center gap-3">
               <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/15 ring-1 ring-white/25"><Mic className="h-5 w-5" /></span>

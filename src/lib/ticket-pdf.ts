@@ -73,13 +73,13 @@ async function loadLogoData(): Promise<{ data: string; width: number; height: nu
   try {
     await image.decode();
   } catch {
-    throw new Error('Logo Standupindo Cilegon gagal dimuat.');
+    throw new Error('Logo Standupindo Serang gagal dimuat.');
   }
   const canvas = document.createElement('canvas');
   canvas.width = image.naturalWidth;
   canvas.height = image.naturalHeight;
   const context = canvas.getContext('2d');
-  if (!context) throw new Error('Logo Standupindo Cilegon tidak dapat diproses di browser ini.');
+  if (!context) throw new Error('Logo Standupindo Serang tidak dapat diproses di browser ini.');
   context.fillStyle = '#ffffff';
   context.fillRect(0, 0, canvas.width, canvas.height);
   context.drawImage(image, 0, 0);
@@ -143,7 +143,7 @@ export async function createETicketPdfDocument({
     doc.setTextColor(15, 23, 42);
     doc.text('STANDUPINDO', brandTextX, 10);
     doc.setTextColor(29, 78, 216);
-    doc.text('CILEGON', brandTextX + doc.getTextWidth('STANDUPINDO '), 10);
+    doc.text('SERANG', brandTextX + doc.getTextWidth('STANDUPINDO '), 10);
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(7);
     doc.setTextColor(100, 116, 139);
@@ -256,7 +256,7 @@ export async function createETicketPdfDocument({
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(7);
     doc.setTextColor(30, 41, 59);
-    doc.text('STANDUPINDO CILEGON', pageWidth / 2, 222, { align: 'center' });
+    doc.text('STANDUPINDO SERANG', pageWidth / 2, 222, { align: 'center' });
   });
 
   return doc;

@@ -494,7 +494,7 @@ export function TicketOrderPage({ router, slug, ticketId }: Props) {
                 <img src={event.poster} alt={`Poster ${event.title}`} className="w-24 shrink-0 self-stretch rounded-xl bg-white object-contain ring-1 ring-slate-200 sm:w-28" />
               ) : (
                 <span className="flex w-24 shrink-0 items-center justify-center self-stretch overflow-hidden rounded-xl bg-white ring-1 ring-blue-100 sm:w-28">
-                  <img src={LOGO_URL} alt="Logo Standupindo Cilegon" className="h-9 w-9 object-contain" />
+                  <img src={LOGO_URL} alt="Logo Standupindo Serang" className="h-9 w-9 object-contain" />
                 </span>
               )}
               <div className="min-w-0 flex-1">

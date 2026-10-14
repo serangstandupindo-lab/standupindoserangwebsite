@@ -7,15 +7,15 @@ import { ImageLightbox } from '@/components/ui/ImageLightbox';
 import { PushNotificationSettings } from '@/components/PushNotificationSettings';
 
 const ITEMS = [
-  { to: '/more/gabung', label: 'Gabung Komunitas', description: 'Jadi bagian dari komunitas Cilegon.', icon: Users },
-  { to: '/more/tentang', label: 'Tentang Komunitas', description: 'Kenali Standupindo Cilegon.', icon: Info },
+  { to: '/more/gabung', label: 'Gabung Komunitas', description: 'Jadi bagian dari komunitas Serang.', icon: Users },
+  { to: '/more/tentang', label: 'Tentang Komunitas', description: 'Kenali Standupindo Serang.', icon: Info },
   { to: '/more/kerja-sama', label: 'Kerja Sama', description: 'Mari berkolaborasi bersama kami.', icon: Handshake },
   { to: '/more/kontak', label: 'Kontak & Sosial Media', description: 'Hubungi dan ikuti kami.', icon: MessageCircle },
 ];
 
 export function MorePage({ router, settings }: { router: Router; settings: SiteSettings }) {
   const [logoLightbox, setLogoLightbox] = useState(false);
-  const logoSrc = settings.logo_url ?? '/assets/images/Logo%20Standupindo%20Cilegon%20Biru.png';
+  const logoSrc = settings.logo_url ?? '/assets/images/pwa-public.png';
 
   return (
     <div className="animate-fade-in">
@@ -26,10 +26,10 @@ export function MorePage({ router, settings }: { router: Router; settings: SiteS
           <div className="mb-4">
             <PushNotificationSettings />
           </div>
-          <div data-scroll-reveal className="scroll-reveal overflow-hidden rounded-[30px] border border-slate-200 bg-[radial-gradient(circle_at_top,_rgba(96,165,250,0.12),_transparent_42%),linear-gradient(180deg,_#ffffff_0%,_#f8fbff_100%)] p-4 shadow-[0_18px_45px_rgba(15,23,42,0.06)] sm:p-6">
-            <div className="mb-5 rounded-[24px] border border-blue-100 bg-white/80 p-4 shadow-[0_10px_25px_rgba(37,99,235,0.06)] backdrop-blur-sm sm:p-5">
+          <div data-scroll-reveal className="scroll-reveal overflow-hidden rounded-[30px] border border-slate-200 bg-[radial-gradient(circle_at_top,_rgba(255,104,104,0.12),_transparent_42%),linear-gradient(180deg,_#ffffff_0%,_#f8fbff_100%)] p-4 shadow-[0_18px_45px_rgba(15,23,42,0.06)] sm:p-6">
+            <div className="mb-5 rounded-[24px] border border-blue-100 bg-white/80 p-4 shadow-[0_10px_25px_rgba(215,25,32,0.06)] backdrop-blur-sm sm:p-5">
               <div className="flex items-center gap-4">
-                <button onClick={() => setLogoLightbox(true)} aria-label="Lihat logo Standupindo Cilegon" className="group relative block shrink-0">
+                <button onClick={() => setLogoLightbox(true)} aria-label="Lihat logo Standupindo Serang" className="group relative block shrink-0">
                   <div className="absolute -inset-1 rounded-xl bg-gradient-to-br from-blue-200/80 to-sky-100/80 blur-sm opacity-80" />
                   <div className="relative rounded-xl border border-blue-100 bg-gradient-to-br from-blue-50 to-white p-0.5 shadow-[0_5px_14px_rgba(29,94,219,0.1)] transition-transform duration-200 group-hover:scale-[1.03]">
                     <span className="site-brand-logo-light-leak relative isolate block h-16 w-auto overflow-hidden rounded-md sm:h-[4.5rem]">
@@ -41,7 +41,7 @@ export function MorePage({ router, settings }: { router: Router; settings: SiteS
                 <div className="min-w-0 flex-1">
                   <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-blue-600">Community</p>
                   <h2 className="mt-1 text-xl font-black tracking-[-0.04em] text-slate-900 sm:text-2xl">{settings.site_name}</h2>
-                  <p className="mt-1 text-sm text-slate-500">Standup, kreativitas, dan kolaborasi di Cilegon.</p>
+                  <p className="mt-1 text-sm text-slate-500">Standup, kreativitas, dan kolaborasi di Serang.</p>
                 </div>
               </div>
             </div>

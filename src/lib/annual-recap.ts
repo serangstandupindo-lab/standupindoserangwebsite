@@ -42,7 +42,7 @@ type KomikaProfile = { id: string; stage_name: string; photo: string | null; pho
 type PublicTicketSalesStats = { totalTicketsSold: number; events: Array<{ eventId: string; ticketsSold: number }> };
 const EVENT_PERFORMER_ROLES = ['lineup', 'opener', 'guest_star', 'special_show'];
 
-export const DEFAULT_RECAP_CLOSING = 'Untuk semua komika yang naik ke panggung, semua komunitas yang ikut meramaikan, dan semua orang yang datang, menonton, mendukung, serta membuat Standupindo Cilegon terus berjalan.';
+export const DEFAULT_RECAP_CLOSING = 'Untuk semua komika yang naik ke panggung, semua komunitas yang ikut meramaikan, dan semua orang yang datang, menonton, mendukung, serta membuat Standupindo Serang terus berjalan.';
 
 function getJakartaDate() {
   const parts = new Intl.DateTimeFormat('en-CA', {
@@ -169,7 +169,7 @@ export async function loadAnnualRecapStats(year: number): Promise<AnnualRecapSta
   const openMicAppearanceCounts = new Map<string, number>();
   const earliestPerformanceByKomika = new Map<string, string>();
   const independentLabels = new Set(['umum', 'independen', 'independent', 'tanpa komunitas']);
-  const internalCommunityLabels = new Set(['standupindo cilegon', 'komunitas standupindo cilegon']);
+  const internalCommunityLabels = new Set(['standupindo serang', 'komunitas standupindo serang']);
   let independentAppearanceCount = 0;
 
   registrations.forEach((registration) => {

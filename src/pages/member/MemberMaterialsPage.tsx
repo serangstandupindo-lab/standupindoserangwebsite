@@ -185,7 +185,7 @@ export function MemberMaterialsPage({ router }: { router: Router }) {
           </div>
         </div>}
 
-        {(showForm || isCreatePage) && <form onSubmit={saveMaterial} className="rounded-[26px] border border-blue-100 bg-blue-50/60 p-4 shadow-[0_10px_28px_rgba(37,99,235,0.08)] sm:p-5">
+        {(showForm || isCreatePage) && <form onSubmit={saveMaterial} className="rounded-[26px] border border-blue-100 bg-blue-50/60 p-4 shadow-[0_10px_28px_rgba(215,25,32,0.08)] sm:p-5">
           <div className="mb-4 flex items-center gap-2"><BookOpen className="h-5 w-5 text-blue-700" /><h2 className="text-lg font-extrabold text-slate-950">Tambah Materi</h2></div>
           <div className="space-y-4">
             <input className="input-field uppercase" placeholder="Judul materi" value={form.title} onChange={(event) => setForm({ ...form, title: event.target.value.toUpperCase() })} />

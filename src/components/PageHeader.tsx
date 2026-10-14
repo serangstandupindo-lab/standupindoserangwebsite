@@ -32,7 +32,7 @@ export function PageHeader({ router, title, subtitle, showBack = true, backTo }:
   return (
     <div className={`border-b-2 ${isRoleArea ? 'border-blue-100 bg-slate-50' : 'border-blue-100 bg-white'}`}>
       <div className={`container-app ${isRoleArea && title ? 'py-3 sm:py-4' : 'py-5'}`}>
-        <div className={isRoleArea && title ? 'rounded-[22px] border border-blue-500 bg-gradient-to-br from-blue-700 via-blue-600 to-sky-500 p-4 text-white shadow-[0_10px_24px_rgba(37,99,235,0.2)] sm:p-5' : ''}>
+        <div className={isRoleArea && title ? 'rounded-[22px] border border-blue-500 bg-gradient-to-br from-blue-700 via-blue-600 to-sky-500 p-4 text-white shadow-[0_10px_24px_rgba(215,25,32,0.2)] sm:p-5' : ''}>
         {showBack && <button
             onClick={handleBack}
             className={`mb-3 inline-flex items-center gap-1.5 text-sm font-bold transition ${isRoleArea && title ? 'text-white hover:text-blue-100' : 'text-slate-700 hover:text-blue-700'}`}

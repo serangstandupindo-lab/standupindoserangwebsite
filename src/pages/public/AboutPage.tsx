@@ -13,14 +13,9 @@ const ACTIVITIES = [
 ];
 
 const COMMUNITY_STORY = [
-  'November 2013 menjadi salah satu titik awal perjalanan Standupindo Cilegon. Saat itu, Adam Datau, Luthfi, dan Entus Bewok tampil membawakan stand-up comedy dalam acara Apresiasi Seni di SMPN 5 Cilegon. Sebuah penampilan sederhana yang mungkin tak pernah mereka bayangkan akan membuka jalan bagi sesuatu yang lebih besar.',
-  'Usai acara, Adam Datau mengunggah beberapa dokumentasi penampilan mereka ke Facebook. Respons pun berdatangan. Di antara banyaknya tanggapan, seorang pecinta stand-up comedy menawarkan kesempatan bagi mereka untuk tampil di Premiere Cafe.',
-  'Tawaran itu membawa mereka ke sebuah panggung baru. Malam itu, mereka kembali tampil, sekaligus berkenalan dengan teman-teman dari Standupindo BSC (Banten Serang Cilegon), komunitas yang dalam perjalanannya kemudian berganti nama menjadi Standupindo Serang.',
-  'Pertemuan tersebut menjadi bagian penting dari perjalanan mereka. Sebab, terkadang, sebuah perkenalan sederhana bisa membuka jalan menuju sesuatu yang sebelumnya tak pernah terpikirkan.',
-  'Sekitar seminggu setelah penampilan itu, Adam Datau dihubungi oleh Ray Koto. Keduanya kemudian bertemu di Premiere Cafe. Dari pertemuan tersebut, muncul sebuah gagasan untuk membangun komunitas stand-up comedy di Kota Cilegon.',
-  'Gagasan itu tidak berhenti sebagai percakapan di sebuah kafe. Open mic mulai digelar, promosi terus dilakukan, dan perlahan ruang bagi para pecinta stand-up comedy di Cilegon mulai terbentuk.',
-  'Hingga akhirnya, pada Januari 2014, Standupindo Cilegon muncul ke permukaan dan secara resmi menandai terbentuknya komunitas ini.',
-  'Waktu terus berjalan. Orang-orang datang dan pergi, pengalaman bertambah, dan banyak hal berubah. Namun, semangat yang mengawali perjalanan ini tetap menjadi bagian penting dari identitas Standupindo Cilegon.',
+  'Perjalanan Standupindo Serang berawal dari berkembangnya komunitas stand-up comedy di wilayah Banten, yang saat itu dikenal sebagai Standupindo BSC (Banten Serang Cilegon). Melalui pertemuan para pecinta stand-up comedy, panggung open mic, dan semangat untuk memperkenalkan stand-up comedy kepada lebih banyak orang, komunitas ini perlahan tumbuh dan membangun ruang bagi para komika untuk berkembang.',
+  'Seiring berjalannya waktu, Standupindo BSC kemudian berganti nama menjadi Standupindo Serang, menandai babak baru perjalanan komunitas dalam mengembangkan skena stand-up comedy di Serang dan sekitarnya.',
+  'Dari pertemuan sederhana hingga lahirnya berbagai panggung komedi, Standupindo Serang tumbuh berkat semangat kolektif orang-orang yang percaya bahwa komedi bisa menjadi ruang untuk berkarya, belajar, dan saling terhubung. Perjalanan ini menjadi fondasi bagi Standupindo Serang untuk terus menjaga api stand-up comedy dan melahirkan generasi komika berikutnya.',
 ];
 
 export function AboutPage({ router, settings }: { router: Router; settings: SiteSettings }) {
@@ -39,14 +34,14 @@ export function AboutPage({ router, settings }: { router: Router; settings: Site
               <div className="mb-6 flex items-center gap-4 border-b border-[#8d7a58]/25 pb-5 sm:mb-7 sm:gap-5 sm:pb-6">
                 <button
                   onClick={() => setLogoLightbox(true)}
-                  aria-label="Lihat logo Standupindo Cilegon"
+                  aria-label="Lihat logo Standupindo Serang"
                   className="group flex h-[4.5rem] w-[4.5rem] shrink-0 items-center justify-center transition-transform duration-200 hover:scale-[1.03] sm:h-20 sm:w-20"
                 >
-                  <img src={settings.logo_url ?? '/assets/images/Logo%20Standupindo%20Cilegon%20Biru.png'} alt={`Logo ${settings.site_name}`} className="h-full w-full object-contain" />
+                  <img src={settings.logo_url ?? '/assets/images/pwa-public.png'} alt={`Logo ${settings.site_name}`} className="h-full w-full object-contain" />
                 </button>
                 <div className="min-w-0 font-mono text-[#302b22]">
                   <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#806b46] sm:text-xs">{settings.site_name}</p>
-                  <h2 className="mt-1 text-lg font-black leading-tight tracking-tight sm:text-2xl">Standupindo Cilegon: The Story</h2>
+                  <h2 className="mt-1 text-lg font-black leading-tight tracking-tight sm:text-2xl">Standupindo Serang: The Story</h2>
                   <p className="mt-1 text-xs italic leading-5 text-[#625740] sm:text-sm">Berawal dari tawa, tumbuh menjadi cerita.</p>
                 </div>
               </div>
@@ -59,11 +54,11 @@ export function AboutPage({ router, settings }: { router: Router; settings: Site
           </article>
 
           <div className="mx-auto mt-8 max-w-2xl text-center">
-            <div data-scroll-reveal className="scroll-reveal overflow-hidden rounded-[30px] border border-slate-200 bg-[radial-gradient(circle_at_top,_rgba(96,165,250,0.12),_transparent_42%),linear-gradient(180deg,_#ffffff_0%,_#f8fbff_100%)] p-4 shadow-[0_18px_45px_rgba(15,23,42,0.06)] sm:p-6">
-              <div className="rounded-[24px] border border-blue-100 bg-white/90 p-5 shadow-[0_10px_25px_rgba(37,99,235,0.06)]">
-                <button onClick={() => setLogoLightbox(true)} aria-label="Lihat logo Standupindo Cilegon" className="group mx-auto block">
+            <div data-scroll-reveal className="scroll-reveal overflow-hidden rounded-[30px] border border-slate-200 bg-[radial-gradient(circle_at_top,_rgba(255,104,104,0.12),_transparent_42%),linear-gradient(180deg,_#ffffff_0%,_#f8fbff_100%)] p-4 shadow-[0_18px_45px_rgba(15,23,42,0.06)] sm:p-6">
+              <div className="rounded-[24px] border border-blue-100 bg-white/90 p-5 shadow-[0_10px_25px_rgba(215,25,32,0.06)]">
+                <button onClick={() => setLogoLightbox(true)} aria-label="Lihat logo Standupindo Serang" className="group mx-auto block">
                   <div className="relative mx-auto flex h-24 w-24 items-center justify-center overflow-hidden rounded-[26px] border border-blue-100 bg-white shadow-[0_12px_28px_rgba(29,94,219,0.12)] transition-transform duration-200 group-hover:scale-[1.02]">
-                    <img src={settings.logo_url ?? '/assets/images/Logo%20Standupindo%20Cilegon%20Biru.png'} alt={`Logo ${settings.site_name}`} className="h-16 w-16 object-contain" />
+                    <img src={settings.logo_url ?? '/assets/images/pwa-public.png'} alt={`Logo ${settings.site_name}`} className="h-16 w-16 object-contain" />
                   </div>
                 </button>
                 <p className="mt-5 text-[11px] font-semibold uppercase tracking-[0.18em] text-blue-600">Community</p>
@@ -89,7 +84,7 @@ export function AboutPage({ router, settings }: { router: Router; settings: Site
           </div>
         </div>
       </div>
-      <ImageLightbox src={settings.logo_url ?? '/assets/images/Logo%20Standupindo%20Cilegon%20Biru.png'} alt={`Logo ${settings.site_name}`} open={logoLightbox} onClose={() => setLogoLightbox(false)} closeAriaLabel="Tutup logo" />
+      <ImageLightbox src={settings.logo_url ?? '/assets/images/pwa-public.png'} alt={`Logo ${settings.site_name}`} open={logoLightbox} onClose={() => setLogoLightbox(false)} closeAriaLabel="Tutup logo" />
     </div>
   );
 }

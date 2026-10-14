@@ -66,7 +66,7 @@ export function EvaluatorDashboardPage({ router }: { router: Router }) {
             .in('open_mic_id', assignedMicIds),
           supabase.from('komika').select('id').eq('user_id', user.id).maybeSingle(),
         ]);
-        const eligibleRegistrations = (registrationRows ?? []).filter((row) => row.community?.toLowerCase().includes('standupindo cilegon') && row.komika_id !== ownProfile?.id);
+        const eligibleRegistrations = (registrationRows ?? []).filter((row) => row.community?.toLowerCase().includes('standupindo serang') && row.komika_id !== ownProfile?.id);
         setEmptyReasonByMic(Object.fromEntries(assignedMicIds.map((id) => {
           const attendedRows = (registrationRows ?? []).filter((row) => row.open_mic_id === id);
           const onlyEvaluator = attendedRows.length > 0 && Boolean(ownProfile?.id) && attendedRows.every((row) => row.komika_id === ownProfile.id);

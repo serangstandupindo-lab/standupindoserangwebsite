@@ -142,7 +142,7 @@ function buildNotifications(kind: EntityKind, item: PublicItem, cycle: Notificat
           stage: `awareness-week-${week}`,
           scheduledAt,
           title: '👀 Jangan Lewatkan!',
-          body: `${item.title} akan hadir di Standupindo Cilegon. Yuk lihat detail eventnya dan simpan informasinya!`,
+          body: `${item.title} akan hadir di Standupindo Serang. Yuk lihat detail eventnya dan simpan informasinya!`,
           url: detailUrl,
           audience: 'public',
         });

@@ -33,7 +33,7 @@ function openYouTube(event: React.MouseEvent<HTMLAnchorElement>, webUrl: string)
   }
 
   event.preventDefault();
-  const nativeUrl = `youtube://www.youtube.com/@standupindocilegon`;
+  const nativeUrl = webUrl.replace(/^https?:\/\//i, 'youtube://');
   window.location.href = nativeUrl;
   window.setTimeout(() => {
     if (!document.hidden) window.location.href = webUrl;
@@ -46,7 +46,7 @@ export function ContactPage({ router, settings }: { router: Router; settings: Si
       ? {
           label: 'WhatsApp',
           href: waLink(settings.whatsapp_registration || settings.whatsapp_admin),
-          ariaLabel: 'Hubungi Standupindo Cilegon melalui WhatsApp',
+          ariaLabel: 'Hubungi Standupindo Serang melalui WhatsApp',
           icon: <MessageCircle className="h-8 w-8" strokeWidth={1.8} />,
         }
       : null,
@@ -54,7 +54,7 @@ export function ContactPage({ router, settings }: { router: Router; settings: Si
       ? {
           label: 'Instagram',
           href: settings.instagram_url,
-          ariaLabel: 'Kunjungi Instagram Standupindo Cilegon',
+          ariaLabel: 'Kunjungi Instagram Standupindo Serang',
           icon: <Instagram className="h-8 w-8" strokeWidth={1.8} />,
         }
       : null,
@@ -62,7 +62,7 @@ export function ContactPage({ router, settings }: { router: Router; settings: Si
       ? {
           label: 'TikTok',
           href: settings.tiktok_url,
-          ariaLabel: 'Kunjungi TikTok Standupindo Cilegon',
+          ariaLabel: 'Kunjungi TikTok Standupindo Serang',
           icon: <TikTokIcon className="h-8 w-8" />,
         }
       : null,
@@ -70,7 +70,7 @@ export function ContactPage({ router, settings }: { router: Router; settings: Si
       ? {
           label: 'YouTube',
           href: settings.youtube_url,
-          ariaLabel: 'Kunjungi YouTube Standupindo Cilegon',
+          ariaLabel: 'Kunjungi YouTube Standupindo Serang',
           icon: <Youtube className="h-8 w-8" strokeWidth={1.8} />,
           nativeAppUrl: settings.youtube_url,
         }
@@ -87,11 +87,11 @@ export function ContactPage({ router, settings }: { router: Router; settings: Si
       <PageHeader router={router} title="Kontak & Sosial Media" />
       <div className="container-app py-10 sm:py-12">
         <div className="mx-auto max-w-3xl">
-          <div className="rounded-[30px] border border-slate-200 bg-[radial-gradient(circle_at_top,_rgba(96,165,250,0.12),_transparent_42%),linear-gradient(180deg,_#ffffff_0%,_#f8fbff_100%)] p-4 shadow-[0_18px_45px_rgba(15,23,42,0.06)] sm:p-6">
-            <div className="rounded-[24px] border border-blue-100 bg-white/90 p-5 text-center shadow-[0_10px_25px_rgba(37,99,235,0.06)]">
+          <div className="rounded-[30px] border border-slate-200 bg-[radial-gradient(circle_at_top,_rgba(255,104,104,0.12),_transparent_42%),linear-gradient(180deg,_#ffffff_0%,_#f8fbff_100%)] p-4 shadow-[0_18px_45px_rgba(15,23,42,0.06)] sm:p-6">
+            <div className="rounded-[24px] border border-blue-100 bg-white/90 p-5 text-center shadow-[0_10px_25px_rgba(215,25,32,0.06)]">
               <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-blue-600">Stay connected</p>
               <h1 className="mt-1 text-2xl font-black tracking-[-0.04em] text-slate-900 sm:text-3xl">Kontak & Sosial Media</h1>
-              <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500">Temukan kabar terbaru dan hubungi Standupindo Cilegon melalui kanal resmi kami.</p>
+              <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500">Temukan kabar terbaru dan hubungi Standupindo Serang melalui kanal resmi kami.</p>
             </div>
 
             {items.length > 0 && (

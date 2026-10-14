@@ -69,13 +69,13 @@ export function OpenMicPage({ router }: { router: Router }) {
           .order('date', { ascending: true }),
         supabase
           .from('komika')
-          .select('id, full_name, stage_name, slug, instagram_url, status, published')
+          .select('id, stage_name, slug, instagram_url, status, published')
           .eq('published', true)
           .eq('status', 'active'),
       ]);
       const list = (data as OpenMic[]) ?? [];
       setMics(list);
-      const komikaList = (komikaData ?? []) as Array<{ id: string; full_name: string; stage_name: string; slug: string; instagram_url: string | null }>;
+      const komikaList = (komikaData ?? []) as Array<{ id: string; stage_name: string; slug: string; instagram_url: string | null }>;
 
       if (list.length > 0) {
         const ids = list.map((m) => m.id);
@@ -131,7 +131,7 @@ export function OpenMicPage({ router }: { router: Router }) {
           summaryByIdentity.set(identityKey, {
             id: identityKey,
             slug: profile?.slug ?? null,
-            fullName: profile?.full_name ?? row.stage_name,
+            fullName: profile?.stage_name ?? row.stage_name,
             stageName: profile?.stage_name ?? row.stage_name,
             instagram: profile?.instagram_url ?? row.instagram,
             community: row.community,
@@ -245,7 +245,7 @@ export function OpenMicPage({ router }: { router: Router }) {
                 </button>
                   {selectedPerformerId === performer.id && <div className="rounded-xl border border-blue-200 bg-blue-50/70 p-2.5">
                     <div className="mb-2 flex items-center justify-between gap-2"><p className="text-[10px] font-extrabold uppercase tracking-[0.12em] text-slate-600">Riwayat tampil</p><span className="text-xs font-black uppercase tracking-[0.08em] text-blue-700">{performer.totalAppearances} OPEN MIC</span></div>
-                    <div className="space-y-1.5">{performer.appearances.map((appearance) => <div key={appearance.id} className="flex items-start justify-between gap-3 rounded-lg border border-slate-200 bg-white px-2.5 py-2 text-xs shadow-sm"><div className="min-w-0"><p className="truncate font-extrabold text-slate-900">{appearance.openMicNumber ? `Open Mic #${appearance.openMicNumber} · ` : ''}{appearance.title}</p><p className="mt-0.5 truncate font-semibold text-slate-600">{appearance.stageName} · {appearance.community ?? 'Komunitas belum dicatat'}</p><p className="mt-1 text-[10px] font-bold text-blue-700">Open Mic ke-{appearance.appearanceNumber} di Standupindo Cilegon</p></div><span className="shrink-0 text-right font-bold leading-5 text-slate-600">{formatDate(appearance.date)}<br />{appearance.venue}</span></div>)}</div>
+                    <div className="space-y-1.5">{performer.appearances.map((appearance) => <div key={appearance.id} className="flex items-start justify-between gap-3 rounded-lg border border-slate-200 bg-white px-2.5 py-2 text-xs shadow-sm"><div className="min-w-0"><p className="truncate font-extrabold text-slate-900">{appearance.openMicNumber ? `Open Mic #${appearance.openMicNumber} · ` : ''}{appearance.title}</p><p className="mt-0.5 truncate font-semibold text-slate-600">{appearance.stageName} · {appearance.community ?? 'Komunitas belum dicatat'}</p><p className="mt-1 text-[10px] font-bold text-blue-700">Open Mic ke-{appearance.appearanceNumber} di Standupindo Serang</p></div><span className="shrink-0 text-right font-bold leading-5 text-slate-600">{formatDate(appearance.date)}<br />{appearance.venue}</span></div>)}</div>
                 </div>}
               </div>)}
             </div>

@@ -16,7 +16,7 @@ export function KomikaPage({ router }: { router: Router }) {
 
   useEffect(() => {
     (async () => {
-      const { data } = await supabase.from('komika').select('id, full_name, stage_name, slug, photo, photo_card, bio, instagram_url, tiktok_url, youtube_url, specialties, featured_order, status, published, created_at, updated_at').eq('published', true).eq('status', 'active');
+      const { data } = await supabase.from('komika').select('id, stage_name, slug, photo, photo_card, bio, instagram_url, tiktok_url, youtube_url, specialties, featured_order, status, published, created_at, updated_at').eq('published', true).eq('status', 'active');
       const komikaList = (data as Komika[]) ?? [];
       const sortedKomika = [...komikaList].sort((a, b) => {
         const aOrder = a.featured_order ?? Number.MAX_SAFE_INTEGER;
@@ -38,7 +38,7 @@ export function KomikaPage({ router }: { router: Router }) {
 
   return (
     <div className="animate-fade-in">
-      <PageHeader router={router} title="Komika" subtitle="Kenali komika dan talent Standupindo Cilegon." />
+      <PageHeader router={router} title="Komika" subtitle="Kenali komika dan talent Standupindo Serang." />
 
       <div className="container-app py-8 space-y-6">
         <div className="relative">

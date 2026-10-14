@@ -111,8 +111,8 @@ export function TicketCheckInReportPage({ onBack }: { onBack: () => void }) {
       sheetName: selectedEvent ? 'Detail Tiket' : 'Rekap per Event',
       title: selectedEvent ? `LAPORAN CHECK-IN - ${selectedEvent.title}` : 'LAPORAN CHECK-IN',
       subtitle: selectedEvent
-        ? `${formatDate(selectedEvent.date)}${selectedEvent.venue ? ` · ${selectedEvent.venue}` : ''} · Standupindo Cilegon`
-        : 'Rekap semua Event dalam scope Admin QR Scanner · Standupindo Cilegon',
+        ? `${formatDate(selectedEvent.date)}${selectedEvent.venue ? ` · ${selectedEvent.venue}` : ''} · Standupindo Serang`
+        : 'Rekap semua Event dalam scope Admin QR Scanner · Standupindo Serang',
       headers: eventFilter === 'all'
         ? ['Event', 'Tanggal', 'Tiket Terjual', 'Hadir', 'Tidak Hadir', 'Kehadiran']
         : ['No.', 'Nama Pemesan', 'WhatsApp', 'Kategori Tiket', 'Status'],
@@ -200,7 +200,7 @@ export function TicketCheckInReportPage({ onBack }: { onBack: () => void }) {
             </section>}
         </>}
       <div className="print-sheet ticket-check-in-report-print">
-        <div className="print-brand"><img src={LOGO_URL} alt="" /><div><h1>LAPORAN CHECK-IN</h1><p>Standupindo Cilegon</p></div></div>
+        <div className="print-brand"><img src={LOGO_URL} alt="" /><div><h1>LAPORAN CHECK-IN</h1><p>Standupindo Serang</p></div></div>
         <div className="ticket-check-in-report-meta">
           <p><strong>Nama Event:</strong> {printTitle}</p>
           {selectedEvent && <p><strong>Tanggal:</strong> {formatDate(selectedEvent.date)}{selectedEvent.venue ? ` · ${selectedEvent.venue}` : ''}</p>}

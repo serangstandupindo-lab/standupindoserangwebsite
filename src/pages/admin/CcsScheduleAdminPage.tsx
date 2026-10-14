@@ -98,7 +98,7 @@ type ScheduleForm = {
 };
 
 const EMPTY_FORM: ScheduleForm = {
-  title: 'Cilegon Comedy Sharing (CCS)',
+  title: 'Serang Comedy Sharing (CCS)',
   event_date: getNextCcsWednesdayDate(),
   date_override: false,
   start_time: '',
@@ -261,7 +261,7 @@ export function CcsScheduleAdminPage() {
 
   return (
     <div className="space-y-5">
-      <WorkspacePageHeader eyebrow="Menu Lainnya" title="Jadwal Cilegon Comedy Sharing (CCS)" subtitle="Atur jadwal Cilegon Comedy Sharing yang ditampilkan di halaman Home." />
+      <WorkspacePageHeader eyebrow="Menu Lainnya" title="Jadwal Serang Comedy Sharing (CCS)" subtitle="Atur jadwal Serang Comedy Sharing yang ditampilkan di halaman Home." />
 
       {message && <p role="status" className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-800">{message}</p>}
       {errorMessage && <p role="alert" className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-800">{errorMessage}</p>}
@@ -404,7 +404,7 @@ export function CcsScheduleAdminPage() {
             <div>
               <p className="text-sm font-bold leading-5 text-slate-900">Yakin ingin menghapus jadwal ini?</p>
               <p className="mt-1 text-xs leading-5 text-slate-600">
-                Jadwal Cilegon Comedy Sharing (CCS){scheduleToDelete?.venue ? ` di ${scheduleToDelete.venue}` : ''} akan dihapus dan tidak lagi tampil di Home.
+                Jadwal Serang Comedy Sharing (CCS){scheduleToDelete?.venue ? ` di ${scheduleToDelete.venue}` : ''} akan dihapus dan tidak lagi tampil di Home.
               </p>
             </div>
           </div>

@@ -189,7 +189,7 @@ export function TicketAudiencePage({ events }: { events: EventItem[] }) {
       fileName: `database-penonton-${new Date().toISOString().slice(0, 10)}.xlsx`,
       sheetName: 'Penonton',
       title: 'DATABASE PENONTON',
-      subtitle: 'Standupindo Cilegon',
+      subtitle: 'Standupindo Serang',
       headers: AUDIENCE_HEADERS,
       rows: audienceRows.map((row) => row.values),
     });
@@ -216,10 +216,10 @@ export function TicketAudiencePage({ events }: { events: EventItem[] }) {
     const eventTime = `*${/\bWIB\b/i.test(rawTime) ? rawTime : `${rawTime} WIB`}*`;
 
     if (type === 'thanks') {
-      return `Terima kasih ${guestName} sudah hadir di ${eventTitle} 🙌\n\nSemoga acaranya berkesan dan sampai ketemu lagi di event Standupindo Cilegon berikutnya.\n\n📅 ${eventDate}\n📍 ${eventLocation}\n🕐 ${eventTime}\n\n${eventLink}`;
+      return `Terima kasih ${guestName} sudah hadir di ${eventTitle} 🙌\n\nSemoga acaranya berkesan dan sampai ketemu lagi di event Standupindo Serang berikutnya.\n\n📅 ${eventDate}\n📍 ${eventLocation}\n🕐 ${eventTime}\n\n${eventLink}`;
     }
     if (type === 'upcoming_event') {
-      return `Halo ${guestName} 👋\n\nAda event baru nih di Standupindo Cilegon.\n\n🎭 ${eventTitle}\n📅 ${eventDate}\n📍 ${eventLocation}\n🕐 ${eventTime}\n\nKalau tertarik, info dan tiketnya bisa dicek di sini:\n${eventLink}`;
+      return `Halo ${guestName} 👋\n\nAda event baru nih di Standupindo Serang.\n\n🎭 ${eventTitle}\n📅 ${eventDate}\n📍 ${eventLocation}\n🕐 ${eventTime}\n\nKalau tertarik, info dan tiketnya bisa dicek di sini:\n${eventLink}`;
     }
     return `Halo ${guestName} 👋\n\nBuat Kakak yang sebelumnya sudah nonton bareng kami, kami ingin berbagi info event mendatang.\n\n🎭 ${eventTitle}\n📅 ${eventDate}\n📍 ${eventLocation}\n🕐 ${eventTime}\n\n${eventLink}`;
   }
@@ -345,7 +345,7 @@ export function TicketAudiencePage({ events }: { events: EventItem[] }) {
         return <article key={guest.whatsapp} className="overflow-hidden rounded-2xl border border-slate-200 bg-white"><button type="button" onClick={() => setExpanded((current) => ({ ...current, [guest.whatsapp]: !current[guest.whatsapp] }))} className="flex w-full items-center gap-3 p-4 text-left"><span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-700"><Users className="h-4 w-4" /></span><span className="min-w-0 flex-1"><span className="block truncate font-extrabold text-slate-900">{guest.full_name}</span><span className="mt-0.5 block text-xs text-slate-500">{guest.whatsapp} · {guest.event_count} Event</span></span><span className="hidden shrink-0 text-right text-xs sm:block"><span className="font-bold text-slate-800">{guest.total_tickets} tiket</span><span className="mt-0.5 block text-slate-500">{guest.total_checked_in} check-in · {guest.total_not_checked_in} belum</span></span><span className="ml-auto flex shrink-0 items-center gap-2">{rank <= 3 && <span aria-label={`Peringkat ${rank}`} title={`Peringkat ${rank}`} className={`flex h-9 w-9 flex-col items-center justify-center rounded-full border shadow-sm ${rank === 1 ? 'border-amber-300 bg-amber-100 text-amber-800' : rank === 2 ? 'border-slate-300 bg-slate-100 text-slate-700' : 'border-orange-300 bg-orange-100 text-orange-800'}`}>{rank === 1 ? <Crown className="h-3.5 w-3.5 fill-amber-300" /> : <Medal className="h-3.5 w-3.5" />}<span className="text-[9px] font-black leading-none">{rank}</span></span>}{isExpanded ? <ChevronDown className="h-4 w-4 text-slate-400" /> : <ChevronRight className="h-4 w-4 text-slate-400" />}</span></button>{isExpanded && <div className="space-y-2 border-t border-slate-100 p-3 sm:p-4">{guest.events.map((event) => <div key={event.event_id} className="flex flex-wrap items-center justify-between gap-2 rounded-xl bg-slate-50 p-3"><div className="min-w-0 flex-1"><p className="truncate text-sm font-bold text-slate-800">{event.title}</p><p className="mt-0.5 text-xs text-slate-500">{formatDate(event.date)} · {event.order_count} order · {event.order_numbers.join(', ') || 'Order lama'}</p><div className="mt-1 flex gap-3 text-xs font-semibold text-slate-600"><span>{event.ticket_count} tiket</span><span className="text-emerald-700">{event.checked_in} hadir</span><span>{event.not_checked_in} belum</span></div></div><button type="button" onClick={() => setMessageTarget({ guest, eventId: event.event_id })} aria-label={`Kirim pesan WhatsApp ke ${guest.full_name} untuk ${event.title}`} title="Kirim pesan WhatsApp" className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-blue-200 bg-white text-blue-700 transition hover:bg-blue-50"><MessageCircle className="h-4 w-4" /></button></div>)}</div>}</article>;
       })}</div>}
       <TicketPagination page={page} pageSize={PAGE_SIZE} total={filteredGuests.length} onPageChange={setPage} />
-      <div className="print-sheet ticket-audience-print"><div className="print-brand"><h1>DATABASE PENONTON</h1><p>Standupindo Cilegon</p></div><table><thead><tr>{AUDIENCE_HEADERS.map((header) => <th key={header}>{header}</th>)}</tr></thead><tbody>{audienceRows.map((row) => <tr key={row.id}>{row.values.map((value, index) => <td key={`${row.id}-${index}`}>{value}</td>)}</tr>)}</tbody></table></div>
+      <div className="print-sheet ticket-audience-print"><div className="print-brand"><h1>DATABASE PENONTON</h1><p>Standupindo Serang</p></div><table><thead><tr>{AUDIENCE_HEADERS.map((header) => <th key={header}>{header}</th>)}</tr></thead><tbody>{audienceRows.map((row) => <tr key={row.id}>{row.values.map((value, index) => <td key={`${row.id}-${index}`}>{value}</td>)}</tr>)}</tbody></table></div>
       <Modal open={Boolean(messageTarget)} onClose={() => { setMessageTarget(null); setMessageActivities([]); setMessageError(''); setPendingConfirmation(null); setPendingConfirmationEventId(null); }} title="Pesan WhatsApp" size="sm">
         {messageTarget && <div className="space-y-3">
           <div className="truncate rounded-lg bg-blue-50 px-3 py-2 text-xs text-slate-700"><span className="font-bold">{messageTarget.guest.full_name}</span> · {targetEvent?.title ?? 'Event'}</div>

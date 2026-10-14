@@ -11,7 +11,7 @@ import { CommunityCombobox, CommunityOptions } from '@/components/ui/CommunityCo
 const INTERESTS = ['Komika', 'Penulis', 'Volunteer', 'Dokumentasi', 'Event', 'Supporter', 'Lainnya'];
 
 export function CommunityJoinPage({ router }: { router: Router }) {
-  const [form, setForm] = useState({ full_name: '', whatsapp: '', instagram: '', city: 'Cilegon', notes: '' });
+  const [form, setForm] = useState({ full_name: '', whatsapp: '', instagram: '', city: 'Serang', notes: '' });
   const [interests, setInterests] = useState<string[]>([]);
   const [otherInterest, setOtherInterest] = useState('');
   const [submitted, setSubmitted] = useState(false);
@@ -62,7 +62,7 @@ export function CommunityJoinPage({ router }: { router: Router }) {
 
   return (
     <div className="animate-fade-in">
-      <PageHeader router={router} title="Gabung Komunitas" subtitle="Jadi bagian dari ruang tumbuh Standupindo Cilegon." />
+      <PageHeader router={router} title="Gabung Komunitas" subtitle="Jadi bagian dari ruang tumbuh Standupindo Serang." />
       <div className="container-app py-6 sm:py-8">
         <div className="mx-auto max-w-xl">
           {submitted ? (
@@ -75,7 +75,7 @@ export function CommunityJoinPage({ router }: { router: Router }) {
           ) : (
             <form data-scroll-reveal onSubmit={submit} className="scroll-reveal card space-y-4 p-4 sm:p-6">
               <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
-                <span className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-xl bg-white ring-1 ring-blue-100"><img src={LOGO_URL} alt="Logo Standupindo Cilegon" className="h-8 w-8 object-contain" /></span>
+                <span className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-xl bg-white ring-1 ring-blue-100"><img src={LOGO_URL} alt="Logo Standupindo Serang" className="h-8 w-8 object-contain" /></span>
                 <div><h2 className="font-bold text-slate-900">Kenalan dengan kami</h2><p className="text-xs text-slate-500 sm:text-sm">Isi data singkat untuk bergabung.</p></div>
               </div>
               <div className="grid gap-3 sm:grid-cols-2">

@@ -60,7 +60,7 @@ export function KomikaDetailPage({ router, slug }: Props) {
       try {
         const { data: slugData } = await supabase
           .from('komika')
-          .select('id, full_name, stage_name, slug, photo, bio, karya_url, instagram_url, tiktok_url, youtube_url, specialties, status, published, created_at, updated_at')
+          .select('id, stage_name, slug, photo, bio, karya_url, instagram_url, tiktok_url, youtube_url, specialties, status, published, created_at, updated_at')
           .eq('slug', slug);
 
         let k = (slugData as Komika[] | null)?.find((item) => item.slug === slug) ?? null;
@@ -68,7 +68,7 @@ export function KomikaDetailPage({ router, slug }: Props) {
         if (!k) {
           const { data: fallbackData } = await supabase
             .from('komika')
-            .select('id, full_name, stage_name, slug, photo, bio, karya_url, instagram_url, tiktok_url, youtube_url, specialties, status, published, created_at, updated_at')
+            .select('id, stage_name, slug, photo, bio, karya_url, instagram_url, tiktok_url, youtube_url, specialties, status, published, created_at, updated_at')
             .limit(200);
 
           const rows = (fallbackData as Komika[] | null) ?? [];
@@ -108,9 +108,9 @@ export function KomikaDetailPage({ router, slug }: Props) {
 
         const pageUrl = `${window.location.origin}/komika/${k.slug}`;
         setOgTags(
-          `${k.stage_name} — Standupindo Cilegon`,
-          `Kenali ${k.stage_name}, komika dari Standupindo Cilegon.`,
-          k.photo ?? `${window.location.origin}/assets/images/Logo%20Standupindo%20Cilegon%20Biru.png`,
+          `${k.stage_name} — Standupindo Serang`,
+          `Kenali ${k.stage_name}, komika dari Standupindo Serang.`,
+          k.photo ?? `${window.location.origin}/assets/images/pwa-public.png`,
           pageUrl,
         );
       } catch (error) {
@@ -179,8 +179,8 @@ export function KomikaDetailPage({ router, slug }: Props) {
                   <h1 className="mt-2 text-2xl font-extrabold tracking-[-0.04em] text-slate-900 sm:text-3xl">{komika.stage_name}</h1>
                 </div>
                 <ShareButton
-                  title={`${komika.stage_name} — Standupindo Cilegon`}
-                  text={`Kenali ${komika.stage_name}, komika dari Standupindo Cilegon.`}
+                  title={`${komika.stage_name} — Standupindo Serang`}
+                  text={`Kenali ${komika.stage_name}, komika dari Standupindo Serang.`}
                   url={pageUrl}
                   image={komika.photo}
                   className="!rounded-full"
@@ -209,10 +209,10 @@ export function KomikaDetailPage({ router, slug }: Props) {
                   href={karyaUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group flex items-center justify-between gap-4 rounded-2xl border border-blue-200 bg-gradient-to-r from-blue-50 via-white to-indigo-50 p-3.5 shadow-[0_8px_20px_rgba(37,99,235,0.08)] transition hover:-translate-y-0.5 hover:border-blue-300 hover:shadow-[0_12px_24px_rgba(37,99,235,0.14)] sm:p-4"
+                  className="group flex items-center justify-between gap-4 rounded-2xl border border-blue-200 bg-gradient-to-r from-blue-50 via-white to-indigo-50 p-3.5 shadow-[0_8px_20px_rgba(215,25,32,0.08)] transition hover:-translate-y-0.5 hover:border-blue-300 hover:shadow-[0_12px_24px_rgba(215,25,32,0.14)] sm:p-4"
                 >
                   <span className="flex min-w-0 items-center gap-3">
-                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-600 text-white shadow-[0_6px_14px_rgba(37,99,235,0.25)]">
+                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-600 text-white shadow-[0_6px_14px_rgba(215,25,32,0.25)]">
                       <Sparkles className="h-5 w-5" />
                     </span>
                     <span className="min-w-0">
@@ -228,7 +228,7 @@ export function KomikaDetailPage({ router, slug }: Props) {
         </div>
 
         {(journeyError || officialHistory.length > 0 || externalHistory.length > 0) && (
-          <section data-scroll-reveal className="scroll-reveal mt-6 rounded-2xl border border-blue-200/80 bg-gradient-to-br from-blue-50/70 via-white to-slate-50 p-3.5 shadow-[0_10px_24px_rgba(30,64,175,0.06)] sm:p-4">
+          <section data-scroll-reveal className="scroll-reveal mt-6 rounded-2xl border border-blue-200/80 bg-gradient-to-br from-blue-50/70 via-white to-slate-50 p-3.5 shadow-[0_10px_24px_rgba(181,18,27,0.06)] sm:p-4">
             <div className="flex items-start gap-3">
               <span className="mt-0.5 h-7 w-1 shrink-0 rounded-full bg-gradient-to-b from-blue-600 to-indigo-500" />
               <div className="min-w-0 flex-1">
@@ -241,7 +241,7 @@ export function KomikaDetailPage({ router, slug }: Props) {
               {!journeyError && officialHistory.length > 0 && <div className="rounded-xl border border-blue-100 bg-white/90 p-3 shadow-sm sm:p-3.5">
                 <h3 className="mb-2.5 flex items-center gap-2 text-[11px] font-extrabold uppercase tracking-[0.1em] text-blue-800">
                   <span className="h-2 w-2 rounded-full bg-blue-600" />
-                  Standupindo Cilegon
+                  Standupindo Serang
                   <span className="ml-auto rounded-full bg-blue-50 px-2 py-0.5 text-[10px] font-bold text-blue-800">{officialHistory.length}</span>
                 </h3>
                 <ul className="divide-y divide-slate-100">

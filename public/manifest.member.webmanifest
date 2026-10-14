@@ -1,13 +1,13 @@
 {
   "id": "/member",
-  "name": "Standupindo Cilegon Member",
-  "short_name": "Standupindo Cilegon Member",
-  "description": "Member Area Standupindo Cilegon.",
+  "name": "Standupindo Serang Member",
+  "short_name": "Standupindo Serang Member",
+  "description": "Member Area Standupindo Serang.",
   "start_url": "/member/login",
   "scope": "/member/",
   "display": "standalone",
   "background_color": "#f8fafc",
-  "theme_color": "#2563eb",
+  "theme_color": "#D71920",
   "icons": [
     {
       "src": "/assets/images/pwa-member.png",

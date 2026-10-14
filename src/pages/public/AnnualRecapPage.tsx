@@ -80,7 +80,7 @@ export function AnnualRecapPage({ router, year }: { router: Router; year: string
           <img src="/assets/images/standup-indo-logo.png" alt="Logo Standupindo" className="h-auto w-32 object-contain drop-shadow-md" />
           <p className="text-[10px] font-extrabold uppercase text-cyan-200">MEMUAT</p>
           <p className="mt-1 text-2xl font-black uppercase leading-none text-white">JEJAK TAWA</p>
-          <p className="mt-1 text-xs font-bold uppercase text-blue-100">STANDUPINDO CILEGON</p>
+          <p className="mt-1 text-xs font-bold uppercase text-blue-100">STANDUPINDO SERANG</p>
         </div>
       </div>
     );

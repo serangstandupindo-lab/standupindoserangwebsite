@@ -165,15 +165,15 @@ export function FollowInstagramPopup({ router, settings }: { router: Router; set
   if (!instagramUrl) return null;
 
   return (
-    <Modal open={open} onClose={() => closeWithCooldown('dismissed')} ariaLabel="Follow Standupindo Cilegon" panelClassName="!border-white/60 !bg-sky-50/70 !shadow-[0_26px_80px_rgba(11,31,68,0.38)] !backdrop-blur-2xl [&>div:first-child]:!bg-transparent [&>div:first-child>button]:!bg-white/70 [&>div:first-child>button]:!backdrop-blur-md" size="sm">
+    <Modal open={open} onClose={() => closeWithCooldown('dismissed')} ariaLabel="Follow Standupindo Serang" panelClassName="!border-white/60 !bg-sky-50/70 !shadow-[0_26px_80px_rgba(67,7,12,0.38)] !backdrop-blur-2xl [&>div:first-child]:!bg-transparent [&>div:first-child>button]:!bg-white/70 [&>div:first-child>button]:!backdrop-blur-md" size="sm">
       <div className="flex flex-col items-center px-2 pb-1 pt-1 text-center sm:px-3">
-        <div className="mb-3 flex h-24 w-24 items-center justify-center overflow-hidden rounded-2xl border border-white/70 bg-white/65 p-2 shadow-[0_8px_20px_rgba(37,99,235,0.12)] backdrop-blur-md">
-          <img src={settings.logo_url ?? LOGO_URL} alt="Logo Standupindo Cilegon" className="h-full w-full object-contain" />
+        <div className="mb-3 flex h-24 w-24 items-center justify-center overflow-hidden rounded-2xl border border-white/70 bg-white/65 p-2 shadow-[0_8px_20px_rgba(215,25,32,0.12)] backdrop-blur-md">
+          <img src={settings.logo_url ?? LOGO_URL} alt="Logo Standupindo Serang" className="h-full w-full object-contain" />
         </div>
         <h2 className="flex flex-col items-center text-base font-black leading-tight tracking-tight text-slate-900 sm:text-lg">
           <span>Follow</span>
           <span className="mt-1 inline-flex items-center gap-1.5">
-            <Instagram className="h-4 w-4 text-pink-600" /> Standupindo Cilegon
+            <Instagram className="h-4 w-4 text-pink-600" /> Standupindo Serang
           </span>
         </h2>
         <a
@@ -181,7 +181,7 @@ export function FollowInstagramPopup({ router, settings }: { router: Router; set
           target="_blank"
           rel="noopener noreferrer"
           onClick={() => closeWithCooldown('followed')}
-          className="mt-4 inline-flex min-h-10 items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-blue-700 to-blue-600 px-5 py-2 text-xs font-extrabold text-white shadow-[0_6px_14px_rgba(37,99,235,0.22)] transition hover:-translate-y-0.5 hover:from-blue-800 hover:to-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+          className="mt-4 inline-flex min-h-10 items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-blue-700 to-blue-600 px-5 py-2 text-xs font-extrabold text-white shadow-[0_6px_14px_rgba(215,25,32,0.22)] transition hover:-translate-y-0.5 hover:from-blue-800 hover:to-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
         >
           <Instagram className="h-4 w-4" /> Follow <ArrowUpRight className="h-3.5 w-3.5" />
         </a>

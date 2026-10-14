@@ -13,7 +13,7 @@ interface EventDocumentationPageProps {
 }
 
 const MAX_DOCUMENTATION_PHOTOS = 15;
-const FALLBACK_LOGO = '/assets/images/Logo%20Standupindo%20Cilegon%20Biru.png';
+const FALLBACK_LOGO = '/assets/images/pwa-public.png';
 const HERO_MOTION_TARGETS = [
   'scale(1.065) translate3d(-0.35%, 0.2%, 0)',
   'scale(1.025) translate3d(0.35%, 0, 0)',
@@ -273,8 +273,8 @@ export function EventDocumentationPage({ router, slug, settings }: EventDocument
               <img src={settings.logo_url ?? FALLBACK_LOGO} alt="" className="h-full w-full object-contain" />
             </span>
             <span className="flex min-w-0 flex-col text-left leading-tight">
-              <span className="truncate text-xs font-black tracking-wide text-white sm:text-sm">{settings.site_short_name.replace(/\s+CILEGON$/i, '')}</span>
-              <span className="text-xs font-extrabold tracking-wide text-blue-300">CILEGON</span>
+              <span className="truncate text-xs font-black tracking-wide text-white sm:text-sm">{settings.site_short_name.replace(/\s+SERANG$/i, '')}</span>
+              <span className="text-xs font-extrabold tracking-wide text-blue-300">SERANG</span>
             </span>
           </div>
         </header>
@@ -329,7 +329,7 @@ export function EventDocumentationPage({ router, slug, settings }: EventDocument
                     type="button"
                     onClick={() => setLightboxIndex(index)}
                     aria-label={`Buka ${index === 0 && event.poster === photo ? 'poster' : `foto dokumentasi ${index + 1}`} dalam layar penuh`}
-                    className="group block w-full overflow-hidden rounded-lg border border-blue-300/20 bg-white/[0.03] shadow-[0_8px_24px_rgba(0,0,0,0.25)] transition hover:border-blue-300/60 hover:shadow-[0_12px_30px_rgba(37,99,235,0.15)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
+                    className="group block w-full overflow-hidden rounded-lg border border-blue-300/20 bg-white/[0.03] shadow-[0_8px_24px_rgba(0,0,0,0.25)] transition hover:border-blue-300/60 hover:shadow-[0_12px_30px_rgba(215,25,32,0.15)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
                   >
                     <img
                       src={photo}

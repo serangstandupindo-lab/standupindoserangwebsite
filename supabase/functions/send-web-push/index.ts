@@ -409,7 +409,7 @@ serve(async (request) => {
       if ((!targetUserId && !targetSubscriptionId) || (targetUserId && targetSubscriptionId)
         || (appIdentity !== 'public' && appIdentity !== 'admin' && appIdentity !== 'member')
         || title !== 'Test Web Push'
-        || body !== 'Notifikasi Web Push Standupindo Cilegon berhasil diterima.'
+        || body !== 'Notifikasi Web Push Standupindo Serang berhasil diterima.'
         || !['/', '/admin', '/member'].includes(String(url))) {
         return response({ error: 'Payload test Web Push tidak valid.' }, 400);
       }

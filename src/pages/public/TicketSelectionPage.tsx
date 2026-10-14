@@ -164,9 +164,9 @@ export function TicketSelectionPage({ router, slug }: Props) {
                     : null;
                   const temporarilyUnavailable = ticketAvailability.get(ticket.id)?.temporarily_unavailable ?? false;
                   return (
-                    <article key={ticket.id} className="overflow-hidden rounded-2xl border border-blue-100 bg-white shadow-[0_6px_18px_rgba(15,23,42,0.045)] transition hover:border-blue-200 hover:shadow-[0_10px_24px_rgba(37,99,235,0.1)]">
+                    <article key={ticket.id} className="overflow-hidden rounded-2xl border border-blue-100 bg-white shadow-[0_6px_18px_rgba(15,23,42,0.045)] transition hover:border-blue-200 hover:shadow-[0_10px_24px_rgba(215,25,32,0.1)]">
                       <div className="flex items-start gap-3 bg-gradient-to-r from-blue-50/80 via-white to-white p-4 sm:items-center sm:gap-4 sm:p-5">
-                        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-600 text-white shadow-[0_5px_12px_rgba(37,99,235,0.22)]"><Ticket className="h-5 w-5" /></span>
+                        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-600 text-white shadow-[0_5px_12px_rgba(215,25,32,0.22)]"><Ticket className="h-5 w-5" /></span>
                         <div className="min-w-0 flex-1">
                           <p className="text-[10px] font-extrabold uppercase tracking-[0.13em] text-blue-700">Kategori Tiket</p>
                           <h3 className="mt-0.5 break-words text-base font-extrabold text-slate-900 sm:text-lg">{ticket.name}</h3>

@@ -347,7 +347,7 @@ export function MemberMaterialDetailPage({ router, id }: { router: Router; id: s
       <div className="container-app py-6 sm:py-8">
         <button type="button" onClick={() => router.navigate('/member/materials')} className="mb-5 inline-flex items-center gap-2 text-sm font-bold text-slate-600 hover:text-blue-700"><ArrowLeft className="h-4 w-4" /> Kembali ke Buku Materi</button>
         <div className="mx-auto max-w-3xl space-y-5">
-          <section className="rounded-2xl border border-blue-100 bg-white px-4 py-3 shadow-[0_8px_22px_rgba(37,99,235,0.08)] sm:px-5">
+          <section className="rounded-2xl border border-blue-100 bg-white px-4 py-3 shadow-[0_8px_22px_rgba(215,25,32,0.08)] sm:px-5">
             <div className="flex items-center gap-3">
               <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-700"><BookOpen className="h-4 w-4" /></div>
               <div className="min-w-0">

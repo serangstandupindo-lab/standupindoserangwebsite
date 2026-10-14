@@ -105,8 +105,8 @@ function drawMicrophone(context: CanvasRenderingContext2D, x: number, y: number,
   context.beginPath();
   context.arc(x + size / 2, y + size / 2, size / 2, 0, Math.PI * 2);
   context.fill();
-  context.strokeStyle = '#2563eb';
-  context.fillStyle = '#2563eb';
+  context.strokeStyle = '#D71920';
+  context.fillStyle = '#D71920';
   context.lineWidth = 4;
   roundedRect(context, x + size * 0.4, y + size * 0.2, size * 0.2, size * 0.38, size * 0.1);
   context.fill();
@@ -180,7 +180,7 @@ function drawHeader(context: CanvasRenderingContext2D, communityLogo: HTMLImageE
     if (!watermarkContext) throw new Error('Watermark logo tidak dapat dibuat di perangkat ini.');
     drawContainedImage(watermarkContext, communityLogo, 0, 0, watermark.width, watermark.height);
     watermarkContext.globalCompositeOperation = 'source-in';
-    watermarkContext.fillStyle = '#2563eb';
+    watermarkContext.fillStyle = '#D71920';
     watermarkContext.fillRect(0, 0, watermark.width, watermark.height);
 
     context.save();
@@ -198,7 +198,7 @@ function drawHeader(context: CanvasRenderingContext2D, communityLogo: HTMLImageE
   context.font = '800 28px Arial, sans-serif';
   context.fillText('STANDUPINDO', 176, 68);
   context.font = '700 25px Arial, sans-serif';
-  context.fillText('CILEGON', 176, 103);
+  context.fillText('SERANG', 176, 103);
   if (affiliationLogo) drawContainedImage(context, affiliationLogo, 850, 24, 175, 110);
   else {
     context.textAlign = 'right';
@@ -232,7 +232,7 @@ function drawEvent(context: CanvasRenderingContext2D, mic: OpenMic, poster: HTML
   const y = 180;
   const posterWidth = 340;
   const posterHeight = 270;
-  context.shadowColor = 'rgba(37, 99, 235, 0.12)';
+  context.shadowColor = 'rgba(215, 25, 32, 0.12)';
   context.shadowBlur = 22;
   context.shadowOffsetY = 8;
   const cardGradient = context.createLinearGradient(x, y, x + 972, y + 310);
@@ -255,7 +255,7 @@ function drawEvent(context: CanvasRenderingContext2D, mic: OpenMic, poster: HTML
   context.fillRect(x + 14, y + 14, posterWidth, posterHeight);
   if (poster) drawContainedImage(context, poster, x + 14, y + 14, posterWidth, posterHeight);
   else {
-    context.fillStyle = '#1d4ed8';
+    context.fillStyle = '#B5121B';
     context.font = '700 24px Arial, sans-serif';
     context.textAlign = 'center';
     context.fillText('POSTER OPEN MIC', x + 14 + posterWidth / 2, y + 155, posterWidth - 24);
@@ -264,7 +264,7 @@ function drawEvent(context: CanvasRenderingContext2D, mic: OpenMic, poster: HTML
   context.restore();
 
   const infoX = 438;
-  context.fillStyle = '#2563eb';
+  context.fillStyle = '#D71920';
   context.font = '800 20px Arial, sans-serif';
   context.fillText('OPEN MIC', infoX, y + 48);
   const titleLines = wrapText(context, mic.title, 540, '800 44px Arial, sans-serif').slice(0, 2);
@@ -283,7 +283,7 @@ function drawEvent(context: CanvasRenderingContext2D, mic: OpenMic, poster: HTML
 }
 
 function drawPerformerCard(context: CanvasRenderingContext2D, performer: CanvasLineup, number: number, x: number, y: number, width: number, height: number) {
-  context.shadowColor = 'rgba(37, 99, 235, 0.1)';
+  context.shadowColor = 'rgba(215, 25, 32, 0.1)';
   context.shadowBlur = 12;
   context.shadowOffsetY = 4;
   context.fillStyle = '#ffffff';
@@ -329,7 +329,7 @@ function drawPerformerCard(context: CanvasRenderingContext2D, performer: CanvasL
     if (!fits) nameFontSize -= 1;
   }
   const textTop = y + (height - textHeight) / 2;
-  context.fillStyle = '#1d4ed8';
+  context.fillStyle = '#B5121B';
   roundedRect(context, x + width - 60, y + 12, 48, 36, 18);
   context.fill();
   context.fillStyle = '#ffffff';
@@ -343,7 +343,7 @@ function drawPerformerCard(context: CanvasRenderingContext2D, performer: CanvasL
     context.fillText(line, textX, textTop + nameFontSize + lineIndex * nameLineHeight, textWidth);
   });
   let detailY = textTop + nameLines.length * nameLineHeight + 12 + detailFontSize;
-  context.fillStyle = '#2563eb';
+  context.fillStyle = '#D71920';
   context.font = `500 ${detailFontSize}px Arial, sans-serif`;
   if (performer.instagram) {
     context.fillText(`@${performer.instagram}`, textX, detailY, textWidth);
@@ -428,7 +428,7 @@ async function createLineupImages(
     context.fillStyle = 'rgba(219, 237, 255, 0.9)';
     roundedRect(context, WIDTH - 54 - badgeWidth, 500, badgeWidth, 48, 24);
     context.fill();
-    context.fillStyle = '#1d4ed8';
+    context.fillStyle = '#B5121B';
     context.textAlign = 'center';
     context.font = '800 17px Arial, sans-serif';
     context.fillText(countLabel, WIDTH - 54 - badgeWidth / 2, 530);
@@ -491,13 +491,13 @@ async function createLineupImages(
     }
     pageOffset += page.length;
 
-    context.fillStyle = '#1d4ed8';
+    context.fillStyle = '#B5121B';
     context.font = '700 20px Arial, sans-serif';
     const domain = window.location.hostname;
     const domainWidth = context.measureText(domain).width;
     const footerWidth = domainWidth;
     const footerStart = (WIDTH - footerWidth) / 2;
-    context.strokeStyle = '#bfdbfe';
+    context.strokeStyle = '#FFE0E0';
     context.lineWidth = 2;
     context.beginPath();
     context.moveTo(56, 1890);

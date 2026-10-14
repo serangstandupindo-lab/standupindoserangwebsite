@@ -16,7 +16,7 @@ const TERMS = [
   {
     title: 'Ketentuan umum pembelian',
     paragraphs: [
-      'Ketentuan ini berlaku untuk pemesanan tiket publik melalui website Standupindo Cilegon. Dengan membuat order, pembeli menyatakan data yang diberikan benar dan memahami informasi event serta aturan venue yang tercantum pada halaman event.',
+      'Ketentuan ini berlaku untuk pemesanan tiket publik melalui website Standupindo Serang. Dengan membuat order, pembeli menyatakan data yang diberikan benar dan memahami informasi event serta aturan venue yang tercantum pada halaman event.',
       'Tiket publik hanya ditawarkan untuk kategori aktif yang ditampilkan pada halaman pemilihan tiket. Ketersediaan akhir mengikuti kuota kategori dan validasi sistem saat order dibuat.',
     ],
   },
@@ -100,7 +100,7 @@ const PRIVACY = [
   {
     title: 'Perubahan kebijakan dan kontak',
     paragraphs: [
-      'Kebijakan ini dapat diperbarui mengikuti perubahan pengumpulan data atau fungsi ticketing. Perubahan akan ditampilkan pada halaman ini. Untuk pertanyaan privasi atau transaksi tiket, hubungi admin melalui halaman kontak resmi Standupindo Cilegon.',
+      'Kebijakan ini dapat diperbarui mengikuti perubahan pengumpulan data atau fungsi ticketing. Perubahan akan ditampilkan pada halaman ini. Untuk pertanyaan privasi atau transaksi tiket, hubungi admin melalui halaman kontak resmi Standupindo Serang.',
     ],
   },
 ];
@@ -119,7 +119,7 @@ export function TicketLegalPage({ router, settings, document }: Props) {
       <main className="container-app py-6 sm:py-9">
         <article className="mx-auto max-w-3xl rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-8">
           <p className="text-sm leading-6 text-slate-600">
-            Dokumen ini menjelaskan ketentuan dan penggunaan data pada flow pembelian tiket publik Standupindo Cilegon.
+            Dokumen ini menjelaskan ketentuan dan penggunaan data pada flow pembelian tiket publik Standupindo Serang.
           </p>
           <div className="mt-6 space-y-6">
             {sections.map((section) => (
@@ -133,7 +133,7 @@ export function TicketLegalPage({ router, settings, document }: Props) {
           </div>
           <div className="mt-8 flex flex-col gap-2 border-t border-slate-100 pt-5 sm:flex-row">
             <a href="/more/kontak" className="btn-secondary min-h-11 flex-1">Halaman Kontak <ArrowUpRight className="h-4 w-4" /></a>
-            {whatsapp && <a href={waLink(whatsapp, `Halo Admin Standupindo Cilegon, saya ingin bertanya tentang ${title}.`)} target="_blank" rel="noopener noreferrer" className="btn-primary min-h-11 flex-1"><MessageCircle className="h-4 w-4" /> Hubungi Admin</a>}
+            {whatsapp && <a href={waLink(whatsapp, `Halo Admin Standupindo Serang, saya ingin bertanya tentang ${title}.`)} target="_blank" rel="noopener noreferrer" className="btn-primary min-h-11 flex-1"><MessageCircle className="h-4 w-4" /> Hubungi Admin</a>}
           </div>
         </article>
       </main>

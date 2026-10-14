@@ -83,7 +83,7 @@ async function createSummaryImage(
   domain: string,
 ): Promise<Blob> {
   const [communityLogo, standupindoLogo, profilePhoto] = await Promise.all([
-    loadCanvasImage(branding.siteLogo || '/assets/images/Logo%20Standupindo%20Cilegon%20Biru.png'),
+    loadCanvasImage(branding.siteLogo || '/assets/images/pwa-public.png'),
     loadCanvasImage(branding.affiliationLogo || '/assets/images/image.png'),
     identity.photo ? loadCanvasImage(identity.photo) : Promise.resolve(null),
   ]);
@@ -96,7 +96,7 @@ async function createSummaryImage(
   const isMcSummary = type.startsWith('mc');
   const theme = isMcSummary
     ? { background: '#faf7ff', accent: '#c4b5fd', primary: '#4c1d95', secondary: '#7c3aed', light: '#ede9fe' }
-    : { background: '#f7fbff', accent: '#ade1fb', primary: '#041d56', secondary: '#266ca9', light: '#dbeafe' };
+    : { background: '#f7fbff', accent: '#ade1fb', primary: '#43070c', secondary: '#266ca9', light: '#dbeafe' };
   context.fillStyle = theme.background;
   context.fillRect(0, 0, canvas.width, canvas.height);
   context.fillStyle = theme.accent;
@@ -111,7 +111,7 @@ async function createSummaryImage(
   context.fillStyle = theme.primary;
   context.font = '800 31px Arial, sans-serif';
   context.fillText('STANDUPINDO', 222, 105, 500);
-  context.fillText('CILEGON', 222, 148, 500);
+  context.fillText('SERANG', 222, 148, 500);
   if (standupindoLogo) drawContainedImage(context, standupindoLogo, 790, 68, 210, 110);
   else {
     context.textAlign = 'right';
@@ -191,7 +191,7 @@ async function createSummaryImage(
           ? [{ label: 'TOTAL MC', value: summary.total, color: '#4c1d95', accent: '#c4b5fd' }]
     : type === 'all'
     ? [
-        { label: 'TOTAL OPEN MIC', value: summary.total, color: '#041d56', accent: '#ade1fb' },
+        { label: 'TOTAL OPEN MIC', value: summary.total, color: '#43070c', accent: '#ade1fb' },
         { label: 'INTERNAL', value: summary.internal, color: '#0f2573', accent: '#ade1fb' },
         { label: 'EKSTERNAL', value: summary.external, color: '#266ca9', accent: '#ade1fb' },
       ]
@@ -199,7 +199,7 @@ async function createSummaryImage(
       ? [{ label: 'OPEN MIC INTERNAL', value: summary.internal, color: '#0f2573', accent: '#ade1fb' }]
       : type === 'external'
         ? [{ label: 'OPEN MIC EKSTERNAL', value: summary.external, color: '#266ca9', accent: '#ade1fb' }]
-        : [{ label: 'TOTAL OPEN MIC', value: summary.total, color: '#041d56', accent: '#ade1fb' }];
+        : [{ label: 'TOTAL OPEN MIC', value: summary.total, color: '#43070c', accent: '#ade1fb' }];
 
   const cardTop = 650;
   const cardHeight = 270;
@@ -209,7 +209,7 @@ async function createSummaryImage(
     const x = metricData.length === 1 ? (canvas.width - cardWidth) / 2 : 56 + index * (cardWidth + gap);
     const cardGradient = context.createLinearGradient(x, cardTop, x + cardWidth, cardTop + cardHeight);
     cardGradient.addColorStop(0, metric.color);
-    cardGradient.addColorStop(1, isMcSummary ? '#7c3aed' : metric.color === '#041d56' ? '#0f2573' : metric.color === '#0f2573' ? '#266ca9' : '#0f2573');
+    cardGradient.addColorStop(1, isMcSummary ? '#7c3aed' : metric.color === '#43070c' ? '#0f2573' : metric.color === '#0f2573' ? '#266ca9' : '#0f2573');
     context.fillStyle = cardGradient;
     roundedRect(context, x, cardTop, cardWidth, cardHeight, 36);
     context.fill();
@@ -723,7 +723,7 @@ export function MemberPerformanceHistoryPage({ router, embedded = false }: { rou
                   <div className="mt-3 grid gap-2 border-t border-slate-100 pt-3 text-sm font-medium text-slate-700">
                     <span className="inline-flex items-center gap-2"><CalendarDays className="h-4 w-4 shrink-0 text-blue-600" />{formatDate(item.date)}</span>
                     <span className="inline-flex items-center gap-2"><MapPin className="h-4 w-4 shrink-0 text-blue-600" />{item.venue}{item.city ? `, ${item.city}` : ''}</span>
-                    {item.source === 'internal' && item.appearanceNumber && <span className="rounded-lg bg-blue-50 px-2.5 py-2 text-xs font-bold text-blue-800">Penampilan ke-{item.appearanceNumber} di Standupindo Cilegon</span>}
+                    {item.source === 'internal' && item.appearanceNumber && <span className="rounded-lg bg-blue-50 px-2.5 py-2 text-xs font-bold text-blue-800">Penampilan ke-{item.appearanceNumber} di Standupindo Serang</span>}
                   </div>
                 </article>)}
               </section>;
@@ -762,29 +762,29 @@ export function MemberPerformanceHistoryPage({ router, embedded = false }: { rou
           <div className={`overflow-hidden rounded-2xl border shadow-sm ${isMcShare ? 'border-violet-200 bg-[#faf7ff]' : 'border-blue-200 bg-[#f8fbff]'}`}>
             <div className={`flex items-center justify-between gap-2 border-b px-3 py-2.5 sm:px-4 ${isMcShare ? 'border-violet-200' : 'border-blue-200'}`}>
               <div className="flex min-w-0 items-center gap-2">
-                <img src={settings.logo_url ?? '/assets/images/Logo%20Standupindo%20Cilegon%20Biru.png'} alt="" className="h-8 w-8 shrink-0 object-contain" />
-                  <p className="text-[10px] font-black leading-[1.15] tracking-[0.08em] text-[#041d56] sm:text-xs">STANDUPINDO<br />CILEGON</p>
+                <img src={settings.logo_url ?? '/assets/images/pwa-public.png'} alt="" className="h-8 w-8 shrink-0 object-contain" />
+                  <p className="text-[10px] font-black leading-[1.15] tracking-[0.08em] text-[#43070c] sm:text-xs">STANDUPINDO<br />SERANG</p>
               </div>
               <img src={settings.affiliation_logo_url ?? '/assets/images/image.png'} alt={settings.affiliation_name ?? 'Standupindo'} className="h-8 w-16 shrink-0 object-contain sm:h-9 sm:w-20" />
             </div>
             <div className="flex items-center gap-3 px-3 py-4 sm:gap-4 sm:px-4">
               {memberIdentity.photo
                 ? <img src={memberIdentity.photo} alt={`Foto ${memberIdentity.stageName || 'Member'}`} className="h-24 w-24 shrink-0 rounded-xl bg-white object-contain p-1 shadow-md sm:h-28 sm:w-28" />
-                : <div className={`flex h-24 w-24 shrink-0 items-center justify-center rounded-xl text-3xl font-black shadow-md ring-4 sm:h-28 sm:w-28 ${isMcShare ? 'bg-gradient-to-br from-violet-200 to-violet-500 text-violet-950 ring-violet-200' : 'bg-gradient-to-br from-[#ade1fb] to-[#266ca9] text-[#041d56] ring-[#ade1fb]'}`}>{(memberIdentity.stageName || 'OM').slice(0, 1).toUpperCase()}</div>}
+                : <div className={`flex h-24 w-24 shrink-0 items-center justify-center rounded-xl text-3xl font-black shadow-md ring-4 sm:h-28 sm:w-28 ${isMcShare ? 'bg-gradient-to-br from-violet-200 to-violet-500 text-violet-950 ring-violet-200' : 'bg-gradient-to-br from-[#ade1fb] to-[#266ca9] text-[#43070c] ring-[#ade1fb]'}`}>{(memberIdentity.stageName || 'OM').slice(0, 1).toUpperCase()}</div>}
               <div className="min-w-0">
                 <p className={`inline-block max-w-full truncate rounded-full px-2.5 py-1 text-[9px] font-extrabold tracking-wide sm:text-[10px] ${isMcShare ? 'bg-violet-100 text-violet-900' : 'bg-[#ade1fb]/60 text-[#0f2573]'}`}>{isMcShare ? 'RIWAYAT MC' : shareType === 'all' ? 'PERJALANAN PANGGUNG OPEN MIC' : 'RIWAYAT OPEN MIC'}</p>
-                <h3 className={`mt-2 truncate text-xl font-black leading-tight sm:text-2xl ${isMcShare ? 'text-violet-950' : 'text-[#041d56]'}`}>{memberIdentity.stageName || 'Perjalanan Panggung'}</h3>
+                <h3 className={`mt-2 truncate text-xl font-black leading-tight sm:text-2xl ${isMcShare ? 'text-violet-950' : 'text-[#43070c]'}`}>{memberIdentity.stageName || 'Perjalanan Panggung'}</h3>
                 {memberIdentity.instagram && <p className={`mt-1 truncate text-xs font-semibold ${isMcShare ? 'text-violet-700' : 'text-[#266ca9]'}`}>@{instagramHandle(memberIdentity.instagram)}</p>}
                 {memberIdentity.community && <p className="mt-1 truncate text-[10px] text-slate-600">{memberIdentity.community}</p>}
               </div>
             </div>
-            <div className={`mx-3 grid gap-1.5 rounded-xl p-2 sm:mx-4 sm:gap-2 sm:p-3 ${isMcShare ? 'bg-violet-950' : 'bg-[#041d56]'} ${shareMetrics.length === 1 ? 'grid-cols-1' : 'grid-cols-3'}`}>
+            <div className={`mx-3 grid gap-1.5 rounded-xl p-2 sm:mx-4 sm:gap-2 sm:p-3 ${isMcShare ? 'bg-violet-950' : 'bg-[#43070c]'} ${shareMetrics.length === 1 ? 'grid-cols-1' : 'grid-cols-3'}`}>
               {shareMetrics.map((metric) => <div key={metric.label} className={`min-w-0 border-r px-1 text-center last:border-r-0 ${isMcShare ? 'border-violet-700' : 'border-[#266ca9]'}`}>
                 <p className="text-xl font-black leading-none text-white sm:text-2xl">{metric.value}</p>
                 <p className={`mt-1 truncate text-[8px] font-extrabold leading-tight sm:text-[9px] ${isMcShare ? 'text-violet-200' : 'text-[#ade1fb]'}`}>{metric.label}</p>
               </div>)}
             </div>
-            <div className={`mx-3 mb-3 mt-3 rounded-xl px-3 py-2.5 sm:mx-4 sm:mb-4 ${isMcShare ? 'bg-violet-950' : 'bg-[#041d56]'}`}>
+            <div className={`mx-3 mb-3 mt-3 rounded-xl px-3 py-2.5 sm:mx-4 sm:mb-4 ${isMcShare ? 'bg-violet-950' : 'bg-[#43070c]'}`}>
               <div className="flex items-start gap-2">
                 <span className={`text-xl font-black leading-none ${isMcShare ? 'text-violet-300' : 'text-[#ade1fb]'}`}>“</span>
                 <p className={`border-t pt-1.5 text-left text-[10px] font-medium leading-4 text-white sm:text-[11px] ${isMcShare ? 'border-violet-700' : 'border-[#266ca9]'}`}>{isMcShare ? 'Memandu cerita, menjaga tawa, dan merangkai pengalaman di setiap panggung.' : 'Jejak langkah di atas panggung adalah bukti keberanian untuk berbagi tawa dan cerita.'}</p>

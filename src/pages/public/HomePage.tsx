@@ -176,7 +176,7 @@ export function HomePage({ router }: Props) {
         supabase.from('open_mics').select('*').eq('published', true).eq('status', 'upcoming').gte('date', today).order('date', { ascending: true }),
         supabase.from('open_mics').select('*').eq('published', true),
         supabase.from('events').select('*').eq('published', true).eq('status', 'upcoming').gte('date', today).order('date', { ascending: true }).limit(5),
-        supabase.from('komika').select('id, full_name, stage_name, slug, photo, photo_card, bio, instagram_url, tiktok_url, youtube_url, specialties, featured_order, status, published, created_at, updated_at').eq('published', true).eq('status', 'active'),
+        supabase.from('komika').select('id, stage_name, slug, photo, photo_card, bio, instagram_url, tiktok_url, youtube_url, specialties, featured_order, status, published, created_at, updated_at').eq('published', true).eq('status', 'active'),
         supabase.from('event_tickets').select('event_id, price').eq('status', 'active').eq('available_public', true).order('price', { ascending: true }),
         supabase.from('partners').select('*').eq('is_published', true).order('sort_order', { ascending: true }).order('name', { ascending: true }),
         supabase.from('annual_recaps').select('year').eq('published', true).order('year', { ascending: false }).limit(1).maybeSingle(),
@@ -236,24 +236,24 @@ export function HomePage({ router }: Props) {
         <div className="hero-flag-glow hero-flag-glow-two" aria-hidden="true" />
         <div className="hero-flag-wave hero-flag-wave-one" aria-hidden="true" />
         <div className="hero-flag-wave hero-flag-wave-two" aria-hidden="true" />
-        <img src={LOGO_URL} alt="" aria-hidden="true" className="hero-watermark" />
+        <img src="/assets/images/Standupindo%20Serang%20Logo.png" alt="" aria-hidden="true" className="hero-watermark" />
 
         <div className="container-app relative z-10 py-7 sm:py-10 lg:py-16">
           <div className="max-w-2xl animate-fade-up">
             <div className="inline-flex items-center gap-2 rounded-full bg-white/12 px-3 py-1.5 text-[11px] font-semibold ring-1 ring-white/20 backdrop-blur-sm sm:text-xs">
-              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#FBBF24] text-[#0B1F44]">
+              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#FFC928] text-[#43070C]">
                 <Sparkles className="h-3 w-3" />
               </span>
-              Komunitas Stand Up Comedy Cilegon
+              Komunitas Stand Up Comedy Serang
             </div>
             <h1 className="mt-4 max-w-3xl text-[2.2rem] font-extrabold leading-[1.05] tracking-[-0.04em] text-white sm:mt-5 sm:text-4xl lg:text-[4rem]">
-              Dari Tawa, Jadi Karya.
+              SERANG DENGAN <span className="text-yellow-300">TAWA</span>
             </h1>
-            <p className="mt-4 max-w-2xl text-[13px] font-semibold leading-6 text-[#BFDBFE] sm:mt-5 sm:text-base sm:leading-7 lg:text-lg lg:leading-8">
-              Menjadi ruang bertemunya komika, penikmat komedi, dan insan kreatif untuk berbagi tawa, mengembangkan potensi, serta membangun ekosistem stand up comedy di Cilegon.
+            <p className="mt-4 max-w-2xl text-[13px] font-semibold leading-6 text-red-100 sm:mt-5 sm:text-base sm:leading-7 lg:text-lg lg:leading-8">
+              Orang-orang yang percaya bahwa komedi bisa menjadi ruang untuk berkarya, belajar, dan saling terhubung. Perjalanan ini menjadi fondasi bagi Standupindo Serang untuk terus menjaga api stand-up comedy dan melahirkan generasi komika berikutnya.
             </p>
             <div className="mt-6 flex flex-col gap-3 sm:mt-7 sm:flex-row">
-              <button onClick={() => router.navigate('/open-mic')} className="home-open-mic-cta inline-flex items-center justify-center gap-2 rounded-xl bg-white px-6 py-3.5 text-sm font-bold text-[#0B1F44] shadow-[0_12px_24px_rgba(11,31,68,0.22)] transition-all hover:scale-[1.02] hover:shadow-[0_16px_28px_rgba(11,31,68,0.28)] active:scale-95">
+              <button onClick={() => router.navigate('/open-mic')} className="home-open-mic-cta inline-flex items-center justify-center gap-2 rounded-xl bg-white px-6 py-3.5 text-sm font-bold text-[#43070C] shadow-[0_12px_24px_rgba(67,7,12,0.22)] transition-all hover:scale-[1.02] hover:shadow-[0_16px_28px_rgba(67,7,12,0.28)] active:scale-95">
                 <span className="relative z-10 inline-flex items-center gap-2">
                   <Mic aria-hidden="true" className="home-hero-cta-icon home-hero-cta-icon-mic h-5 w-5 sm:h-[1.375rem] sm:w-[1.375rem]" /> Temukan Open Mic
                 </span>
@@ -276,12 +276,12 @@ export function HomePage({ router }: Props) {
               type="button"
               onClick={() => router.navigate(`/recap/${publishedRecap.year}`)}
               aria-label={`Buka Annual Recap ${publishedRecap.year}`}
-              className="group flex w-full items-center justify-between gap-4 overflow-hidden rounded-2xl border border-cyan-900/20 bg-gradient-to-r from-[#0B1F44] via-[#123B55] to-[#155E63] px-5 py-5 text-left text-white shadow-[0_12px_28px_rgba(11,31,68,0.16)] transition hover:shadow-[0_16px_34px_rgba(11,31,68,0.22)] sm:px-7 sm:py-6"
+              className="group flex w-full items-center justify-between gap-4 overflow-hidden rounded-2xl border border-red-900/20 bg-gradient-to-r from-[#43070C] via-[#94111A] to-[#D71920] px-5 py-5 text-left text-white shadow-[0_12px_28px_rgba(67,7,12,0.16)] transition hover:shadow-[0_16px_34px_rgba(67,7,12,0.22)] sm:px-7 sm:py-6"
             >
               <span className="min-w-0">
                 <span className="inline-flex rounded-full border border-amber-200/40 bg-amber-300/15 px-2.5 py-1 text-[10px] font-bold uppercase text-amber-100">Cerita tahunan</span>
                 <span className="mt-2 block text-xl font-black sm:text-2xl">Annual Recap {publishedRecap.year}</span>
-                <span className="mt-1 block text-sm text-cyan-50/85">Lihat kembali panggung dan cerita komunitas tahun ini.</span>
+                <span className="mt-1 block text-sm text-red-50/85">Lihat kembali panggung dan cerita komunitas tahun ini.</span>
               </span>
               <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/25 bg-white/10 transition group-hover:bg-white/20">
                 <ArrowRight className="h-5 w-5" />
@@ -341,7 +341,7 @@ export function HomePage({ router }: Props) {
                 <div className="min-w-[260px] max-w-[260px] snap-start sm:min-w-[300px] lg:min-w-0 lg:max-w-none"><LoadingSkeleton count={1} /></div>
               </div>
             ) : events.length === 0 ? (
-              <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-blue-200 bg-white px-6 py-12 text-center shadow-[0_8px_24px_rgba(37,99,235,0.05)] sm:py-16">
+              <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-blue-200 bg-white px-6 py-12 text-center shadow-[0_8px_24px_rgba(215,25,32,0.05)] sm:py-16">
                 <div className="flex h-14 w-14 items-center justify-center rounded-full bg-slate-100 text-slate-400"><Inbox className="h-7 w-7" /></div>
                 <h3 className="mt-4 text-base font-semibold text-slate-800 sm:text-lg">Belum ada event baru untuk saat ini.</h3>
                 <p className="mt-1 max-w-lg text-sm leading-6 text-slate-500">Tapi tenang, keseruan berikutnya sedang dalam perjalanan. Sampai jumpa di tawa selanjutnya!</p>
@@ -364,7 +364,7 @@ export function HomePage({ router }: Props) {
         {/* KOMIKA */}
         <section data-home-reveal className="home-reveal">
           <div className="flex items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm sm:gap-4 sm:p-4">
-            <div className="min-w-0 flex-1 border-l-4 border-l-blue-500 pl-3 sm:pl-4"><SectionHeader title="Komika" subtitle="Kenali talent Standupindo Cilegon." /></div>
+            <div className="min-w-0 flex-1 border-l-4 border-l-blue-500 pl-3 sm:pl-4"><SectionHeader title="Komika" subtitle="Kenali talent Standupindo Serang." /></div>
             <button type="button" onClick={() => router.navigate('/komika')} aria-label="Lihat semua Komika" className="mr-1 flex min-h-11 min-w-11 shrink-0 items-center justify-center text-blue-600 sm:mr-2"><Drama aria-hidden="true" className="h-8 w-8 sm:h-9 sm:w-9" /></button>
             <button onClick={() => router.navigate('/komika')} className="hidden items-center gap-1 text-sm font-semibold text-blue-700 hover:gap-2 transition-all sm:inline-flex">
               Lihat semua <ArrowRight className="h-4 w-4" />
@@ -422,7 +422,7 @@ export function HomePage({ router }: Props) {
               <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-white/15 ring-1 ring-white/20">
                 <Handshake className="h-7 w-7" />
               </div>
-              <h2 className="mt-5 text-2xl font-extrabold sm:text-3xl">Mau berkolaborasi dengan Standupindo Cilegon?</h2>
+              <h2 className="mt-5 text-2xl font-extrabold sm:text-3xl">Mau berkolaborasi dengan Standupindo Serang?</h2>
               <p className="mt-3 text-sm text-blue-100 sm:text-base">Mari berkolaborasi untuk sponsorship, event, atau partnership venue bersama kami.</p>
               <button onClick={() => router.navigate('/more/kerja-sama')} className="mt-6 inline-flex items-center gap-2 rounded-xl bg-white px-6 py-3.5 text-sm font-bold text-blue-700 shadow-lg transition hover:scale-[1.02] active:scale-95">
                 Kerja Sama <ArrowRight className="h-4 w-4" />

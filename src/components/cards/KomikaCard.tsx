@@ -19,7 +19,7 @@ export function KomikaCard({ komika, router }: { komika: Komika; router: Router 
           router.navigate(`/komika/${komika.slug}`);
         }
       }}
-      className="komika-card-light-leak group relative isolate aspect-[3/5] min-w-0 cursor-pointer overflow-hidden rounded-[22px] border-[3px] border-blue-600 bg-slate-900 shadow-[inset_2px_0_8px_rgba(255,255,255,0.62),inset_-2px_0_10px_rgba(96,165,250,0.76),inset_0_-3px_12px_rgba(37,99,235,0.64),0_0_12px_rgba(37,99,235,0.42),0_10px_22px_rgba(30,64,175,0.3)] ring-1 ring-blue-500/80 transition-[transform,box-shadow] duration-300 active:scale-[0.98] hover:-translate-y-1 hover:shadow-[inset_2px_0_10px_rgba(255,255,255,0.72),inset_-2px_0_12px_rgba(147,197,253,0.88),inset_0_-3px_14px_rgba(96,165,250,0.78),0_0_20px_rgba(37,99,235,0.68),0_16px_30px_rgba(30,64,175,0.4)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+      className="komika-card-light-leak group relative isolate aspect-[3/5] min-w-0 cursor-pointer overflow-hidden rounded-[22px] border-[3px] border-blue-600 bg-slate-900 shadow-[inset_2px_0_8px_rgba(255,255,255,0.62),inset_-2px_0_10px_rgba(255,104,104,0.76),inset_0_-3px_12px_rgba(215,25,32,0.64),0_0_12px_rgba(215,25,32,0.42),0_10px_22px_rgba(181,18,27,0.3)] ring-1 ring-blue-500/80 transition-[transform,box-shadow] duration-300 active:scale-[0.98] hover:-translate-y-1 hover:shadow-[inset_2px_0_10px_rgba(255,255,255,0.72),inset_-2px_0_12px_rgba(147,197,253,0.88),inset_0_-3px_14px_rgba(255,104,104,0.78),0_0_20px_rgba(215,25,32,0.68),0_16px_30px_rgba(181,18,27,0.4)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
       role="button"
       tabIndex={0}
       aria-label={`Lihat profil ${komika.stage_name}`}
@@ -36,7 +36,7 @@ export function KomikaCard({ komika, router }: { komika: Komika; router: Router 
           {komika.stage_name.charAt(0)}
         </div>
       )}
-      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_bottom,rgba(30,64,175,0.02)_18%,rgba(29,78,216,0.2)_48%,rgba(30,58,138,0.82)_72%,rgba(15,23,80,0.98)_100%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_bottom,rgba(181,18,27,0.02)_18%,rgba(29,78,216,0.2)_48%,rgba(30,58,138,0.82)_72%,rgba(15,23,80,0.98)_100%)]" />
 
       <div className="absolute inset-x-0 bottom-0 min-w-0 p-3 text-white sm:p-4">
         <h3 className="line-clamp-2 break-words text-lg font-black leading-tight tracking-[-0.025em] text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] sm:text-xl">

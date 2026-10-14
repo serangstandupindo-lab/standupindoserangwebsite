@@ -209,7 +209,7 @@ export function MemberProfilePage({ router }: { router: Router }) {
               <div className={`${editingProfile ? 'overflow-visible' : 'overflow-hidden'} rounded-2xl border border-white/35 bg-white/15 ring-1 ring-white/30`}>
                 {editingProfile ? (
                   <div>
-                    <ImageUpload label="Foto Profil" folder="komika" value={form.photo} onChange={(url) => setForm({ ...form, photo: url })} aspect="portrait" processingProfile="avatar" avatar cropToFrame onSaveImmediately={handleSaveProfilePhoto} onPreview={() => setPreviewPhoto(true)} />
+                    <ImageUpload label="Foto Profil" folder={`komika/${user?.id ?? 'no-user'}`} value={form.photo} onChange={(url) => setForm({ ...form, photo: url })} aspect="portrait" processingProfile="avatar" avatar cropToFrame onSaveImmediately={handleSaveProfilePhoto} onPreview={() => setPreviewPhoto(true)} />
                   </div>
                 ) : (
                   <button type="button" onClick={() => form.photo && setPreviewPhoto(true)} className="block h-full w-full" aria-label={form.photo ? 'Lihat foto profil' : undefined}>

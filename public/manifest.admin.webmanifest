@@ -1,13 +1,13 @@
 {
   "id": "/admin",
-  "name": "Standupindo Cilegon Admin",
-  "short_name": "Standupindo Cilegon Admin",
-  "description": "Workspace operasional Standupindo Cilegon.",
+  "name": "Standupindo Serang Admin",
+  "short_name": "Standupindo Serang Admin",
+  "description": "Workspace operasional Standupindo Serang.",
   "start_url": "/admin/login",
   "scope": "/admin/",
   "display": "standalone",
   "background_color": "#f8fafc",
-  "theme_color": "#0a1a3b",
+  "theme_color": "#D71920",
   "icons": [
     {
       "src": "/assets/images/pwa-admin.png",

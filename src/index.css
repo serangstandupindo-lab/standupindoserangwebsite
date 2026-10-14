@@ -51,12 +51,12 @@
 
 @layer base {
   :root {
-    --brand-navy: #0B1F44;
-    --brand-primary: #2563EB;
-    --brand-secondary: #3B82F6;
-    --brand-light-blue: #60A5FA;
-    --brand-accent: #FBBF24;
-    --bg-light: #F8FAFC;
+    --brand-navy: #43070C;
+    --brand-primary: #D71920;
+    --brand-secondary: #B5121B;
+    --brand-light-blue: #FF6868;
+    --brand-accent: #FFC928;
+    --bg-light: #FFF8F5;
     --text-dark: #0F172A;
     --white: #FFFFFF;
     --safe-bottom: env(safe-area-inset-bottom, 0px);
@@ -122,7 +122,7 @@
   }
 
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-bold text-white shadow-[0_10px_20px_rgba(37,99,235,0.24)] transition-all duration-200 hover:shadow-[0_12px_24px_rgba(37,99,235,0.32)] focus:outline-none focus:ring-2 focus:ring-offset-2 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60;
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-bold text-white shadow-[0_10px_20px_rgba(215,25,32,0.24)] transition-all duration-200 hover:shadow-[0_12px_24px_rgba(215,25,32,0.32)] focus:outline-none focus:ring-2 focus:ring-offset-2 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60;
     min-height: 44px;
     background: linear-gradient(135deg, var(--brand-primary), var(--brand-secondary));
     --tw-ring-color: var(--brand-primary);
@@ -133,11 +133,11 @@
   }
 
   .admin-login-page {
-    background: #5b21b6;
+    background: #D71920;
   }
 
   .member-login-page {
-    background: linear-gradient(135deg, #172554 0%, #1d4ed8 52%, #2563eb 100%);
+    background: linear-gradient(135deg, #79131a 0%, #D71920 58%, #FFC928 100%);
   }
 
   .ticket-access-logo {
@@ -215,16 +215,16 @@
   }
 
   .card {
-    @apply rounded-2xl bg-white shadow-[0_12px_30px_rgba(11,31,68,0.1)] ring-1 ring-blue-200/80 transition-all duration-300;
+    @apply rounded-2xl bg-white shadow-[0_12px_30px_rgba(67,7,12,0.1)] ring-1 ring-blue-200/80 transition-all duration-300;
   }
 
   .card-hover {
-    @apply hover:-translate-y-1 hover:shadow-[0_16px_38px_rgba(37,99,235,0.18)] hover:ring-blue-300;
+    @apply hover:-translate-y-1 hover:shadow-[0_16px_38px_rgba(215,25,32,0.18)] hover:ring-blue-300;
   }
 
   .open-mic-roster-performers > div:first-child,
   .open-mic-roster-pendaftar > div:nth-child(3) {
-    @apply rounded-[22px] border border-blue-500 bg-gradient-to-br from-blue-700 via-blue-600 to-sky-500 p-4 text-white shadow-[0_10px_24px_rgba(37,99,235,0.2)] sm:p-5;
+    @apply rounded-[22px] border border-blue-500 bg-gradient-to-br from-blue-700 via-blue-600 to-sky-500 p-4 text-white shadow-[0_10px_24px_rgba(215,25,32,0.2)] sm:p-5;
   }
 
   .open-mic-roster-performers > div:first-child h1,
@@ -563,7 +563,7 @@
 
     .print-sheet h1 {
       margin: 0 0 2mm;
-      color: #0B1F44;
+      color: #43070C;
       font-size: 16pt;
     }
 
@@ -600,7 +600,7 @@
 
     .print-sheet th {
       color: #FFFFFF;
-      background: #0B1F44;
+      background: #43070C;
       font-weight: 700;
     }
 
@@ -626,14 +626,14 @@
 
     .ticket-sales-report-print h2 {
       margin: 8mm 0 1mm;
-      color: #0B1F44;
+      color: #43070C;
       font-size: 13pt;
       font-weight: 700;
     }
 
     .ticket-sales-report-print h3 {
       margin: 5mm 0 2mm;
-      color: #1D4ED8;
+      color: #B5121B;
       font-size: 10pt;
       font-weight: 700;
     }
@@ -649,7 +649,7 @@
 
     .ticket-sales-report-print .ticket-report-print-total {
       margin-top: 3mm;
-      color: #0B1F44;
+      color: #43070C;
       font-weight: 700;
     }
 
@@ -669,7 +669,7 @@
 
     .ticket-check-in-report-print h2 {
       margin: 5mm 0 2mm;
-      color: #0B1F44;
+      color: #43070C;
       font-size: 11pt;
       font-weight: 700;
     }
@@ -996,22 +996,22 @@
     isolation: isolate;
     min-height: 26rem;
     background:
-      radial-gradient(circle at 22% 12%, rgba(96, 165, 250, 0.3) 0%, transparent 18%),
+      radial-gradient(circle at 22% 12%, rgba(181, 18, 27, 0.28) 0%, transparent 18%),
       radial-gradient(circle at 78% 18%, rgba(255, 255, 255, 0.12) 0%, transparent 22%),
-      linear-gradient(135deg, var(--brand-navy) 0%, #123268 28%, var(--brand-primary) 62%, var(--brand-secondary) 100%);
+      linear-gradient(135deg, var(--brand-navy) 0%, #79131a 28%, var(--brand-primary) 62%, var(--brand-secondary) 100%);
   }
 
   .text-blue-600 { color: var(--brand-primary) !important; }
   .text-blue-700 { color: var(--brand-primary) !important; }
   .text-blue-900 { color: var(--brand-navy) !important; }
-  .bg-blue-50 { background-color: rgba(96, 165, 250, 0.15) !important; }
-  .bg-blue-100 { background-color: rgba(96, 165, 250, 0.22) !important; }
+  .bg-blue-50 { background-color: rgba(255, 104, 104, 0.1) !important; }
+  .bg-blue-100 { background-color: rgba(255, 104, 104, 0.16) !important; }
   .bg-blue-600 { background-color: var(--brand-primary) !important; }
   .border-blue-400 { border-color: var(--brand-secondary) !important; }
   .border-blue-500 { border-color: var(--brand-primary) !important; }
   .hover\:bg-blue-600:hover { background-color: var(--brand-primary) !important; }
   .hover\:bg-blue-700:hover { background-color: var(--brand-secondary) !important; }
-  .hover\:bg-blue-100:hover { background-color: rgba(96, 165, 250, 0.18) !important; }
+  .hover\:bg-blue-100:hover { background-color: rgba(255, 104, 104, 0.14) !important; }
   .hover\:text-blue-700:hover { color: var(--brand-primary) !important; }
   .text-slate-400 { color: #64748B !important; }
   .text-slate-500 { color: #475569 !important; }
@@ -1036,12 +1036,12 @@
   }
 
   .hero-flag-glow-one {
-    background: linear-gradient(145deg, transparent 32%, rgba(96, 165, 250, 0.52) 53%, transparent 72%);
+    background: linear-gradient(145deg, transparent 32%, rgba(215, 25, 32, 0.38) 53%, transparent 72%);
     animation: flagDrift 18s ease-in-out infinite alternate;
   }
 
   .hero-flag-glow-two {
-    background: linear-gradient(24deg, transparent 20%, rgba(37, 99, 235, 0.42) 46%, rgba(96, 165, 250, 0.24) 64%, transparent 80%);
+    background: linear-gradient(24deg, transparent 20%, rgba(181, 18, 27, 0.42) 46%, rgba(215, 25, 32, 0.24) 64%, transparent 80%);
     animation: flagDriftReverse 23s ease-in-out infinite alternate;
   }
 
@@ -1057,8 +1057,8 @@
   .hero-flag-wave-one {
     top: 20%;
     z-index: -3;
-    background: linear-gradient(100deg, rgba(7, 24, 46, 0.72), rgba(37, 99, 235, 0.45) 48%, rgba(96, 165, 250, 0.16));
-    box-shadow: 0 28px 45px rgba(4, 20, 54, 0.25);
+    background: linear-gradient(100deg, rgba(67, 7, 12, 0.72), rgba(215, 25, 32, 0.4) 48%, rgba(181, 18, 27, 0.24));
+    box-shadow: 0 28px 45px rgba(67, 7, 12, 0.25);
     animation: flagWave 20s ease-in-out infinite alternate;
   }
 
@@ -1067,7 +1067,7 @@
     z-index: -2;
     height: 44%;
     border-radius: 55% 45% 42% 58% / 58% 48% 52% 42%;
-    background: linear-gradient(105deg, rgba(4, 20, 54, 0.6), rgba(37, 99, 235, 0.3) 49%, rgba(96, 165, 250, 0.1));
+    background: linear-gradient(105deg, rgba(67, 7, 12, 0.6), rgba(181, 18, 27, 0.3) 49%, rgba(215, 25, 32, 0.2));
     animation: flagWaveReverse 25s ease-in-out infinite alternate;
   }
 
@@ -1078,10 +1078,10 @@
     right: clamp(-8rem, -2vw, -1rem);
     width: clamp(22rem, 46vw, 43rem);
     height: auto;
-    opacity: 0.18;
+    opacity: 0.26;
     pointer-events: none;
     mix-blend-mode: screen;
-    filter: grayscale(1) brightness(1.4) contrast(0.7);
+    filter: drop-shadow(0 0 18px rgba(255, 255, 255, 0.12));
     transform: translateY(-50%) rotate(-7deg);
     animation: watermarkFloat 16s ease-in-out infinite alternate;
   }
@@ -1090,7 +1090,7 @@
     .hero-watermark {
       right: -8rem;
       width: clamp(19rem, 48vw, 31rem);
-      opacity: 0.14;
+      opacity: 0.22;
     }
   }
 
@@ -1106,7 +1106,7 @@
       right: -4.5rem;
       bottom: 0.5rem;
       width: clamp(16rem, 82vw, 22rem);
-      opacity: 0.12;
+      opacity: 0.2;
       transform: rotate(-7deg);
     }
 
@@ -1183,25 +1183,25 @@
     border: 1px solid #93c5fd;
     border-radius: 0.75rem;
     background-color: #eff6ff;
-    background-image: linear-gradient(45deg, transparent 50%, #2563eb 50%), linear-gradient(135deg, #2563eb 50%, transparent 50%);
+    background-image: linear-gradient(45deg, transparent 50%, #D71920 50%), linear-gradient(135deg, #D71920 50%, transparent 50%);
     background-position: calc(100% - 0.85rem) 1.05rem, calc(100% - 0.6rem) 1.05rem;
     background-size: 0.3rem 0.3rem, 0.3rem 0.3rem;
     background-repeat: no-repeat;
     padding-right: 2rem;
-    color: #1d4ed8;
+    color: #B5121B;
     font-weight: 800;
-    box-shadow: 0 3px 8px rgba(37, 99, 235, 0.08);
+    box-shadow: 0 3px 8px rgba(215, 25, 32, 0.08);
   }
 
   select[aria-label^="Peran"]:hover {
-    border-color: #2563eb;
+    border-color: #D71920;
     background-color: #dbeafe;
   }
 
   select[aria-label^="Peran"]:focus {
-    border-color: #2563eb;
+    border-color: #D71920;
     outline: none;
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.18);
+    box-shadow: 0 0 0 3px rgba(215, 25, 32, 0.18);
   }
 
 @layer utilities {
@@ -1342,7 +1342,7 @@
 
 .home-open-mic-cta:hover,
 .home-open-mic-cta:focus-visible {
-  background-color: #2563eb;
+  background-color: #D71920;
   color: #fff;
   box-shadow: 0 0 0 2px rgba(216, 180, 254, 0.95), 0 0 24px 5px rgba(168, 85, 247, 0.85), 0 14px 28px rgba(11, 31, 68, 0.3), inset 0 0 0 1px rgba(255, 255, 255, 0.22);
   transform: translateY(-3px) scale(1.035);
@@ -1509,8 +1509,8 @@
 
 .recap-device-texture {
   background-image:
-    linear-gradient(145deg, rgba(37, 99, 235, 0.16), transparent 52%),
-    repeating-linear-gradient(132deg, transparent 0 38px, rgba(96, 165, 250, 0.055) 39px 40px, transparent 41px 78px);
+    linear-gradient(145deg, rgba(215, 25, 32, 0.16), transparent 52%),
+    repeating-linear-gradient(132deg, transparent 0 38px, rgba(255, 104, 104, 0.055) 39px 40px, transparent 41px 78px);
   opacity: 0.72;
 }
 

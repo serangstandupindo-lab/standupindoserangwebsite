@@ -102,7 +102,15 @@ export function MemberAccountsPage({ komika, onNotice }: { komika: Komika[]; onN
 
     setSaving(false);
     if (error || data?.error) {
-      onNotice(error?.message ?? data?.error ?? 'Akun member gagal dibuat.');
+      let message = data?.error ?? error?.message ?? 'Akun member gagal dibuat.';
+      const context = (error as (Error & { context?: Response }) | null)?.context;
+      if (!data?.error && context && typeof context.json === 'function') {
+        try {
+          const response = await context.json() as { error?: string };
+          message = response.error ?? message;
+        } catch { /* Keep the SDK error message when the response body is unavailable. */ }
+      }
+      onNotice(message);
       return;
     }
 

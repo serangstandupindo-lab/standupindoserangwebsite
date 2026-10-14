@@ -1,10 +1,12 @@
-# Standupindo Community Website
+# Website Komunitas Standupindo Serang
 
-Website komunitas Standupindo Cilegon berbasis React, Vite, TypeScript, dan Supabase.
+Website komunitas Standupindo Serang berbasis React, Vite, TypeScript, dan Supabase.
 
-Project ini sudah dapat dideploy sebagai static website dan dapat diclone untuk komunitas Standupindo di kota lain.
+Source ini mempertahankan fitur aplikasi komunitas; setiap komunitas hasil clone wajib memakai repository, Supabase, hosting, domain, dan data sendiri.
 
-Panduan clone mandiri untuk komunitas baru tersedia di [COMMUNITY_CLONE_RUNBOOK.md](COMMUNITY_CLONE_RUNBOOK.md). Panduan lama [DUPLICATE_DEPLOY_GUIDE.md](DUPLICATE_DEPLOY_GUIDE.md) hanya arsip historis dan jangan dipakai sebagai urutan deploy database.
+Panduan pemula dengan checklist, lokasi secret, dan prompt siap salin: [PANDUAN_CLONE_PEMULA.md](PANDUAN_CLONE_PEMULA.md).
+
+Belum pernah coding? Mulai dari [PANDUAN_CLONE_PEMULA.md](PANDUAN_CLONE_PEMULA.md), yang berisi langkah sederhana, lokasi konfigurasi/secret, dan prompt siap salin. Referensi audit teknis ada di [COMMUNITY_CLONE_RUNBOOK.md](COMMUNITY_CLONE_RUNBOOK.md). Panduan lama [DUPLICATE_DEPLOY_GUIDE.md](DUPLICATE_DEPLOY_GUIDE.md) adalah arsip historis dan jangan dipakai untuk menjalankan migration.
 
 > Setiap komunitas harus memakai repository, domain, hosting, Supabase, Resend, akun admin, dan secrets sendiri. Jangan memakai migration seed admin, `.env`, atau kredensial milik Cilegon.
 
@@ -38,7 +40,7 @@ Migration menjadwalkan pemeriksaan setiap 15 menit. Pengiriman Event/Open Mic pu
 
 ## Clone komunitas
 
-Untuk tahapan membuat salinan mandiri—termasuk akun dan resource terpisah, migration, branding, build, hosting, keamanan, dan smoke test—gunakan [COMMUNITY_CLONE_RUNBOOK.md](COMMUNITY_CLONE_RUNBOOK.md). Jangan mengikuti panduan clone historis yang menginstruksikan menjalankan seluruh folder migration.
+Untuk tahapan membuat salinan mandiri—termasuk akun/resource, branding, Supabase, secrets, hosting, dan smoke test—gunakan [PANDUAN_CLONE_PEMULA.md](PANDUAN_CLONE_PEMULA.md). Jangan mengikuti panduan clone historis atau menjalankan seluruh folder migration.
 
 ## Rencana Banten Comedy Network
 

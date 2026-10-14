@@ -77,7 +77,7 @@ export function AppShell({ router, settings, children }: AppShellProps) {
   }, [router.path]);
 
   return (
-    <div ref={shellRef} className={`flex min-h-screen flex-col ${isTicketAccessPage ? 'bg-slate-200' : isEventDocumentationPage ? 'bg-[#030712]' : isPublicNavyPage ? 'bg-[#0B1F44]' : 'bg-slate-50'}`}>
+    <div ref={shellRef} className={`flex min-h-screen flex-col ${isTicketAccessPage ? 'bg-slate-200' : isEventDocumentationPage ? 'bg-[#030712]' : isPublicNavyPage ? 'bg-[#43070C]' : 'bg-slate-50'}`}>
       {!isTicketAccessPage && !isEventDocumentationPage && <DesktopNavbar router={router} settings={settings} />}
 
       <main className={`flex-1 ${isTicketAccessPage ? '' : 'pb-safe-nav md:pb-0'} ${isPublicNavyPage ? 'text-slate-100' : ''}`}>{children}</main>
@@ -90,15 +90,14 @@ export function AppShell({ router, settings, children }: AppShellProps) {
               <div className="flex items-center gap-2.5">
                 <span className="relative flex shrink-0 items-center justify-center rounded-lg border border-blue-100 bg-gradient-to-br from-blue-50 to-white p-0.5 shadow-[0_5px_14px_rgba(29,94,219,0.1)]">
                   <span className="site-brand-logo-light-leak relative isolate block h-12 w-auto overflow-hidden rounded-md sm:h-14">
-                    <img src={settings.logo_url ?? '/assets/images/Logo%20Standupindo%20Cilegon%20Biru.png'} alt={settings.site_name} className="block h-full w-auto rounded-md object-contain" />
+                    <img src={settings.logo_url ?? '/assets/images/pwa-public.png'} alt={settings.site_name} className="block h-full w-auto rounded-md object-contain" />
                   </span>
                 </span>
                 <span className="flex flex-col text-sm font-extrabold leading-tight tracking-tight text-slate-900">
-                  <span>{settings.site_short_name.replace(/\s+CILEGON$/i, '')}</span>
-                  <span className="text-blue-600">CILEGON</span>
+                  <span>{settings.site_name}</span>
                 </span>
               </div>
-              <p className="mt-3 max-w-xl text-sm font-semibold leading-6 text-slate-700">Menjadi ruang bertemunya komika, penikmat komedi, dan insan kreatif untuk berbagi tawa, mengembangkan potensi, serta membangun ekosistem stand up comedy di Cilegon.</p>
+              <p className="mt-3 max-w-xl text-sm font-semibold leading-6 text-slate-700">Menjadi ruang berkumpulnya komika, penikmat komedi, dan insan kreatif untuk berbagi tawa, mengasah kemampuan, serta saling mendukung dalam berkarya. Bersama-sama membangun ekosistem stand-up comedy yang aktif, inklusif, dan terus berkembang di Serang.</p>
               <div className="mt-4 flex flex-wrap items-center gap-2">
                 {settings.instagram_url && (
                   <a href={settings.instagram_url} target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-slate-600 transition hover:bg-blue-600 hover:text-white">

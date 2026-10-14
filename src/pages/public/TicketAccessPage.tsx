@@ -302,7 +302,7 @@ export function TicketAccessPage({ router }: { router: Router }) {
           <img src={LOGO_URL} alt="" className="h-10 w-10 shrink-0 rounded-xl border border-white/40 bg-white p-1 object-contain shadow-sm" />
           <div className="mr-auto min-w-0 pl-3 leading-tight">
             <p className="truncate text-sm font-black tracking-wide sm:text-base">STANDUPINDO</p>
-            <p className="text-xs font-extrabold tracking-[0.12em] text-amber-200 sm:text-sm">CILEGON</p>
+            <p className="text-xs font-extrabold tracking-[0.12em] text-amber-200 sm:text-sm">SERANG</p>
           </div>
           <button type="button" onClick={() => void logout()} aria-label="Keluar dari Tiket Saya" title="Keluar" className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-red-200/70 bg-white text-red-600 shadow-sm transition hover:bg-red-50 hover:text-red-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300 focus-visible:ring-offset-2 focus-visible:ring-offset-blue-700">
             <LogOut className="h-5 w-5" />
@@ -316,15 +316,15 @@ export function TicketAccessPage({ router }: { router: Router }) {
           <div aria-hidden="true" className="pointer-events-none absolute -bottom-[18%] -right-[14%] h-[45%] w-[62%] -skew-x-[38deg] bg-gradient-to-tl from-blue-600/40 via-blue-500/15 to-transparent" />
           <div aria-hidden="true" className="pointer-events-none absolute -bottom-[23%] -right-[20%] h-[34%] w-[68%] -skew-x-[38deg] border-t border-blue-400/15 bg-blue-500/10" />
           <div className="relative z-10 flex w-full flex-col items-center">
-            <span className="ticket-access-logo mb-6 h-[4.5rem] w-[4.5rem] rounded-xl shadow-[0_0_28px_rgba(96,165,250,0.4)] sm:mb-7">
-              <img src={LOGO_URL} alt="Standupindo Cilegon" className="relative z-0 h-full w-full rounded-xl bg-white p-1 object-contain shadow-lg" />
+            <span className="ticket-access-logo mb-6 h-[4.5rem] w-[4.5rem] rounded-xl shadow-[0_0_28px_rgba(255,104,104,0.4)] sm:mb-7">
+              <img src={LOGO_URL} alt="Standupindo Serang" className="relative z-0 h-full w-full rounded-xl bg-white p-1 object-contain shadow-lg" />
             </span>
             <section className="relative w-full max-w-[580px] overflow-hidden rounded-[22px] bg-gradient-to-br from-white via-[#f8fbff] to-[#edf5ff] px-6 py-7 shadow-[0_24px_60px_rgba(0,10,28,0.35)] sm:rounded-[24px] sm:px-11 sm:py-11">
               <div aria-hidden="true" className="pointer-events-none absolute -left-1 top-0 h-[68px] w-[68px] bg-gradient-to-br from-blue-500 to-blue-400 [clip-path:polygon(0_0,100%_0,0_100%)]" />
               <div aria-hidden="true" className="pointer-events-none absolute -bottom-1 -right-1 h-[68px] w-[68px] bg-gradient-to-tl from-blue-600 to-blue-400 [clip-path:polygon(100%_0,100%_100%,0_100%)]" />
               <form onSubmit={(event) => { event.preventDefault(); void login(); }} className="relative space-y-6 sm:space-y-7">
                 <div className="text-center">
-                  <h1 className="text-4xl font-black tracking-tight text-[#0b1f44] sm:text-[52px]">Akses <span className="text-blue-600">Tiket</span></h1>
+                  <h1 className="text-4xl font-black tracking-tight text-[#43070c] sm:text-[52px]">Akses <span className="text-blue-600">Tiket</span></h1>
                   <p className="mx-auto mt-3 max-w-sm text-sm leading-6 text-slate-500 sm:text-base">Masukkan nomor WhatsApp dan kode akses tiketmu.</p>
                 </div>
                 <div>
@@ -342,7 +342,7 @@ export function TicketAccessPage({ router }: { router: Router }) {
                   </div>
                 </div>
                 {error && <p role="alert" className="rounded-xl border border-red-200 bg-red-50 px-3.5 py-3 text-sm font-semibold leading-5 text-red-700">{error}</p>}
-                <button type="submit" disabled={loading} className="group inline-flex min-h-[60px] w-full items-center justify-center gap-4 rounded-2xl bg-gradient-to-r from-blue-600 to-blue-500 px-5 py-4 text-base font-extrabold text-white shadow-[0_12px_24px_rgba(37,99,235,0.25)] transition hover:from-blue-700 hover:to-blue-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 disabled:cursor-wait disabled:opacity-60 sm:text-lg">
+                <button type="submit" disabled={loading} className="group inline-flex min-h-[60px] w-full items-center justify-center gap-4 rounded-2xl bg-gradient-to-r from-blue-600 to-blue-500 px-5 py-4 text-base font-extrabold text-white shadow-[0_12px_24px_rgba(215,25,32,0.25)] transition hover:from-blue-700 hover:to-blue-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 disabled:cursor-wait disabled:opacity-60 sm:text-lg">
                   {loading ? 'Memeriksa tiket...' : <>Lihat Tiket <ArrowRight className="h-6 w-6 transition-transform group-hover:translate-x-1" /></>}
                 </button>
               </form>

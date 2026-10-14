@@ -801,7 +801,7 @@ export function TicketAdminTicketsPage() {
               <span className="mt-1 block text-[11px] font-medium text-slate-500">{freePassQuantityLimit > 0 ? `Maksimal ${freePassQuantityLimit} tiket per penerbitan.` : 'Kuota kategori tiket sudah habis.'}</span>
             </label>
             <label className="block text-xs font-bold text-slate-700 sm:col-span-2">Sumber / Alasan Free Pass
-              <textarea required maxLength={300} rows={2} value={freePassForm.reason} onChange={(event) => setFreePassForm((current) => ({ ...current, reason: event.target.value }))} className="input-field mt-1 resize-y" placeholder="Contoh: Media partner — Cilegon Update" />
+              <textarea required maxLength={300} rows={2} value={freePassForm.reason} onChange={(event) => setFreePassForm((current) => ({ ...current, reason: event.target.value }))} className="input-field mt-1 resize-y" placeholder="Contoh: Media partner — Serang Update" />
               <span className="mt-1 block text-right text-[11px] font-medium text-slate-500">{freePassForm.reason.length}/300</span>
             </label>
           </div>

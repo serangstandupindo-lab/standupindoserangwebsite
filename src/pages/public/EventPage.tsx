@@ -88,7 +88,7 @@ export function EventPage({ router }: { router: Router }) {
 
   return (
     <div className="animate-fade-in">
-      <PageHeader router={router} title="Event" subtitle="Malam penuh tawa bersama komika terbaik Cilegon." />
+      <PageHeader router={router} title="Event" subtitle="Malam penuh tawa bersama komika terbaik Serang." />
 
       <div className="container-app py-6 space-y-8 sm:py-8 sm:space-y-10">
         <section data-scroll-reveal className="scroll-reveal">
@@ -123,7 +123,7 @@ export function EventPage({ router }: { router: Router }) {
               <div className="flex items-center gap-3">
                 <span className="h-8 w-1 rounded-full bg-blue-700" />
                 <h2 className="text-2xl font-black tracking-tight text-white sm:text-3xl">Event Selesai</h2>
-                <span aria-label={`${completed.length} event selesai`} className="inline-flex h-8 min-w-8 items-center justify-center rounded-full border border-blue-400 bg-blue-600 px-2 text-sm font-black text-white shadow-[0_4px_12px_rgba(37,99,235,0.35)]">{completed.length}</span>
+                <span aria-label={`${completed.length} event selesai`} className="inline-flex h-8 min-w-8 items-center justify-center rounded-full border border-blue-400 bg-blue-600 px-2 text-sm font-black text-white shadow-[0_4px_12px_rgba(215,25,32,0.35)]">{completed.length}</span>
               </div>
               <p className="pl-4 text-sm text-slate-300">Kenangan dari panggung yang pernah kita ramaikan.</p>
             </div>

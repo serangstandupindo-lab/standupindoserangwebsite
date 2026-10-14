@@ -90,7 +90,7 @@ export function EvaluatorEvaluationPage({ router, openMicId }: { router: Router;
         .filter((row) => row.komika_id !== ownProfile?.id)
         .filter((row) => row.id !== user.id)
         .filter((row) => Boolean(row.komika_id))
-        .filter((row) => row.community?.toLowerCase().includes('standupindo cilegon'));
+        .filter((row) => row.community?.toLowerCase().includes('standupindo serang'));
       setPerformers(safeList);
       const { data: evaluationRows } = await supabase.from('evaluations').select('performer_registration_id, status').eq('open_mic_id', openMicId).eq('evaluator_user_id', user.id).in('performer_registration_id', safeList.map((row) => row.id));
       const nextStatuses = Object.fromEntries(((evaluationRows ?? []) as Array<{ performer_registration_id: string; status: Evaluation['status'] }>).map((row) => [row.performer_registration_id, row.status]));
@@ -307,7 +307,7 @@ export function EvaluatorEvaluationPage({ router, openMicId }: { router: Router;
             <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-6 text-center shadow-sm sm:rounded-[28px] sm:p-8">
               <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100 text-slate-400"><UserRound className="h-6 w-6" /></div>
               <p className="mt-3 text-sm font-bold text-slate-700">Belum ada performer yang bisa dievaluasi</p>
-              <p className="mx-auto mt-1 max-w-sm text-xs leading-5 text-slate-500">Hanya anggota Standupindo Cilegon yang sudah ditandai tampil yang dapat dievaluasi.</p>
+              <p className="mx-auto mt-1 max-w-sm text-xs leading-5 text-slate-500">Hanya anggota Standupindo Serang yang sudah ditandai tampil yang dapat dievaluasi.</p>
             </div>
           )}
         </div>

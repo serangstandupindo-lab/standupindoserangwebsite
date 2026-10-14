@@ -95,8 +95,8 @@ function PartnerMarqueeStrip({ partners, category }: { partners: Partner[]; cate
 export function PartnershipPage({ router, settings }: { router: Router; settings: SiteSettings }) {
   const [logoLightbox, setLogoLightbox] = useState(false);
   const [partnersByCategory, setPartnersByCategory] = useState<Record<'sponsor' | 'support' | 'media_partner', Partner[]>>({ sponsor: [], support: [], media_partner: [] });
-  const message = 'Halo Admin Standupindo Cilegon, saya ingin mengajukan kerja sama.';
-  const logoSrc = settings.logo_url ?? '/assets/images/Logo%20Standupindo%20Cilegon%20Biru.png';
+  const message = 'Halo Admin Standupindo Serang, saya ingin mengajukan kerja sama.';
+  const logoSrc = settings.logo_url ?? '/assets/images/pwa-public.png';
 
   useEffect(() => {
     (async () => {
@@ -124,7 +124,7 @@ export function PartnershipPage({ router, settings }: { router: Router; settings
           <div data-scroll-reveal className="scroll-reveal overflow-hidden rounded-[30px] border border-slate-200 bg-[radial-gradient(circle_at_top,_rgba(251,191,36,0.14),_transparent_35%),linear-gradient(180deg,_#ffffff_0%,_#f8fbff_100%)] p-4 shadow-[0_18px_45px_rgba(15,23,42,0.06)] sm:p-6">
             <div className="rounded-[24px] border border-slate-200 bg-white/90 p-4 shadow-[0_10px_25px_rgba(15,23,42,0.04)] sm:p-5">
               <div className="flex items-center gap-4">
-                <button onClick={() => setLogoLightbox(true)} aria-label="Lihat logo Standupindo Cilegon" className="group relative block shrink-0">
+                <button onClick={() => setLogoLightbox(true)} aria-label="Lihat logo Standupindo Serang" className="group relative block shrink-0">
                   <div className="absolute -inset-1 rounded-[24px] bg-gradient-to-br from-blue-200/80 to-yellow-100/80 blur-sm opacity-80" />
                   <div className="relative flex h-20 w-20 items-center justify-center overflow-hidden rounded-[22px] border border-blue-100 bg-white shadow-[0_12px_28px_rgba(29,94,219,0.1)] transition-transform duration-200 group-hover:scale-[1.02]">
                     <img src={logoSrc} alt={`Logo ${settings.site_name}`} className="h-12 w-12 object-contain sm:h-14 sm:w-14" />

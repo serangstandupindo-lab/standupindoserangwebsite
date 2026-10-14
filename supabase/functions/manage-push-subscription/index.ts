@@ -171,7 +171,7 @@ serve(async (request) => {
           app_identity: appIdentity,
           target_subscription_id: subscription.id,
           title: 'Test Web Push',
-          body: 'Notifikasi Web Push Standupindo Cilegon berhasil diterima.',
+          body: 'Notifikasi Web Push Standupindo Serang berhasil diterima.',
           url: appIdentity === 'admin' ? '/admin' : appIdentity === 'member' ? '/member' : '/',
         }),
       });

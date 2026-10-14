@@ -34,9 +34,9 @@ async function maintenanceAction<T>(body: Record<string, unknown>) {
 }
 
 function templateMessage(type: ActivityType, guest: AudienceGuest, target: EventItem) {
-  const eventLink = `https://standupindocilegon.id/event/${target.slug}`;
+  const eventLink = new URL(`/event/${target.slug}`, window.location.origin).toString();
   if (type === 'thanks') return `Halo ${guest.full_name}, terima kasih sudah hadir di ${target.title}!\n\nSampai bertemu di acara berikutnya.\n${eventLink}`;
-  if (type === 'upcoming_event') return `Halo ${guest.full_name}, ada Event mendatang dari Standupindo Cilegon!\n\n${target.title}\n${formatDate(target.date)} · ${target.time}\n${target.venue}\n${target.location}\n${eventLink}`;
+  if (type === 'upcoming_event') return `Halo ${guest.full_name}, ada Event mendatang dari Standupindo Serang!\n\n${target.title}\n${formatDate(target.date)} · ${target.time}\n${target.venue}\n${target.location}\n${eventLink}`;
   return `Halo ${guest.full_name}, kami ingin mengajak kamu hadir di ${target.title}!\n\n${formatDate(target.date)} · ${target.time}\n${target.venue}\n${eventLink}`;
 }
 

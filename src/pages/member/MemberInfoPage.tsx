@@ -53,7 +53,7 @@ export function MemberInfoPage({ router, kind }: { router: Router; kind: 'roles'
             <h3 className="text-sm font-extrabold text-slate-900">PERTANYAAN UMUM</h3>
             {items.map(([question, answer]) => <details key={question} className="group rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"><summary className="cursor-pointer list-none pr-6 text-sm font-bold text-slate-900 marker:hidden">{question}</summary><p className="mt-3 border-t border-slate-100 pt-3 text-sm leading-6 text-slate-600">{answer}</p></details>)}
           </section>
-          <a href={waLink(settings.whatsapp_admin, 'Halo Admin Standupindo Cilegon, saya membutuhkan bantuan terkait Member Area.')} target="_blank" rel="noopener noreferrer" className="btn-primary w-full"><ExternalLink className="h-4 w-4" /> Hubungi Admin via WhatsApp</a>
+          <a href={waLink(settings.whatsapp_admin, 'Halo Admin Standupindo Serang, saya membutuhkan bantuan terkait Member Area.')} target="_blank" rel="noopener noreferrer" className="btn-primary w-full"><ExternalLink className="h-4 w-4" /> Hubungi Admin via WhatsApp</a>
         </> : <div className="space-y-2">{roles.map((role) => <div key={role} className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3.5 shadow-sm"><span className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-50 text-blue-700"><UserRound className="h-4 w-4" /></span><span className="flex-1 text-sm font-bold capitalize text-slate-900">{role === 'evaluator' ? 'Evaluator' : role}</span><span className="rounded-full bg-emerald-50 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-emerald-700">Aktif</span></div>)}</div>}
       </div></div>
     </div>

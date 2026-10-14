@@ -105,7 +105,7 @@ function freePassConfirmationEmailHtml(order: {
   const email = paymentConfirmationEmailHtml({ ...order, total_price: 0 }, event, accessCode, ticketPageUrl, true);
   const safeEventTitle = event.title.replace(/[\r\n]+/g, ' ').trim();
   email.subject = `FREE PASS ${safeEventTitle} - TIKET KAMU SUDAH SIAP`;
-  email.text = `Halo ${order.full_name},\n\nKamu mendapatkan tiket Free Pass untuk ${event.title}.\n\nDetail Tiket:\nEvent: ${event.title}\nKategori: ${order.ticket_category}\nJumlah tiket: ${order.quantity}\n\nAkses Tiket:\nNomor WhatsApp: ${order.whatsapp}\nKode Akses: ${accessCode}\n\nGunakan Nomor WhatsApp dan Kode Akses tersebut untuk melihat tiket melalui website.\nBuka Tiket Saya: ${ticketPageUrl}\n\nSTANDUPINDO CILEGON`;
+  email.text = `Halo ${order.full_name},\n\nKamu mendapatkan tiket Free Pass untuk ${event.title}.\n\nDetail Tiket:\nEvent: ${event.title}\nKategori: ${order.ticket_category}\nJumlah tiket: ${order.quantity}\n\nAkses Tiket:\nNomor WhatsApp: ${order.whatsapp}\nKode Akses: ${accessCode}\n\nGunakan Nomor WhatsApp dan Kode Akses tersebut untuk melihat tiket melalui website.\nBuka Tiket Saya: ${ticketPageUrl}\n\nSTANDUPINDO SERANG`;
   return email;
 }
 
@@ -139,7 +139,7 @@ function paymentConfirmationEmailHtml(order: {
   const whatsapp = escapeHtml(order.whatsapp);
   const code = escapeHtml(accessCode);
   const ticketUrl = escapeHtml(ticketPageUrl);
-  const logoUrl = escapeHtml(new URL('/assets/images/Logo%20Standupindo%20Cilegon%20Biru.png', ticketPageUrl).toString());
+  const logoUrl = escapeHtml(new URL('/assets/images/pwa-public.png', ticketPageUrl).toString());
   const total = `Rp ${order.total_price.toLocaleString('id-ID')}`;
   const parsedDate = event.date ? Date.parse(`${event.date}T00:00:00Z`) : Number.NaN;
   const eventDate = Number.isNaN(parsedDate)
@@ -152,7 +152,7 @@ function paymentConfirmationEmailHtml(order: {
   const detailRow = (label: string, value: string, last = false, emphasize = false) => `
     <tr>
       <td style="padding:${last ? '13px 0 5px' : '9px 0'};color:#64748b;${last ? '' : 'border-bottom:1px solid #edf1f6;'}width:42%">${label}</td>
-      <td style="padding:${last ? '13px 0 5px' : '9px 0'};color:${emphasize ? '#102a56' : '#172033'};font-weight:700;${last ? 'font-size:18px;line-height:24px;' : 'border-bottom:1px solid #edf1f6;'}">${value}</td>
+      <td style="padding:${last ? '13px 0 5px' : '9px 0'};color:${emphasize ? '#43070c' : '#172033'};font-weight:700;${last ? 'font-size:18px;line-height:24px;' : 'border-bottom:1px solid #edf1f6;'}">${value}</td>
     </tr>`;
   const eventRows = [
     eventDate ? detailRow('Tanggal', escapeHtml(eventDate)) : '',
@@ -178,7 +178,7 @@ function paymentConfirmationEmailHtml(order: {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="x-apple-disable-message-reformatting">
-  <title>${isFreePass ? 'Free Pass' : 'Pembayaran Berhasil'} - Standupindo Cilegon</title>
+  <title>${isFreePass ? 'Free Pass' : 'Pembayaran Berhasil'} - Standupindo Serang</title>
 </head>
 <body style="margin:0;padding:0;background-color:#f1f5f9;font-family:Arial,Helvetica,sans-serif;color:#172033">
   <div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent">${escapeHtml(preheader)}</div>
@@ -187,21 +187,21 @@ function paymentConfirmationEmailHtml(order: {
       <table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" style="width:100%;max-width:600px;background-color:#fff;border-radius:18px;overflow:hidden">
         <tr><td style="padding:24px 28px;background-color:#fff;border-bottom:1px solid #e7edf5">
           <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0"><tr>
-            <td valign="middle" style="width:58px"><img src="${logoUrl}" width="52" height="52" alt="Standupindo Cilegon" style="display:block;width:52px;height:52px;object-fit:contain;border:0"></td>
-            <td valign="middle" style="padding-left:12px"><div style="font-size:17px;line-height:22px;font-weight:800;color:#102a56">STANDUPINDO</div><div style="font-size:11px;line-height:17px;letter-spacing:1.4px;color:#64748b">CILEGON · OFFICIAL TICKETING</div></td>
+            <td valign="middle" style="width:58px"><img src="${logoUrl}" width="52" height="52" alt="Standupindo Serang" style="display:block;width:52px;height:52px;object-fit:contain;border:0"></td>
+            <td valign="middle" style="padding-left:12px"><div style="font-size:17px;line-height:22px;font-weight:800;color:#43070c">STANDUPINDO</div><div style="font-size:11px;line-height:17px;letter-spacing:1.4px;color:#D71920">SERANG · OFFICIAL TICKETING</div></td>
             <td align="right" valign="middle"><span style="display:inline-block;padding:8px 10px;border-radius:20px;background-color:${isFreePass ? '#fff7df' : '#e8f8ef'};color:${isFreePass ? '#9a6700' : '#16834a'};font-size:10px;line-height:12px;font-weight:800;letter-spacing:.5px">${statusLabel}</span></td>
           </tr></table>
         </td></tr>
         <tr><td align="center" style="padding:34px 28px 28px">
           <div style="width:54px;height:54px;line-height:54px;border-radius:50%;background-color:#e7f8ee;color:#169653;font-size:30px;font-weight:700;text-align:center;margin:0 auto 18px">✓</div>
-          <h1 style="margin:0 0 12px;font-size:27px;line-height:34px;color:#102a56">${heading}</h1>
+          <h1 style="margin:0 0 12px;font-size:27px;line-height:34px;color:#43070c">${heading}</h1>
           <p style="margin:0;max-width:440px;font-size:15px;line-height:24px;color:#526176">${intro}</p>
         </td></tr>
         <tr><td style="padding:0 28px 24px">
           <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="border:1px solid #e2eaf4;border-radius:14px;overflow:hidden">
             <tr><td style="padding:18px 20px;background-color:#f8fbff;border-bottom:1px solid #e2eaf4">
               <div style="font-size:11px;line-height:16px;font-weight:800;letter-spacing:1.2px;color:#64748b;margin-bottom:5px">DETAIL TIKET</div>
-              <div style="font-size:19px;line-height:26px;font-weight:800;color:#102a56">${escapedEventTitle}</div>
+              <div style="font-size:19px;line-height:26px;font-weight:800;color:#43070c">${escapedEventTitle}</div>
               <div style="margin-top:10px"><span style="display:inline-block;padding:6px 10px;border-radius:20px;background-color:${isFreePass ? '#fff7df' : '#e8f8ef'};color:${isFreePass ? '#9a6700' : '#16834a'};font-size:10px;line-height:12px;font-weight:800;letter-spacing:.5px">${detailStatus}</span></div>
             </td></tr>
             <tr><td style="padding:8px 20px 14px"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="font-size:13px;line-height:19px">
@@ -210,12 +210,12 @@ function paymentConfirmationEmailHtml(order: {
           </table>
         </td></tr>
         <tr><td style="padding:0 28px 24px">
-          <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color:#102a56;border-radius:14px"><tr><td style="padding:20px">
+          <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color:#43070c;border-radius:14px"><tr><td style="padding:20px">
             <div style="font-size:16px;line-height:22px;color:#fff;font-weight:800;margin-bottom:6px">Akses Tiket</div>
             <div style="font-size:13px;line-height:20px;color:#dbe7f8;margin-bottom:16px">Gunakan informasi berikut untuk membuka tiket digital kamu di website.</div>
             <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0"><tr>
               <td style="padding:12px;background-color:#1b3a6b;border-radius:9px 0 0 9px;width:50%"><div style="font-size:11px;line-height:16px;color:#b8c9e3;margin-bottom:4px">Nomor WhatsApp</div><div style="font-size:15px;line-height:21px;color:#fff;font-weight:800;word-break:break-word">${whatsapp}</div></td>
-              <td style="padding:12px;background-color:#1b3a6b;border-radius:0 9px 9px 0;width:50%;border-left:1px solid #102a56"><div style="font-size:11px;line-height:16px;color:#b8c9e3;margin-bottom:4px">Kode Akses</div><div style="font-size:15px;line-height:21px;color:#fff;font-weight:800;letter-spacing:1px;word-break:break-word">${code}</div></td>
+              <td style="padding:12px;background-color:#1b3a6b;border-radius:0 9px 9px 0;width:50%;border-left:1px solid #43070c"><div style="font-size:11px;line-height:16px;color:#b8c9e3;margin-bottom:4px">Kode Akses</div><div style="font-size:15px;line-height:21px;color:#fff;font-weight:800;letter-spacing:1px;word-break:break-word">${code}</div></td>
             </tr></table>
           </td></tr></table>
         </td></tr>
@@ -226,16 +226,16 @@ function paymentConfirmationEmailHtml(order: {
         </td></tr>
         <tr><td style="padding:20px 28px;background-color:#f8fbff;border-top:1px solid #e7edf5"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0"><tr>
           <td valign="middle" style="width:44px"><img src="${logoUrl}" width="38" height="38" alt="Standupindo" style="display:block;width:38px;height:38px;object-fit:contain;border:0"></td>
-          <td valign="middle" style="padding-left:10px"><div style="font-size:12px;line-height:18px;color:#64748b">Official Ticketing</div><div style="font-size:13px;line-height:19px;color:#102a56;font-weight:800">Standupindo Cilegon</div></td>
+          <td valign="middle" style="padding-left:10px"><div style="font-size:12px;line-height:18px;color:#64748b">Official Ticketing</div><div style="font-size:13px;line-height:19px;color:#43070c;font-weight:800">Standupindo Serang</div></td>
           <td align="right" valign="middle" style="font-size:10px;line-height:16px;color:#94a3b8">Email otomatis<br>Mohon tidak membalas email ini.</td>
         </tr></table></td></tr>
       </table>
-      <div style="max-width:560px;padding:16px 8px 0;font-size:10px;line-height:16px;color:#94a3b8;text-align:center">© Standupindo Cilegon · Official Ticketing</div>
+      <div style="max-width:560px;padding:16px 8px 0;font-size:10px;line-height:16px;color:#94a3b8;text-align:center">© Standupindo Serang · Official Ticketing</div>
     </td></tr>
   </table>
 </body>
 </html>`,
-    text: `Halo ${order.full_name}, pembayaran tiket ${eventTitle} sudah dikonfirmasi dan berstatus lunas.\n\nDetail Tiket:\nEvent: ${eventTitle}\nNama pemesan: ${order.full_name}\n${eventDate ? `Tanggal: ${eventDate}\n` : ''}${eventTime ? `Waktu: ${eventTime}\n` : ''}${eventLocation ? `Lokasi: ${eventLocation}\n` : ''}Kategori: ${order.ticket_category}\nJumlah tiket: ${order.quantity}\nTotal pembayaran: ${total}\n\nAkses Tiket:\nNomor WhatsApp: ${order.whatsapp}\nKode Akses: ${accessCode}\n\nBuka Tiket Saya: ${ticketPageUrl}\n\nSTANDUPINDO CILEGON`,
+    text: `Halo ${order.full_name}, pembayaran tiket ${eventTitle} sudah dikonfirmasi dan berstatus lunas.\n\nDetail Tiket:\nEvent: ${eventTitle}\nNama pemesan: ${order.full_name}\n${eventDate ? `Tanggal: ${eventDate}\n` : ''}${eventTime ? `Waktu: ${eventTime}\n` : ''}${eventLocation ? `Lokasi: ${eventLocation}\n` : ''}Kategori: ${order.ticket_category}\nJumlah tiket: ${order.quantity}\nTotal pembayaran: ${total}\n\nAkses Tiket:\nNomor WhatsApp: ${order.whatsapp}\nKode Akses: ${accessCode}\n\nBuka Tiket Saya: ${ticketPageUrl}\n\nSTANDUPINDO SERANG`,
   };
 }
 async function resendErrorMessage(response: Response, secrets: string[]) {
@@ -781,9 +781,10 @@ serve(async (request) => {
           console.error('ticket payment confirmation email could not be reserved');
         } else if (recipientEmail) {
           const resendApiKey = Deno.env.get('RESEND_API_KEY');
-          if (!resendApiKey) {
+          const resendFrom = Deno.env.get('RESEND_FROM')?.trim();
+          if (!resendApiKey || !resendFrom) {
             const { error: logUpdateError } = await serviceClient.from('ticket_email_logs')
-              .update({ status: 'failed', error_message: 'Konfigurasi Resend belum tersedia.' })
+              .update({ status: 'failed', error_message: !resendApiKey ? 'Konfigurasi Resend belum tersedia.' : 'Alamat pengirim Resend belum tersedia.' })
               .eq('id', emailLog.id);
             if (logUpdateError) console.error('ticket payment email failure could not be saved');
           } else if (!event?.title) {
@@ -798,7 +799,7 @@ serve(async (request) => {
               ticket_category: order.ticket_category,
               quantity: order.quantity,
               total_price: order.total_price,
-            }, event, accessCode, 'https://standupindocilegon.id/tiket');
+            }, event, accessCode, ticketPageUrl);
             try {
               const resendResponse = await fetch('https://api.resend.com/emails', {
                 method: 'POST',
@@ -806,10 +807,10 @@ serve(async (request) => {
                   Authorization: `Bearer ${resendApiKey}`,
                   'Content-Type': 'application/json',
                   'Idempotency-Key': `ticket-payment-confirmation/${order.id}`,
-                  'User-Agent': 'standupindo-cilegon-ticketing/1.0',
+                  'User-Agent': 'standupindo-serang-ticketing/1.0',
                 },
                 body: JSON.stringify({
-                  from: 'Standupindo Cilegon <noreply@standupindocilegon.id>',
+                  from: resendFrom,
                   to: [recipientEmail],
                   subject: emailContent.subject,
                   html: emailContent.html,
@@ -1071,12 +1072,13 @@ serve(async (request) => {
         console.error('free pass email log could not be reserved');
       } else if (recipientEmail) {
         const resendApiKey = Deno.env.get('RESEND_API_KEY');
+        const resendFrom = Deno.env.get('RESEND_FROM')?.trim();
         const emailContent = freePassConfirmationEmailHtml(order, event, accessCode, ticketPageUrl);
-        if (!resendApiKey) {
+        if (!resendApiKey || !resendFrom) {
           emailStatus = 'failed';
           emailMessage = 'Tiket terbit, tetapi konfigurasi layanan email belum tersedia.';
           const { error: logUpdateError } = await serviceClient.from('ticket_email_logs')
-            .update({ status: 'failed', error_message: 'Konfigurasi Resend belum tersedia.' }).eq('id', emailLog.id);
+            .update({ status: 'failed', error_message: !resendApiKey ? 'Konfigurasi Resend belum tersedia.' : 'Alamat pengirim Resend belum tersedia.' }).eq('id', emailLog.id);
           if (logUpdateError) console.error('free pass email failure could not be saved');
         } else {
           try {
@@ -1086,10 +1088,10 @@ serve(async (request) => {
                 Authorization: `Bearer ${resendApiKey}`,
                 'Content-Type': 'application/json',
                 'Idempotency-Key': `free-pass-access/${String(issued.issued_order_id)}`,
-                'User-Agent': 'standupindo-cilegon-ticketing/1.0',
+                'User-Agent': 'standupindo-serang-ticketing/1.0',
               },
               body: JSON.stringify({
-                from: 'Standupindo Cilegon <noreply@standupindocilegon.id>',
+                from: resendFrom,
                 to: [recipientEmail],
                 subject: emailContent.subject,
                 html: emailContent.html,
