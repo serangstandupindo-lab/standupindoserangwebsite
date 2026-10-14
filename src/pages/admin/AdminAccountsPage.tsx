@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Eye, EyeOff, KeyRound, Power, ShieldPlus, Trash2 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { Modal } from '@/components/ui/Modal';
+import { WorkspacePageHeader } from '@/components/admin/WorkspacePageHeader';
 
 type AdminRole = 'open_mic_admin' | 'event_admin' | 'admin_ticket' | 'admin_qr';
 interface AdminAccount { id: string; email?: string; created_at: string; active: boolean; role: AdminRole; scopes?: Array<{ event_id: string | null; scope_all: boolean }>; }
@@ -95,10 +96,7 @@ export function AdminAccountsPage({ onNotice, creatorRole = 'admin' }: { onNotic
 
   return (
     <div className="space-y-5">
-      <div>
-        <h1 className="text-2xl font-extrabold text-slate-900">Akun Admin</h1>
-        <p className="mt-1 text-sm text-slate-500">{creatorRole === 'event_admin' ? 'Buat dan kelola akun Admin Tiket serta Admin QR Scanner.' : 'Buat dan kelola akun admin operasional.'}</p>
-      </div>
+      <WorkspacePageHeader eyebrow="Menu Lainnya" title="Akun Admin" subtitle={creatorRole === 'event_admin' ? 'Buat dan kelola akun Admin Tiket serta Admin QR Scanner.' : 'Buat dan kelola akun admin operasional.'} />
       <form onSubmit={createAccount} className="max-w-2xl rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
         <div className="mb-5 flex items-center gap-3 rounded-2xl bg-blue-50 p-4 text-blue-800 ring-1 ring-blue-100"><KeyRound className="h-5 w-5 shrink-0" /><p className="text-sm font-medium">Akun memakai login Admin yang sama di <strong>/admin/login</strong>.</p></div>
         <div className="grid gap-4 sm:grid-cols-3">

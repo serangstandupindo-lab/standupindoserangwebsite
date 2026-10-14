@@ -3,6 +3,7 @@ import { Check, ChevronDown, Eye, EyeOff, KeyRound, Power, RefreshCw, Search, Tr
 import type { Komika } from '@/lib/types';
 import { supabase } from '@/lib/supabase';
 import { Modal } from '@/components/ui/Modal';
+import { WorkspacePageHeader } from '@/components/admin/WorkspacePageHeader';
 
 interface MemberAccount {
   id: string;
@@ -115,10 +116,7 @@ export function MemberAccountsPage({ komika, onNotice }: { komika: Komika[]; onN
 
   return (
     <div className="space-y-5">
-      <div>
-        <h1 className="text-2xl font-extrabold text-slate-900">Akun Member</h1>
-        <p className="mt-1 text-sm text-slate-500">Buat akun member dan hubungkan langsung ke profil komika yang sesuai.</p>
-      </div>
+      <WorkspacePageHeader eyebrow="Menu Lainnya" title="Akun Member" subtitle="Buat akun member dan hubungkan langsung ke profil komika yang sesuai." />
 
       <form onSubmit={handleSubmit} className="max-w-2xl rounded-[28px] border border-slate-200 bg-white p-5 shadow-[0_10px_28px_rgba(15,23,42,0.04)] sm:p-6">
         <div className="mb-5 flex items-center gap-3 rounded-2xl bg-blue-50 p-4 text-blue-800 ring-1 ring-blue-100">

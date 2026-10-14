@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Archive, BarChart3, Bell, CalendarDays, Camera, Check, CheckCircle2, ChevronDown, ChevronRight, Clock3, Copy, DoorOpen, Eye, EyeOff, FolderOpen, History, ImagePlus, LogOut, MapPin, MessageCircle, Mic, MoreHorizontal, Pencil, Plus, Power, Printer, RefreshCw, Search, Settings, ShieldPlus, Ticket as TicketIcon, Trash2, UserCheck, UserPlus, Users, X, ArrowLeft, ExternalLink } from 'lucide-react';
+import { Archive, BarChart3, Bell, CalendarDays, Camera, Check, CheckCircle2, ChevronDown, ChevronRight, Clock3, Copy, DoorOpen, Eye, EyeOff, FolderOpen, History, ImagePlus, KeyRound, Link2, LogOut, MapPin, MessageCircle, Mic, MoreHorizontal, Pencil, Plus, Power, Printer, RefreshCw, Search, Settings, ShieldPlus, Ticket as TicketIcon, Trash2, UserCheck, UserPlus, Users, X, ArrowLeft, ExternalLink } from 'lucide-react';
 import type { Router } from '@/lib/router';
 import type { ApplicationStatus, AttendanceStatus, CommunityApplication, EventItem, EventPartnership, EventParticipant, EventTicket, EvaluatorAssignment, Komika, MemberOpenMicHistoryStatus, MemberOpenMicHistorySubmission, OpenMic, OpenMicRegistration, Partner, SiteSettings, TicketOrder, TicketOrderStatus } from '@/lib/types';
 import { supabase } from '@/lib/supabase';
@@ -9,6 +9,7 @@ import { generateTicketOrderWhatsAppUrl } from '@/lib/whatsapp';
 import { Modal } from '@/components/ui/Modal';
 import { StatusBadge } from '@/components/ui/StatusBadge';
 import { ImageUpload } from '@/components/ui/ImageUpload';
+import { ImageLightbox } from '@/components/ui/ImageLightbox';
 import { MultiImageUpload } from '@/components/ui/MultiImageUpload';
 import { SocialIconButton } from '@/components/ui/SocialIconButton';
 import { LOGO_URL } from '@/lib/types';
@@ -30,6 +31,7 @@ import { EventLineupManagementModal } from '@/pages/admin/EventLineupManagementM
 import { SearchableEventSelect } from '@/components/ui/SearchableEventSelect';
 import { AppCredit } from '@/components/AppCredit';
 import { MobileBottomNavPortal } from '@/components/nav/MobileBottomNavPortal';
+import { WorkspacePageHeader } from '@/components/admin/WorkspacePageHeader';
 import { AnnualRecapAdminPage } from '@/pages/admin/AnnualRecapAdminPage';
 import { CcsScheduleAdminPage } from '@/pages/admin/CcsScheduleAdminPage';
 
@@ -188,6 +190,12 @@ function getWorkspaceBottomNav(isAdmin: boolean, isOpenMicAdmin: boolean, isEven
 function isMoreNavigationActive(section: Section, isTicketAdmin: boolean, isQrScanner: boolean) {
   return section === 'more' || section === 'settings'
     || section === 'ccs-schedule'
+    || section === 'annual-recap'
+    || section === 'applications'
+    || section === 'ticket-orders'
+    || section === 'member-accounts'
+    || section === 'admin-accounts'
+    || section === 'evaluator'
     || (isTicketAdmin && (section === 'payment-info' || section === 'ticket-report' || section === 'profile-settings'))
     || (isQrScanner && (section === 'check-in-report' || section === 'profile-settings'));
 }
@@ -1039,7 +1047,7 @@ export function AdminPage({ router, settings }: Props) {
 
         {/* Main Content */}
         <main className="min-w-0 flex-1 p-4 pb-safe-nav md:pb-0 lg:p-8 lg:pb-8" style={{ paddingBottom: 'calc(7.5rem + var(--safe-bottom))' }}>
-          {section !== 'dashboard' && !sectionHasOwnBackButton && <button type="button" onClick={returnToPreviousAdminMenu} className="mb-4 inline-flex items-center gap-1.5 text-sm font-bold text-slate-700 transition hover:text-blue-700">
+          {section !== 'dashboard' && !sectionHasOwnBackButton && <button type="button" onClick={returnToPreviousAdminMenu} className="mb-4 inline-flex min-h-10 items-center gap-2 rounded-xl border border-blue-100 bg-white px-3 text-sm font-bold text-blue-700 shadow-sm transition hover:border-blue-200 hover:bg-blue-50">
             <ArrowLeft className="h-4 w-4" /> Kembali
           </button>}
           {notice && (
@@ -1061,7 +1069,7 @@ export function AdminPage({ router, settings }: Props) {
             : <ScopedEventList events={events} loading={loading} onManageTickets={isTicketAdmin ? setTicketEvent : undefined} />)}
           {section === 'applications' && <ApplicationsView community={communityApplications} onNotice={setNotice} onReload={load} />}
           {section === 'open-mic-history' && <MemberOpenMicHistoryReview rows={memberHistory} komika={komika} onNotice={setNotice} onReload={load} />}
-          {section === 'komika' && <KomikaManagement rows={komika} registrations={registrations} openMics={openMics} attendanceCounts={komikaAttendanceCounts} loading={loading} onReload={load} onAdd={() => { setEditing(null); setModal('komika'); }} onEdit={(row) => { setEditing(row); setModal('komika'); }} onDelete={(id) => deleteRow('komika', id)} />}
+          {section === 'komika' && <KomikaManagement rows={komika} registrations={registrations} openMics={openMics} attendanceCounts={komikaAttendanceCounts} loading={loading} onReload={load} onNotice={setNotice} onAdd={() => { setEditing(null); setModal('komika'); }} onEdit={(row) => { setEditing(row); setModal('komika'); }} onDelete={(id) => deleteRow('komika', id)} />}
           {section === 'member-accounts' && <MemberAccountsPage komika={komika} onNotice={setNotice} />}
           {section === 'admin-accounts' && (isAdmin || isEventAdmin) && <AdminAccountsPage onNotice={setNotice} creatorRole={isAdmin ? 'admin' : 'event_admin'} />}
           {section === 'profile-settings' && !isAdmin && <AdminProfileSettingsPage onNotice={setNotice} onBack={isTicketAdmin ? () => navigateSection('more') : undefined} />}
@@ -1078,7 +1086,7 @@ export function AdminPage({ router, settings }: Props) {
           {section === 'ticket-report' && isTicketAdmin && <TicketSalesReportPage events={events} orders={ticketOrders} onBack={() => navigateSection('more')} />}
           {section === 'check-in-report' && isQrScanner && <TicketCheckInReportPage onBack={() => navigateSection('more')} />}
           {section === 'maintenance' && (isAdmin || isEventAdmin) && <TicketMaintenancePage events={events} />}
-          {section === 'annual-recap' && isAdmin && <AnnualRecapAdminPage onNotice={setNotice} onBack={() => navigateSection('dashboard')} />}
+          {section === 'annual-recap' && isAdmin && <AnnualRecapAdminPage onNotice={setNotice} />}
           {section === 'settings' && <SettingsPanel settings={settings} onSaved={load} onNotice={setNotice} />}
           {section === 'more' && <MorePage onNavigate={navigateSection} onSignOut={async () => { await signOut(); router.navigate('/admin/login'); }} ticketOrderUnreadCount={notificationCounts['ticket-orders']} applicationUnreadCount={notificationCounts.applications} isAdmin={isAdmin} isOpenMicAdmin={isOpenMicAdmin} isEventAdmin={isEventAdmin} isTicketAdmin={isTicketAdmin} isQrScanner={isQrScanner} />}
         </main>
@@ -1155,7 +1163,7 @@ export function AdminPage({ router, settings }: Props) {
 
       {/* Form Modal */}
       <EventDocumentationPhotosModal event={documentationEvent} onClose={() => setDocumentationEvent(null)} onNotice={setNotice} onSaved={async () => { setDocumentationEvent(null); await load(); }} />
-      <AdminFormModal kind={modal} editing={editing} venueHistory={openMics} saving={saving} onClose={() => setModal(null)} onSaving={setSaving} onNotice={setNotice} onSaved={async () => { setModal(null); await load(); setNotice('Perubahan berhasil disimpan.'); }} />
+      <AdminFormModal kind={modal} editing={editing} venueHistory={openMics} saving={saving} onClose={() => setModal(null)} onSaving={setSaving} onNotice={setNotice} onPhotoSaved={load} onSaved={async () => { setModal(null); await load(); setNotice('Perubahan berhasil disimpan.'); }} />
 
     </div>
   );
@@ -1303,7 +1311,7 @@ function ApplicationsView({ community, onNotice, onReload }: { community: Commun
 
   return (
     <div className="space-y-5">
-      <div><h1 className="text-2xl font-extrabold text-slate-900">Gabung Komunitas</h1><p className="mt-1 text-sm text-slate-500">Kelola calon anggota komunitas.</p></div>
+      <WorkspacePageHeader eyebrow="Menu Lainnya" title="Gabung Komunitas" subtitle="Kelola calon anggota komunitas." />
       <div className="grid grid-cols-3 gap-2">{folders.map((item) => <button key={item.key} onClick={() => setFolder(item.key)} className={`rounded-2xl border p-3 text-left transition ${folder === item.key ? 'border-blue-200 bg-blue-50 text-blue-700 shadow-sm' : 'border-slate-200 bg-white text-slate-600 hover:border-blue-100'}`}><span className="block text-xs font-semibold uppercase tracking-wide opacity-70">{item.label}</span><span className="mt-1 block text-2xl font-extrabold">{counts[item.key]}</span></button>)}</div>
       <div className="space-y-3">
         {rows.map((row) => <div key={row.id} className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-200/70"><div className="flex items-start justify-between gap-3"><div className="min-w-0"><p className="truncate font-bold text-slate-900">{row.full_name}</p><p className="mt-1 truncate text-sm text-slate-500">{row.city} · {row.whatsapp}</p><div className="mt-2 flex flex-wrap gap-1.5">{row.interests.map((interest) => <span key={interest} className="chip">{interest}</span>)}</div></div><StatusBadge status={row.status} /></div><div className="mt-4 flex gap-2"><button onClick={() => setViewApplication(row)} className="flex-1 rounded-lg bg-slate-100 py-2.5 text-xs font-semibold text-slate-700">Detail</button><a href={buildCommunityWhatsAppLink(row)} target="_blank" rel="noopener noreferrer" className="flex flex-1 items-center justify-center gap-1 rounded-lg bg-green-50 py-2.5 text-xs font-semibold text-green-700"><MessageCircle className="h-3.5 w-3.5" /> WhatsApp</a></div></div>)}
@@ -1444,10 +1452,6 @@ function OperationalDashboard({ kind, openMics, registrations, events, eventPend
       </div>
     </div>
   );
-}
-
-function WorkspacePageHeader({ title, subtitle, eyebrow = 'Open Mic Workspace', action }: { title: string; subtitle: string; eyebrow?: string; action?: React.ReactNode }) {
-  return <div className="flex items-start justify-between gap-4 rounded-[22px] border border-blue-500 bg-gradient-to-br from-blue-700 via-blue-600 to-sky-500 p-4 text-white shadow-[0_10px_24px_rgba(37,99,235,0.2)] sm:p-5"><div className="min-w-0"><p className="!text-blue-100 text-[10px] font-extrabold uppercase tracking-[0.16em] sm:text-[11px]">{eyebrow}</p><h1 className="!text-white mt-1.5 text-xl font-black tracking-tight sm:text-2xl">{title}</h1><p className="!text-blue-50 mt-1 text-xs font-medium leading-5 sm:text-sm">{subtitle}</p></div>{action}</div>;
 }
 
 function OpenMicRosterView({ mode, openMics, registrations, loading, onReload }: { mode: 'registrants' | 'performers'; openMics: OpenMic[]; registrations: OpenMicRegistration[]; loading: boolean; onReload: () => Promise<void> }) {
@@ -2153,7 +2157,7 @@ function getAdminFieldPlaceholder(key: string): string | undefined {
   const placeholders: Record<string, string> = {
     full_name: 'Contoh: Budi Santoso', stage_name: 'Contoh: Budi Ngakak', whatsapp: 'Contoh: 082212345678', joined_at: 'Contoh: September 2026',
     instagram_url: 'Contoh: @budi.ngakak', tiktok_url: 'Contoh: @budingakak', youtube_url: 'Contoh: https://youtube.com/@budingakak',
-    bio: 'Contoh: Komika dengan materi observasi sehari-hari.', specialties: 'Contoh: Observasi, kehidupan kerja', title: 'Contoh: Comedy Night #02',
+    bio: 'Contoh: Komika dengan materi observasi sehari-hari.', specialties: 'Contoh: Komika, Penulis, MC/Host', title: 'Contoh: Comedy Night #02',
     venue: 'Contoh: Aula Serbaguna Cilegon', location: 'Contoh: Cilegon, Banten', maps_url: 'Contoh: https://maps.google.com/...', capacity: 'Contoh: 10', time: 'Contoh: 19.00',
   };
   return placeholders[key];
@@ -2866,8 +2870,12 @@ function PartnerManagement({ rows, events, partnerships, loading, onAdd, onEdit,
   );
 }
 
-function KomikaManagement({ rows, registrations, openMics, attendanceCounts, loading, onReload, onAdd, onEdit, onDelete }: { rows: Komika[]; registrations: OpenMicRegistration[]; openMics: OpenMic[]; attendanceCounts: Record<string, number>; loading: boolean; onReload: () => Promise<void>; onAdd: () => void; onEdit: (row: Komika) => void; onDelete: (id: string) => void }) {
+function KomikaManagement({ rows, registrations, openMics, attendanceCounts, loading, onReload, onNotice, onAdd, onEdit, onDelete }: { rows: Komika[]; registrations: OpenMicRegistration[]; openMics: OpenMic[]; attendanceCounts: Record<string, number>; loading: boolean; onReload: () => Promise<void>; onNotice: (message: string) => void; onAdd: () => void; onEdit: (row: Komika) => void; onDelete: (id: string) => void }) {
   const [viewKomika, setViewKomika] = useState<Komika | null>(null);
+  const [accountAction, setAccountAction] = useState<{ mode: 'create' | 'manage'; komika: Komika } | null>(null);
+  const [accountEmail, setAccountEmail] = useState('');
+  const [accountPassword, setAccountPassword] = useState('');
+  const [accountActionSaving, setAccountActionSaving] = useState(false);
   const [search, setSearch] = useState('');
   const [folder, setFolder] = useState<'active' | 'archived'>('active');
   const [historySaving, setHistorySaving] = useState(false);
@@ -2879,6 +2887,62 @@ function KomikaManagement({ rows, registrations, openMics, attendanceCounts, loa
   });
   const printRows = [...rows].sort((first, second) => first.stage_name.localeCompare(second.stage_name, 'id', { sensitivity: 'base' }));
   const history = viewKomika ? registrations.filter((registration) => registration.komika_id === viewKomika.id).sort((first, second) => second.created_at.localeCompare(first.created_at)) : [];
+
+  function openAccountAction(mode: 'create' | 'manage', komika: Komika) {
+    setAccountEmail('');
+    setAccountPassword('');
+    setAccountAction({ mode, komika });
+  }
+
+  async function submitAccountAction(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!accountAction) return;
+    const { mode, komika } = accountAction;
+    if (mode !== 'create' && !komika.user_id) {
+      onNotice('Profil Komika belum memiliki akun login.');
+      return;
+    }
+
+    setAccountActionSaving(true);
+    try {
+      const result = mode === 'create'
+        ? await supabase.functions.invoke('admin-create-member', { body: { email: accountEmail.trim(), password: accountPassword, komika_id: komika.id } })
+        : await supabase.functions.invoke('admin-manage-members', { body: { action: 'reset-password', user_id: komika.user_id, password: accountPassword } });
+      if (result.error || result.data?.error) {
+        onNotice(result.error?.message ?? result.data?.error ?? 'Aksi akun login gagal.');
+        return;
+      }
+      setAccountAction(null);
+      setAccountEmail('');
+      setAccountPassword('');
+      await onReload();
+      onNotice(mode === 'create' ? 'Akun login berhasil dibuat dan ditautkan ke Komika.' : 'Password akun login berhasil direset.');
+    } catch (error) {
+      onNotice(error instanceof Error ? error.message : 'Aksi akun login gagal.');
+    } finally {
+      setAccountActionSaving(false);
+    }
+  }
+
+  async function deleteLinkedLogin() {
+    const komika = accountAction?.komika;
+    if (!komika?.user_id || !window.confirm(`Hapus akun login untuk ${komika.stage_name}? Profil Komika tetap tersimpan.`)) return;
+    setAccountActionSaving(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('admin-manage-members', { body: { action: 'delete', user_id: komika.user_id } });
+      if (error || data?.error) {
+        onNotice(error?.message ?? data?.error ?? 'Akun login gagal dihapus.');
+        return;
+      }
+      setAccountAction(null);
+      await onReload();
+      onNotice(`Akun login ${komika.stage_name} dihapus. Profil Komika tetap tersimpan.`);
+    } catch (error) {
+      onNotice(error instanceof Error ? error.message : 'Akun login gagal dihapus.');
+    } finally {
+      setAccountActionSaving(false);
+    }
+  }
 
   async function deleteHistory() {
     if (!deleteHistoryTarget) return;
@@ -2901,10 +2965,7 @@ function KomikaManagement({ rows, registrations, openMics, attendanceCounts, loa
 
   return (
     <div className="space-y-5">
-      <div className="flex items-end justify-between gap-3">
-        <div><h1 className="text-2xl font-extrabold text-slate-900">Komika</h1><p className="mt-1 text-sm text-slate-500">Kelola profil komika yang tampil di website.</p></div>
-        <div className="flex gap-2"><button onClick={() => window.print()} className="btn-secondary"><Printer className="h-4 w-4" /> <span className="hidden sm:inline">Print</span></button><button onClick={onAdd} className="btn-primary"><Plus className="h-4 w-4" /> <span className="hidden sm:inline">Tambah</span></button></div>
-      </div>
+      <WorkspacePageHeader eyebrow="Komika Workspace" title="Komika" subtitle="Kelola profil komika yang tampil di website." action={<div className="flex shrink-0 gap-2"><button type="button" onClick={() => window.print()} aria-label="Print daftar komika" title="Print" className="flex h-10 w-10 items-center justify-center rounded-xl bg-white text-blue-700 shadow-sm transition hover:bg-blue-50 sm:w-auto sm:px-3"><Printer className="h-4 w-4" /><span className="ml-2 hidden text-sm font-bold sm:inline">Print</span></button><button type="button" onClick={onAdd} aria-label="Tambah komika" title="Tambah komika" className="flex h-10 w-10 items-center justify-center rounded-xl bg-white text-blue-700 shadow-sm transition hover:bg-blue-50 sm:w-auto sm:px-3"><Plus className="h-5 w-5" /><span className="ml-2 hidden text-sm font-bold sm:inline">Tambah</span></button></div>} />
 
       <div className="grid grid-cols-2 gap-3">
         <button onClick={() => setFolder('active')} className={`flex items-center gap-3 rounded-2xl border p-3.5 text-left transition ${folder === 'active' ? 'border-blue-200 bg-blue-50 text-blue-700 shadow-sm' : 'border-slate-200 bg-white text-slate-600 hover:border-blue-100'}`}>
@@ -2935,17 +2996,19 @@ function KomikaManagement({ rows, registrations, openMics, attendanceCounts, loa
         <div className="overflow-x-auto">
           <table className="w-full min-w-[640px] text-left text-sm">
             <thead className="bg-slate-50 text-xs uppercase tracking-wider text-slate-500">
-              <tr><th className="px-5 py-4">Nama Lengkap / Stage Name</th><th className="px-5 py-4">Specialties</th><th className="px-5 py-4">Status</th><th className="px-5 py-4 text-right">Actions</th></tr>
+              <tr><th className="px-5 py-4">Nama Lengkap / Stage Name</th><th className="px-5 py-4">Specialties</th><th className="px-5 py-4">Status</th><th className="px-5 py-4">Akun Login</th><th className="px-5 py-4 text-right">Actions</th></tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {loading ? <tr><td colSpan={4} className="px-5 py-10 text-center text-slate-400">Memuat data...</td></tr> : filteredRows.map((k) => (
+              {loading ? <tr><td colSpan={5} className="px-5 py-10 text-center text-slate-400">Memuat data...</td></tr> : filteredRows.map((k) => (
                 <tr key={k.id} onClick={() => setViewKomika(k)} className="cursor-pointer hover:bg-slate-50/70">
                   <td className="px-5 py-4"><div className="flex items-center gap-3">{k.photo ? <img src={k.photo} alt={k.stage_name} className="h-11 w-11 shrink-0 rounded-full object-cover ring-1 ring-slate-200" /> : <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue-700 ring-1 ring-blue-100"><Users className="h-5 w-5" /></div>}<div><p className="font-semibold text-slate-800">{k.full_name}</p><p className="text-xs text-slate-500">{k.stage_name}</p></div></div></td>
                   <td className="px-5 py-4 text-slate-500"><span>{k.specialties.join(', ') || '—'}</span><span className="mt-1 block text-xs font-semibold text-slate-400">{attendanceCounts[k.id] ?? 0}x Tampil</span></td>
                   <td className="px-5 py-4"><StatusBadge status={k.status} /></td>
+                  <td className="px-5 py-4"><span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${k.user_id ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-600'}`}><Link2 className="h-3.5 w-3.5" />{k.user_id ? 'Terhubung' : 'Belum terhubung'}</span></td>
                   <td className="px-5 py-4">
                     <div className="flex justify-end gap-1">
                       {k.whatsapp && <a href={waLink(k.whatsapp)} target="_blank" rel="noopener noreferrer" onClick={(event) => event.stopPropagation()} className="rounded-lg p-2 text-green-600 hover:bg-green-50 hover:text-green-700" title="Hubungi via WhatsApp" aria-label={`Hubungi ${k.stage_name} via WhatsApp`}><MessageCircle className="h-4 w-4" /></a>}
+                      <button type="button" onClick={(event) => { event.stopPropagation(); openAccountAction(k.user_id ? 'manage' : 'create', k); }} className={`rounded-lg p-2 ${k.user_id ? 'text-emerald-700 hover:bg-emerald-50' : 'text-blue-600 hover:bg-blue-50'}`} title={k.user_id ? 'Kelola akun login' : 'Buat akun login'} aria-label={k.user_id ? `Kelola akun login ${k.stage_name}` : `Buat akun login untuk ${k.stage_name}`}>{k.user_id ? <KeyRound className="h-4 w-4" /> : <UserPlus className="h-4 w-4" />}</button>
                       <button onClick={(event) => { event.stopPropagation(); onEdit(k); }} className="rounded-lg p-2 text-slate-500 hover:bg-blue-50 hover:text-blue-700" title="Edit"><Pencil className="h-4 w-4" /></button>
                       <button onClick={(event) => { event.stopPropagation(); onDelete(k.id); }} className="rounded-lg p-2 text-slate-500 hover:bg-red-50 hover:text-red-700" title="Hapus"><Trash2 className="h-4 w-4" /></button>
                     </div>
@@ -2965,28 +3028,47 @@ function KomikaManagement({ rows, registrations, openMics, attendanceCounts, loa
         ) : filteredRows.length === 0 ? (
           <div className="col-span-full"><AdminEmptyState title={search ? 'Komika tidak ditemukan.' : folder === 'archived' ? 'Belum ada Komika Archived.' : 'Belum ada Komika Aktif.'} /></div>
         ) : filteredRows.map((k) => (
-          <div key={k.id} onClick={() => setViewKomika(k)} onKeyDown={(event) => { if (event.key === 'Enter' || event.key === ' ') setViewKomika(k); }} role="button" tabIndex={0} className="cursor-pointer overflow-hidden rounded-2xl bg-white shadow-soft ring-1 ring-slate-200/70 transition hover:-translate-y-0.5 hover:shadow-md">
+          <div key={k.id} onClick={() => setViewKomika(k)} onKeyDown={(event) => { if (event.key === 'Enter' || event.key === ' ') setViewKomika(k); }} role="button" tabIndex={0} aria-label={`Lihat detail ${k.stage_name}`} className="flex h-full cursor-pointer flex-col overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-[0_4px_16px_rgba(15,23,42,0.06)] transition hover:-translate-y-0.5 hover:shadow-md">
             {k.photo ? (
-              <img src={k.photo} alt={k.stage_name} className="h-32 w-full object-cover" />
+              <img src={k.photo} alt={k.stage_name} className="aspect-[4/3] w-full bg-slate-100 object-cover" />
             ) : (
-              <div className="flex h-32 w-full items-center justify-center bg-slate-100"><Users className="h-8 w-8 text-slate-300" /></div>
+              <div className="flex aspect-[4/3] w-full items-center justify-center bg-slate-100"><Users className="h-8 w-8 text-slate-400" /></div>
             )}
-            <div className="p-3">
-              <p className="font-bold text-slate-900">{k.full_name}</p>
-              <p className="text-xs font-medium text-blue-700">{k.stage_name}</p>
-              <p className="text-xs text-slate-500">{k.specialties.join(', ') || '—'}</p>
-              <p className="mt-1 text-[11px] font-semibold text-slate-400">{attendanceCounts[k.id] ?? 0}x Tampil</p>
-              {k.joined_at && <p className="mt-1 text-[11px] text-slate-400">Bergabung {k.joined_at}</p>}
-              <div className="mt-2"><StatusBadge status={k.status} /></div>
-              <div className="mt-3 flex gap-2">
-                {k.whatsapp && <a href={waLink(k.whatsapp)} target="_blank" rel="noopener noreferrer" onClick={(event) => event.stopPropagation()} className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-green-50 text-green-700 transition hover:bg-green-100" title="Hubungi via WhatsApp" aria-label={`Hubungi ${k.stage_name} via WhatsApp`}><MessageCircle className="h-4 w-4" /></a>}
-                <button onClick={(event) => { event.stopPropagation(); onEdit(k); }} className="flex-1 rounded-lg bg-blue-50 py-2 text-xs font-semibold text-blue-700 transition hover:bg-blue-100">Edit</button>
-                <button onClick={(event) => { event.stopPropagation(); onDelete(k.id); }} className="flex-1 rounded-lg bg-red-50 py-2 text-xs font-semibold text-red-700 transition hover:bg-red-100">Hapus</button>
+            <div className="flex flex-1 flex-col gap-2.5 p-3">
+              <div className="min-w-0">
+                <p className="line-clamp-2 break-words text-sm font-bold leading-snug text-slate-900">{k.full_name}</p>
+                <p className="mt-0.5 line-clamp-2 break-words text-xs font-medium text-blue-700">{k.stage_name}</p>
+                <span className={`mt-1 inline-flex items-center gap-1 text-[10px] font-semibold ${k.user_id ? 'text-emerald-700' : 'text-slate-500'}`}><Link2 className="h-3 w-3" />{k.user_id ? 'Akun terhubung' : 'Belum terhubung'}</span>
+              </div>
+              <div className="mt-auto border-t border-slate-100 pt-2.5">
+                <span className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-[10px] font-semibold ${k.status === 'active' ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-600'}`}><span className={`h-1.5 w-1.5 rounded-full ${k.status === 'active' ? 'bg-emerald-500' : 'bg-slate-400'}`} />{k.status === 'active' ? 'Aktif' : 'Nonaktif'}</span>
+                <div className="mt-2 grid grid-cols-4 gap-1.5">
+                  {k.whatsapp ? <a href={waLink(k.whatsapp)} target="_blank" rel="noopener noreferrer" onClick={(event) => event.stopPropagation()} className="flex h-8 min-w-0 items-center justify-center rounded-lg bg-emerald-700 text-white transition hover:bg-emerald-800" title="Hubungi via WhatsApp" aria-label={`Hubungi ${k.stage_name} via WhatsApp`}><MessageCircle className="h-4 w-4" /></a> : <button type="button" disabled className="flex h-8 min-w-0 items-center justify-center rounded-lg bg-slate-200 text-slate-500" title="Nomor WhatsApp belum diisi" aria-label="Nomor WhatsApp belum diisi"><MessageCircle className="h-4 w-4" /></button>}
+                  <button type="button" onClick={(event) => { event.stopPropagation(); openAccountAction(k.user_id ? 'manage' : 'create', k); }} className="flex h-8 min-w-0 items-center justify-center rounded-lg bg-slate-700 text-white transition hover:bg-slate-800" title={k.user_id ? 'Kelola akun login' : 'Buat akun login'} aria-label={k.user_id ? `Kelola akun login ${k.stage_name}` : `Buat akun login untuk ${k.stage_name}`}>{k.user_id ? <KeyRound className="h-4 w-4" /> : <UserPlus className="h-4 w-4" />}</button>
+                  <button type="button" onClick={(event) => { event.stopPropagation(); onEdit(k); }} className="flex h-8 min-w-0 items-center justify-center rounded-lg bg-blue-700 text-white transition hover:bg-blue-800" title="Edit Komika" aria-label={`Edit ${k.stage_name}`}><Pencil className="h-4 w-4" /></button>
+                  <button type="button" onClick={(event) => { event.stopPropagation(); onDelete(k.id); }} className="flex h-8 min-w-0 items-center justify-center rounded-lg bg-rose-700 text-white transition hover:bg-rose-800" title="Hapus Komika" aria-label={`Hapus ${k.stage_name}`}><Trash2 className="h-4 w-4" /></button>
+                </div>
               </div>
             </div>
           </div>
         ))}
       </div>
+
+      <Modal open={accountAction?.mode === 'create'} onClose={() => { if (!accountActionSaving) setAccountAction(null); }} title="Buat Akun Login" size="sm">
+        {accountAction?.mode === 'create' && <form onSubmit={submitAccountAction} className="space-y-4">
+          <div className="rounded-xl bg-blue-50 p-3 text-sm text-blue-900"><p className="font-bold">{accountAction.komika.stage_name}</p><p className="mt-0.5 text-xs text-blue-700">Akun akan langsung ditautkan ke profil Komika ini.</p></div>
+          <div><label className="label-field" htmlFor="komika-login-email">Email login</label><input id="komika-login-email" type="email" required autoComplete="off" value={accountEmail} onChange={(event) => setAccountEmail(event.target.value)} className="input-field" placeholder="komika@email.com" /></div>
+          <div><label className="label-field" htmlFor="komika-login-password">Password awal</label><input id="komika-login-password" type="password" required minLength={6} autoComplete="new-password" value={accountPassword} onChange={(event) => setAccountPassword(event.target.value)} className="input-field" placeholder="Minimal 6 karakter" /></div>
+          <div className="flex gap-2 border-t border-slate-100 pt-3"><button type="button" onClick={() => setAccountAction(null)} disabled={accountActionSaving} className="btn-secondary flex-1">Batal</button><button type="submit" disabled={accountActionSaving} className="btn-primary flex-1"><UserPlus className="h-4 w-4" />{accountActionSaving ? 'Membuat...' : 'Buat Akun'}</button></div>
+        </form>}
+      </Modal>
+      <Modal open={accountAction?.mode === 'manage'} onClose={() => { if (!accountActionSaving) setAccountAction(null); }} title="Kelola Akun Login" size="sm">
+        {accountAction?.mode === 'manage' && <div className="space-y-4">
+          <div className="rounded-xl bg-emerald-50 p-3 text-sm text-emerald-900"><p className="font-bold">{accountAction.komika.stage_name}</p><p className="mt-0.5 flex items-center gap-1.5 text-xs text-emerald-700"><Link2 className="h-3.5 w-3.5" />Akun login terhubung</p></div>
+          <form onSubmit={submitAccountAction} className="space-y-3"><div><label className="label-field" htmlFor="komika-reset-password">Password baru</label><input id="komika-reset-password" type="password" required minLength={6} autoComplete="new-password" value={accountPassword} onChange={(event) => setAccountPassword(event.target.value)} className="input-field" placeholder="Minimal 6 karakter" /></div><button type="submit" disabled={accountActionSaving || accountPassword.length < 6} className="btn-primary w-full justify-center"><KeyRound className="h-4 w-4" />{accountActionSaving ? 'Menyimpan...' : 'Reset Password'}</button></form>
+          <div className="flex gap-2 border-t border-slate-100 pt-3"><button type="button" onClick={() => setAccountAction(null)} disabled={accountActionSaving} className="btn-secondary flex-1">Tutup</button><button type="button" onClick={() => void deleteLinkedLogin()} disabled={accountActionSaving} className="inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-xl bg-rose-50 px-4 py-2.5 text-sm font-bold text-rose-700 transition hover:bg-rose-100 disabled:opacity-60"><Trash2 className="h-4 w-4" />Hapus Akun</button></div>
+        </div>}
+      </Modal>
 
       <Modal open={Boolean(viewKomika)} onClose={() => setViewKomika(null)} title="Detail Komika" size="lg">
         {viewKomika && (
@@ -3384,10 +3466,7 @@ function EvaluatorAssignmentView({ openMics, komika, assignments, currentUserId,
 
   return (
     <div className="space-y-5">
-      <div>
-        <h1 className="text-2xl font-extrabold text-slate-900">Evaluator Assignment</h1>
-        <p className="mt-1 text-sm text-slate-500">Tetapkan evaluator ke Open Mic berdasarkan profil komika yang sudah terhubung ke akun.</p>
-      </div>
+      <WorkspacePageHeader eyebrow="Menu Lainnya" title="Evaluator" subtitle="Tetapkan evaluator ke Open Mic berdasarkan profil komika yang sudah terhubung ke akun." />
 
       <form onSubmit={handleSubmit} className="rounded-[28px] border border-slate-200 bg-white p-4 shadow-[0_10px_28px_rgba(15,23,42,0.04)] sm:p-5">
         <div className="grid gap-4 md:grid-cols-3">
@@ -3546,7 +3625,7 @@ function MorePage({ onNavigate, onSignOut, ticketOrderUnreadCount, applicationUn
   ];
   return (
     <div className="space-y-5">
-      <WorkspacePageHeader title={isTicketAdmin || isOpenMicAdmin || isAdmin ? 'Lainnya' : 'More'} subtitle="Menu lainnya." eyebrow={isTicketAdmin ? 'Admin Tiket' : undefined} />
+      <WorkspacePageHeader title={isTicketAdmin || isOpenMicAdmin || isAdmin ? 'Lainnya' : 'More'} subtitle="Menu lainnya." eyebrow={isAdmin ? 'Admin Penuh' : isTicketAdmin ? 'Admin Tiket' : isQrScanner ? 'Admin QR Scanner' : isOpenMicAdmin ? 'Open Mic Workspace' : isEventAdmin ? 'Event Workspace' : 'Workspace'} />
       <div className="overflow-hidden rounded-2xl bg-white shadow-soft ring-1 ring-slate-200/70">
         <div className="divide-y divide-slate-100">
           {items.filter((item) => !item.section || canAccessSection(item.section, isAdmin, isOpenMicAdmin, isEventAdmin, isTicketAdmin, isQrScanner)).map((item) => {
@@ -3622,15 +3701,17 @@ function EventDocumentationPhotosModal({ event, onClose, onNotice, onSaved }: { 
   );
 }
 
-function AdminFormModal({ kind, editing, venueHistory, saving, onClose, onSaving, onNotice, onSaved }: { kind: 'open-mic' | 'event' | 'komika' | 'partner' | null; editing: OpenMic | EventItem | Komika | Partner | null; venueHistory: OpenMic[]; saving: boolean; onClose: () => void; onSaving: (v: boolean) => void; onNotice: (message: string) => void; onSaved: () => void }) {
+function AdminFormModal({ kind, editing, venueHistory, saving, onClose, onSaving, onNotice, onPhotoSaved, onSaved }: { kind: 'open-mic' | 'event' | 'komika' | 'partner' | null; editing: OpenMic | EventItem | Komika | Partner | null; venueHistory: OpenMic[]; saving: boolean; onClose: () => void; onSaving: (v: boolean) => void; onNotice: (message: string) => void; onPhotoSaved: () => Promise<void>; onSaved: () => void }) {
   const [form, setForm] = useState<Record<string, string>>({});
   const [uploading, setUploading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [previewKomikaPhoto, setPreviewKomikaPhoto] = useState(false);
   const [venueSuggestionsOpen, setVenueSuggestionsOpen] = useState(false);
   const [partnerCategoryOpen, setPartnerCategoryOpen] = useState(false);
   useEffect(() => {
     if (!kind) return;
     setErrorMessage('');
+    setPreviewKomikaPhoto(false);
     setPartnerCategoryOpen(false);
     const row = editing as Record<string, unknown> | null;
     if (row) {
@@ -3639,7 +3720,7 @@ function AdminFormModal({ kind, editing, venueHistory, saving, onClose, onSaving
         setForm((current) => ({ ...current, documentation_photos: row.documentation_photos.join('\n') }));
       }
     } else if (kind === 'komika') {
-      setForm({ full_name: '', whatsapp: '', stage_name: '', photo: '', bio: '', instagram_url: '', tiktok_url: '', youtube_url: '', specialties: '', joined_at: '', status: 'active', published: 'true' });
+      setForm({ full_name: '', whatsapp: '', stage_name: '', photo: '', photo_card: '', bio: '', instagram_url: '', tiktok_url: '', youtube_url: '', specialties: '', joined_at: '', status: 'active', published: 'true' });
     } else if (kind === 'open-mic') {
       setForm({ title: '', poster: '', date: '', time: '19.30', venue: '', location: 'Cilegon', maps_url: '', description: 'Open Mic Standupindo Cilegon adalah ruang terbuka bagi siapa saja yang ingin mencoba, belajar, dan mengembangkan kemampuan di dunia stand up comedy.\n\nDi sini, para komika dapat menguji materi baru, mengasah kemampuan menulis dan membawakan jokes, sekaligus mendapatkan pengalaman tampil langsung di depan penonton.\n\nBukan cuma untuk komika, Open Mic juga menjadi ruang bagi masyarakat Cilegon untuk menikmati hiburan, mengenal dunia stand up comedy, dan menjadi bagian dari perkembangan komunitas komedi di Kota Cilegon.', capacity: '20', status: 'upcoming', registration_status: 'open', published: 'true' });
     } else if (kind === 'partner') {
@@ -3652,6 +3733,16 @@ function AdminFormModal({ kind, editing, venueHistory, saving, onClose, onSaving
   if (!kind) return null;
   const isEdit = Boolean(editing);
   const set = (key: string, value: string) => setForm((f) => ({ ...f, [key]: value }));
+  async function saveKomikaPhoto(photoUrl: string | null, cardPhotoUrl: string | null) {
+    if (kind !== 'komika') return;
+    if (editing?.id) {
+      const { error } = await supabase.from('komika').update({ photo: photoUrl, photo_card: cardPhotoUrl, updated_at: new Date().toISOString() }).eq('id', editing.id);
+      if (error) throw error;
+      await onPhotoSaved();
+      onNotice(photoUrl ? 'Foto Komika berhasil diperbarui.' : 'Foto Komika berhasil dihapus.');
+    }
+    setForm((current) => ({ ...current, photo: photoUrl ?? '', photo_card: cardPhotoUrl ?? '' }));
+  }
   const venueQuery = (form.venue ?? '').trim().toLocaleLowerCase();
   const venueHistoryEntries = kind === 'open-mic'
     ? Array.from(venueHistory.reduce((entries, row) => {
@@ -3677,7 +3768,7 @@ function AdminFormModal({ kind, editing, venueHistory, saving, onClose, onSaving
     const base = { ...form };
     try {
       if (kind === 'komika') {
-        const payload = { ...base, instagram_url: instagramProfileUrl(base.instagram_url), tiktok_url: tiktokProfileUrl(base.tiktok_url), slug: isEdit ? base.slug : slugify(base.stage_name), specialties: (base.specialties || '').split(',').map((s) => s.trim()).filter(Boolean), featured_order: base.featured_order ? Number(base.featured_order) : null, published: base.published !== 'false' };
+        const payload = { ...base, photo: base.photo?.trim() || null, photo_card: base.photo_card?.trim() || null, instagram_url: instagramProfileUrl(base.instagram_url), tiktok_url: tiktokProfileUrl(base.tiktok_url), slug: isEdit ? base.slug : slugify(base.stage_name), specialties: (base.specialties || '').split(',').map((s) => s.trim()).filter(Boolean), featured_order: base.featured_order ? Number(base.featured_order) : null, published: base.published !== 'false' };
         const result = editing ? await supabase.from('komika').update(payload).eq('id', editing.id) : await supabase.from('komika').insert(payload);
         if (result.error) throw result.error;
       } else if (kind === 'partner') {
@@ -3732,7 +3823,7 @@ function AdminFormModal({ kind, editing, venueHistory, saving, onClose, onSaving
   const requiredFields = ['title', 'full_name', 'stage_name', 'date', 'time', 'venue', 'name'];
 
   const fields: [string, string, 'text' | 'textarea' | 'select' | 'date' | 'number'][] = kind === 'komika'
-    ? [['full_name', 'Nama Lengkap', 'text'], ['stage_name', 'Stage Name', 'text'], ['whatsapp', 'Nomor WhatsApp (privat, tidak tampil publik)', 'text'], ['joined_at', 'Bergabung (bulan dan tahun)', 'text'], ['bio', 'Bio', 'textarea'], ['instagram_url', 'Instagram (@username)', 'text'], ['tiktok_url', 'TikTok (@username)', 'text'], ['youtube_url', 'YouTube URL', 'text'], ['specialties', 'Specialties (pisahkan koma)', 'textarea'], ['featured_order', 'Urutan tampil (opsional)', 'number'], ['status', 'Status', 'select']]
+    ? [['full_name', 'Nama Lengkap', 'text'], ['stage_name', 'Nama Panggung', 'text'], ['whatsapp', 'Nomor WhatsApp', 'text'], ['joined_at', 'Bergabung', 'text'], ['bio', 'Tentang', 'textarea'], ['instagram_url', 'Instagram', 'text'], ['tiktok_url', 'TikTok', 'text'], ['youtube_url', 'YouTube URL', 'text'], ['specialties', 'Spesialisasi', 'textarea'], ['featured_order', 'Urutan Tampil', 'number'], ['status', 'Status', 'select']]
     : kind === 'open-mic'
     ? [['title', 'Title', 'text'], ['date', 'Date', 'date'], ['time', 'Time', 'text'], ['venue', 'Venue', 'text'], ['location', 'Location', 'text'], ['maps_url', 'Maps URL', 'text'], ['description', 'Description', 'textarea'], ['capacity', 'Capacity', 'number'], ['status', 'Status', 'select'], ['registration_status', 'Registration', 'select']]
     : kind === 'partner'
@@ -3751,7 +3842,7 @@ function AdminFormModal({ kind, editing, venueHistory, saving, onClose, onSaving
         <div className="lg:grid lg:grid-cols-[minmax(240px,0.85fr)_minmax(0,1.5fr)] lg:items-start lg:gap-6">
           <div className="lg:sticky lg:top-0">
             {kind === 'komika' && (
-              <ImageUpload label="Foto Komika" folder="komika" value={form.photo ?? ''} onChange={(url) => set('photo', url)} aspect="portrait" processingProfile="avatar" onUploadingChange={setUploading} />
+              <ImageUpload label="Foto Komika" folder="komika" value={form.photo ?? ''} onChange={(url) => set('photo', url)} aspect="portrait" objectFit="contain" processingProfile="avatar" cropToFrame onUploadingChange={setUploading} onSaveImmediately={saveKomikaPhoto} onPreview={() => setPreviewKomikaPhoto(true)} />
             )}
             {kind === 'open-mic' && (
               <ImageUpload label="Poster / Foto Open Mic" folder="open-mic" value={form.poster ?? ''} onChange={(url) => set('poster', url)} aspect="landscape" processingProfile="poster" onUploadingChange={setUploading} skipCrop />
@@ -3766,7 +3857,7 @@ function AdminFormModal({ kind, editing, venueHistory, saving, onClose, onSaving
           <div className="mt-4 space-y-4 lg:mt-0 lg:grid lg:grid-cols-2 lg:gap-4 lg:space-y-0">
             {fields.map(([key, label, type]) => (
               <div key={key} className={type === 'textarea' ? 'lg:col-span-2' : ''}>
-                <label className="label-field" htmlFor={`admin-${key}`}>{label}</label>
+                <label className="label-field" htmlFor={`admin-${key}`}>{label}{kind === 'komika' && key === 'featured_order' && <> <span className="font-medium text-slate-400">(opsional)</span></>}</label>
                 {kind === 'partner' && key === 'category' ? (
                   <div className="relative">
                     <button
@@ -3888,6 +3979,7 @@ function AdminFormModal({ kind, editing, venueHistory, saving, onClose, onSaving
           </div>
         </div>
       </form>
+      {kind === 'komika' && form.photo && <ImageLightbox src={form.photo} alt={`Foto ${form.stage_name || form.full_name || 'Komika'}`} open={previewKomikaPhoto} onClose={() => setPreviewKomikaPhoto(false)} closeAriaLabel="Tutup foto Komika" />}
     </Modal>
   );
 }
@@ -4453,10 +4545,7 @@ function SettingsPanel({ settings, onSaved, onNotice }: { settings: SiteSettings
 
   return (
     <div className="space-y-5">
-      <div>
-        <h1 className="text-2xl font-extrabold text-slate-900">Settings</h1>
-        <p className="mt-1 text-sm text-slate-500">Kelola identitas, kontak, dan tampilan publik komunitas.</p>
-      </div>
+      <WorkspacePageHeader eyebrow="Menu Lainnya" title="Settings" subtitle="Kelola identitas, kontak, dan tampilan publik komunitas." />
       <form onSubmit={handleSubmit} className="max-w-3xl space-y-4">
         <section className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-200/70 sm:p-5">
           <div className="mb-4"><h2 className="text-base font-bold text-slate-900">Identitas Komunitas</h2><p className="mt-1 text-xs leading-5 text-slate-500">Nama dan logo yang tampil di header, footer, dan halaman publik.</p></div>

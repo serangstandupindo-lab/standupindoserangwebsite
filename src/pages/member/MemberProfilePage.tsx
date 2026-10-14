@@ -132,7 +132,7 @@ export function MemberProfilePage({ router }: { router: Router }) {
     }
   }
 
-  async function handleSaveProfilePhoto(photoUrl: string, cardPhotoUrl: string | null) {
+  async function handleSaveProfilePhoto(photoUrl: string | null, cardPhotoUrl: string | null) {
     if (!profile) throw new Error('Profil komika tidak ditemukan.');
     const { error } = await supabase
       .from('komika')
@@ -144,9 +144,9 @@ export function MemberProfilePage({ router }: { router: Router }) {
       .eq('id', profile.id);
     if (error) throw error;
 
-    setForm((current) => ({ ...current, photo: photoUrl }));
+    setForm((current) => ({ ...current, photo: photoUrl ?? '' }));
     setProfile((current) => current ? { ...current, photo: photoUrl, photo_card: cardPhotoUrl } : current);
-    setProfileNotice('Foto profil berhasil disimpan.');
+    setProfileNotice(photoUrl ? 'Foto profil berhasil disimpan.' : 'Foto profil berhasil dihapus.');
   }
 
   function cancelEditing() {

@@ -106,10 +106,19 @@ serve(async (request) => {
 
   const email = body.email?.trim().toLowerCase();
   const password = body.password ?? '';
+  const komikaId = body.komika_id?.trim() || null;
   if (!email || !email.includes('@')) return response({ error: 'Email member tidak valid.' }, 400);
   if (password.length < 6) return response({ error: 'Password minimal 6 karakter.' }, 400);
 
   const adminClient = createClient(supabaseUrl, serviceRoleKey);
+  if (komikaId) {
+    const { data: profile, error: profileError } = await adminClient.from('komika')
+      .select('id, user_id').eq('id', komikaId).maybeSingle();
+    if (profileError) return response({ error: 'Profil Komika gagal diperiksa.' }, 500);
+    if (!profile) return response({ error: 'Profil Komika tidak ditemukan.' }, 404);
+    if (profile.user_id) return response({ error: 'Profil Komika sudah terhubung ke akun login.' }, 409);
+  }
+
   const { data: created, error: createError } = await adminClient.auth.admin.createUser({
     email,
     password,
@@ -118,18 +127,21 @@ serve(async (request) => {
   });
   if (createError || !created.user) return response({ error: createError?.message ?? 'Akun gagal dibuat.' }, 400);
 
-  if (body.komika_id) {
-    const { error: linkError } = await adminClient
+  if (komikaId) {
+    const { data: linkedProfile, error: linkError } = await adminClient
       .from('komika')
       .update({ user_id: created.user.id })
-      .eq('id', body.komika_id);
+      .eq('id', komikaId)
+      .is('user_id', null)
+      .select('id')
+      .maybeSingle();
 
-    if (linkError) {
+    if (linkError || !linkedProfile) {
       await adminClient.auth.admin.deleteUser(created.user.id);
-      return response({ error: `Akun dibatalkan karena profil komika gagal dihubungkan: ${linkError.message}` }, 400);
+      return response({ error: linkError ? `Akun dibatalkan karena profil komika gagal dihubungkan: ${linkError.message}` : 'Akun dibatalkan karena profil Komika sudah terhubung ke akun lain.' }, linkError ? 400 : 409);
     }
 
-    await linkUnassignedHistory(adminClient, body.komika_id);
+    await linkUnassignedHistory(adminClient, komikaId);
   }
 
   return response({ user_id: created.user.id, email: created.user.email });

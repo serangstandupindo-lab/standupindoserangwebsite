@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { CalendarDays, Check, ChevronDown, Clock3, Pencil, Plus, Trash2 } from 'lucide-react';
 import { ImageUpload } from '@/components/ui/ImageUpload';
 import { Modal } from '@/components/ui/Modal';
+import { WorkspacePageHeader } from '@/components/admin/WorkspacePageHeader';
 import { useAuth } from '@/lib/auth-context';
 import { supabase } from '@/lib/supabase';
 import { formatCcsDate, formatCcsTime, getCcsOccurrenceDate, getCcsRecurrenceLabel, getNextCcsWednesdayDate } from '@/lib/ccs';
@@ -260,11 +261,7 @@ export function CcsScheduleAdminPage() {
 
   return (
     <div className="space-y-5">
-      <header className="rounded-2xl border border-blue-100 bg-gradient-to-br from-white to-blue-50 p-5 sm:p-6">
-        <p className="text-[10px] font-extrabold uppercase tracking-[0.16em] text-blue-700">Manajemen Kegiatan</p>
-        <h1 className="mt-1 text-2xl font-black text-slate-950">Jadwal Cilegon Comedy Sharing (CCS)</h1>
-        <p className="mt-1 text-sm text-slate-600">Atur jadwal Cilegon Comedy Sharing yang ditampilkan di halaman Home.</p>
-      </header>
+      <WorkspacePageHeader eyebrow="Menu Lainnya" title="Jadwal Cilegon Comedy Sharing (CCS)" subtitle="Atur jadwal Cilegon Comedy Sharing yang ditampilkan di halaman Home." />
 
       {message && <p role="status" className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-800">{message}</p>}
       {errorMessage && <p role="alert" className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-800">{errorMessage}</p>}

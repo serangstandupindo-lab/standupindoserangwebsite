@@ -10,8 +10,8 @@ const corsHeaders = {
 
 type RequestBody = { year?: unknown };
 type EventRow = { id: string; date: string };
-type PaidOrder = { id: string; event_id: string };
-type ActiveTicket = { event_id: string; ticket_order_id: string; status: string };
+type PaidOrder = { id: string; event_id: string; quantity: number };
+type TicketInstance = { event_id: string; ticket_order_id: string; status: string };
 
 function json(body: Record<string, unknown>, status = 200) {
   return new Response(JSON.stringify(body), {
@@ -88,7 +88,7 @@ serve(async (request) => {
     for (const ids of chunkValues(eventIds)) {
       const { data, error } = await fetchAllPages((from, to) => serviceClient
         .from('ticket_orders')
-        .select('id, event_id')
+        .select('id, event_id, quantity')
         .eq('status', 'Lunas')
         .in('event_id', ids)
         .order('id', { ascending: true })
@@ -99,21 +99,29 @@ serve(async (request) => {
 
     const orderEventById = new Map(paidOrders.map((order) => [order.id, order.event_id]));
     const ticketsSoldByEvent = new Map<string, number>();
+    const ordersWithoutInstances = new Set(paidOrders.map((order) => order.id));
     for (const orderIds of chunkValues(paidOrders.map((order) => order.id))) {
       const { data, error } = await fetchAllPages((from, to) => serviceClient
         .from('ticket_instances')
         .select('event_id, ticket_order_id, status')
         .in('ticket_order_id', orderIds)
-        .eq('status', 'active')
         .order('id', { ascending: true })
         .range(from, to));
       if (error) return json({ error: 'Data tiket terjual gagal dimuat.' }, 500);
 
-      ((data ?? []) as ActiveTicket[]).forEach((ticket) => {
+      ((data ?? []) as TicketInstance[]).forEach((ticket) => {
         if (orderEventById.get(ticket.ticket_order_id) !== ticket.event_id) return;
-        ticketsSoldByEvent.set(ticket.event_id, (ticketsSoldByEvent.get(ticket.event_id) ?? 0) + 1);
+        ordersWithoutInstances.delete(ticket.ticket_order_id);
+        if (ticket.status === 'active') {
+          ticketsSoldByEvent.set(ticket.event_id, (ticketsSoldByEvent.get(ticket.event_id) ?? 0) + 1);
+        }
       });
     }
+
+    paidOrders.forEach((order) => {
+      if (!ordersWithoutInstances.has(order.id)) return;
+      ticketsSoldByEvent.set(order.event_id, (ticketsSoldByEvent.get(order.event_id) ?? 0) + order.quantity);
+    });
 
     const eventStats = events.map((event) => ({ eventId: event.id, ticketsSold: ticketsSoldByEvent.get(event.id) ?? 0 }));
     return json({

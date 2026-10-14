@@ -1522,12 +1522,72 @@
   animation: recapSlideEnter 0.72s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
-.recap-slide-enter > section > *:nth-child(2) { animation-delay: 120ms; }
-.recap-slide-enter > section > *:nth-child(3) { animation-delay: 240ms; }
-.recap-slide-enter > section > *:nth-child(4) { animation-delay: 360ms; }
-.recap-slide-enter > section > *:nth-child(5) { animation-delay: 480ms; }
-.recap-slide-enter > section > *:nth-child(6) { animation-delay: 600ms; }
-.recap-slide-enter > section > *:nth-child(7) { animation-delay: 720ms; }
+.recap-slide-enter > section > *:nth-child(2) { animation-delay: 800ms; }
+.recap-slide-enter > section > *:nth-child(3) { animation-delay: 1600ms; }
+.recap-slide-enter > section > *:nth-child(4) { animation-delay: 2400ms; }
+.recap-slide-enter > section > *:nth-child(5) { animation-delay: 3200ms; }
+.recap-slide-enter > section > *:nth-child(6) { animation-delay: 4000ms; }
+.recap-slide-enter > section > *:nth-child(7) { animation-delay: 4800ms; }
+
+.recap-sequence > :not([aria-hidden="true"]) {
+  animation: recapSlideEnter 0.72s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: var(--recap-entry-delay, 0ms);
+}
+
+.recap-sequence > :nth-child(2) { animation-delay: calc(var(--recap-entry-delay, 0ms) + 1000ms); }
+.recap-sequence > :nth-child(3) { animation-delay: calc(var(--recap-entry-delay, 0ms) + 2000ms); }
+.recap-sequence > :nth-child(4) { animation-delay: calc(var(--recap-entry-delay, 0ms) + 3000ms); }
+.recap-sequence > :nth-child(5) { animation-delay: calc(var(--recap-entry-delay, 0ms) + 4000ms); }
+.recap-sequence > :nth-child(6) { animation-delay: calc(var(--recap-entry-delay, 0ms) + 5000ms); }
+.recap-sequence > .recap-sequence-reverse { animation: none; }
+
+.recap-slide-enter > section > .recap-sequence { animation: none; }
+.recap-slide-enter > section > .recap-sequence.recap-sequence-surface {
+  animation: recapSlideEnter 0.72s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: var(--recap-entry-delay, 0ms);
+}
+.recap-sequence-late { --recap-entry-delay: 1600ms; }
+.recap-sequence-later { --recap-entry-delay: 3200ms; }
+.recap-sequence-last { --recap-entry-delay: 3700ms; }
+.recap-sequence-reverse { --recap-reverse-gap: 1500ms; }
+.recap-sequence-reverse > :nth-child(1) {
+  --recap-card-delay: calc(var(--recap-entry-delay, 0ms) + var(--recap-reverse-gap) + var(--recap-reverse-gap));
+  animation-delay: var(--recap-card-delay);
+}
+.recap-sequence-reverse > :nth-child(2) {
+  --recap-card-delay: calc(var(--recap-entry-delay, 0ms) + var(--recap-reverse-gap));
+  animation-delay: var(--recap-card-delay);
+}
+.recap-sequence-reverse > :nth-child(3) {
+  --recap-card-delay: var(--recap-entry-delay, 0ms);
+  animation-delay: var(--recap-card-delay);
+}
+.recap-sequence.recap-sequence-reverse > article .recap-performer-photo {
+  transform-origin: center;
+  animation: recapPerformerImageEnter 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: var(--recap-card-delay, 0ms);
+}
+
+.recap-month-row {
+  animation: recapSlideEnter 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.recap-month-bar {
+  transform-origin: left;
+  animation: recapMonthGrow 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.recap-community-row {
+  animation: recapSlideEnter 0.72s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.recap-community-icon {
+  animation: recapSlideEnter 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.recap-community-copy {
+  animation: recapSlideEnter 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
 
 .recap-device main {
   scrollbar-width: none;
@@ -1542,9 +1602,26 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
+@keyframes recapPerformerImageEnter {
+  from { opacity: 0; transform: scale(1.025); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes recapMonthGrow {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .recap-slide-enter,
-  .recap-slide-enter > section > *:not([aria-hidden="true"]) { animation: none; }
+  .recap-slide-enter > section > *:not([aria-hidden="true"]),
+  .recap-sequence > :not([aria-hidden="true"]),
+  .recap-sequence.recap-sequence-reverse > article .recap-performer-photo,
+  .recap-month-row,
+  .recap-month-bar,
+  .recap-community-row,
+  .recap-community-icon,
+  .recap-community-copy { animation: none; }
 }
 
 .event-documentation-hero-motion {

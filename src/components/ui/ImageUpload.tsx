@@ -19,7 +19,7 @@ interface ImageUploadProps {
   skipCrop?: boolean;
   processingProfile?: ImageProcessingProfile;
   cropToFrame?: boolean;
-  onSaveImmediately?: (photoUrl: string, cardPhotoUrl: string | null) => Promise<void>;
+  onSaveImmediately?: (photoUrl: string | null, cardPhotoUrl: string | null) => Promise<void>;
 }
 
 export function ImageUpload({ label, folder, value, onChange, aspect = 'auto', objectFit = 'cover', required = false, onUploadingChange, compact = false, avatar = false, onPreview, skipCrop = false, processingProfile, cropToFrame = false, onSaveImmediately }: ImageUploadProps) {
@@ -82,10 +82,24 @@ export function ImageUpload({ label, folder, value, onChange, aspect = 'auto', o
     if (file) void uploadFile(file);
   }
 
-  function handleRemove() {
+  async function handleRemove() {
     if (value && !window.confirm('Hapus foto ini?')) return;
-    onChange('');
     setError('');
+    if (!onSaveImmediately) {
+      onChange('');
+      return;
+    }
+    setUploading(true);
+    onUploadingChange?.(true);
+    try {
+      await onSaveImmediately(null, null);
+    } catch (removeFailure) {
+      const detail = removeFailure instanceof Error ? ` ${removeFailure.message}` : '';
+      setError(`Foto gagal dihapus.${detail}`);
+    } finally {
+      setUploading(false);
+      onUploadingChange?.(false);
+    }
   }
 
   return (
@@ -102,6 +116,7 @@ export function ImageUpload({ label, folder, value, onChange, aspect = 'auto', o
           </button>
           <button type="button" onClick={() => inputRef.current?.click()} disabled={uploading} className="absolute -bottom-1 -right-1 flex h-9 w-9 touch-manipulation items-center justify-center rounded-full border-2 border-white bg-blue-600 text-white shadow-lg transition hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-300 focus-visible:ring-offset-2 active:scale-95 disabled:cursor-not-allowed disabled:opacity-60" aria-label={value ? 'Ganti foto profil' : 'Pilih foto profil'} title={value ? 'Ganti foto profil' : 'Pilih foto profil'}><Upload className="h-4 w-4" /></button>
           {uploading && <span className="absolute inset-0 flex items-center justify-center rounded-2xl bg-white/70"><span className="h-5 w-5 animate-spin rounded-full border-2 border-blue-200 border-t-blue-600" /></span>}
+          {value && <button type="button" onClick={() => void handleRemove()} disabled={uploading} className="absolute -left-1 -top-1 flex h-8 w-8 items-center justify-center rounded-full border-2 border-white bg-red-600 text-white shadow-md transition hover:bg-red-700 disabled:opacity-50" aria-label="Hapus foto profil" title="Hapus foto profil"><X className="h-4 w-4" /></button>}
         </div>
       ) : compact ? (
         <div className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-3">

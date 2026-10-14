@@ -18,6 +18,37 @@ const SLIDE_DURATIONS = {
 const MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MEI', 'JUN', 'JUL', 'AGU', 'SEP', 'OKT', 'NOV', 'DES'];
 const formatCount = (count: number) => count.toLocaleString('id-ID');
 
+function AnimatedCount({ value, reducedMotion, className, startDelay = 800 }: { value: number; reducedMotion: boolean; className: string; startDelay?: number }) {
+  const [count, setCount] = useState(reducedMotion ? value : 0);
+
+  useEffect(() => {
+    if (reducedMotion) {
+      setCount(value);
+      return;
+    }
+
+    setCount(0);
+    let frameId = 0;
+    const timeoutId = window.setTimeout(() => {
+      const startedAt = performance.now();
+      const updateCount = (now: number) => {
+        const progress = Math.min((now - startedAt) / 1200, 1);
+        const easedProgress = 1 - (1 - progress) ** 3;
+        setCount(Math.round(value * easedProgress));
+        if (progress < 1) frameId = window.requestAnimationFrame(updateCount);
+      };
+      frameId = window.requestAnimationFrame(updateCount);
+    }, startDelay);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+      if (frameId) window.cancelAnimationFrame(frameId);
+    };
+  }, [reducedMotion, startDelay, value]);
+
+  return <strong className={className} aria-label={formatCount(value)}>{formatCount(reducedMotion ? value : count)}</strong>;
+}
+
 export function AnnualRecapStory({ year, stats, closingNarrative, musicUrl, onClose }: {
   year: number;
   stats: AnnualRecapStats;
@@ -196,18 +227,18 @@ export function AnnualRecapStory({ year, stats, closingNarrative, musicUrl, onCl
             {activeSlide === 'opening' && <section className="relative flex min-h-full flex-col justify-between overflow-hidden pb-2 pt-20">
               <div className="absolute right-1 top-[27%] rotate-[-13deg] text-cyan-300/80" aria-hidden="true"><Mic2 className="h-24 w-24 drop-shadow-[0_10px_18px_rgba(12,173,255,0.3)] sm:h-28 sm:w-28" strokeWidth={1.4} /><span className="absolute -left-7 top-2 h-20 w-px rotate-[-26deg] bg-cyan-300/50" /><span className="absolute -left-2 top-[-1.5rem] h-16 w-px rotate-[-26deg] bg-cyan-300/30" /></div>
               <img src="/assets/images/standup-indo-logo.png" alt="Logo Standupindo" className="absolute right-0 top-1 h-12 w-24 object-contain" />
-              <div><div className="flex items-center gap-3"><span className="flex shrink-0 items-center justify-center rounded-xl bg-white p-1.5"><img src={LOGO_URL} alt="Logo Standupindo Cilegon" className="h-[4.5rem] w-auto object-contain" /></span><p className="text-[11px] font-bold uppercase text-cyan-100">Satu tahun bersama Standupindo Cilegon</p></div><h1 className="mt-5 flex flex-col text-[4.5rem] font-black leading-[0.78] text-white sm:text-[5.5rem]"><span>RECAP</span><span className="mt-3 -rotate-2 text-[5.8rem] text-cyan-300 sm:text-[6.5rem]">{year}</span></h1><p className="mt-7 max-w-[18rem] text-sm leading-6 text-blue-100">Setahun penuh cerita, panggung, tawa, dan orang-orang yang ikut memeriahkan.</p><p className="mt-6 max-w-[15rem] -rotate-2 font-serif text-lg italic text-cyan-200">Yuk, lihat apa yang terjadi selama setahun...</p></div>
-              <div className="pb-2 text-[9px] font-bold uppercase text-blue-200/80">STANDUPINDO CILEGON</div>
+              <div className="recap-sequence"><div className="flex items-center gap-3"><span className="flex shrink-0 items-center justify-center rounded-xl bg-white p-1.5"><img src={LOGO_URL} alt="Logo Standupindo Cilegon" className="h-[4.5rem] w-auto object-contain" /></span><p className="text-[11px] font-bold uppercase text-cyan-100">Satu tahun bersama Standupindo Cilegon</p></div><h1 className="mt-5 flex flex-col text-[4.5rem] font-black leading-[0.78] text-white sm:text-[5.5rem]"><span>RECAP</span><span className="mt-3 -rotate-2 text-[5.8rem] text-cyan-300 sm:text-[6.5rem]">{year}</span></h1><p className="mt-7 max-w-[18rem] text-sm leading-6 text-blue-100">Setahun penuh cerita, panggung, tawa, dan orang-orang yang ikut memeriahkan.</p><p className="mt-6 max-w-[15rem] -rotate-2 font-serif text-lg italic text-cyan-200">Yuk, lihat apa yang terjadi selama setahun...</p></div>
+              <div className="pb-2 text-[9px] font-bold uppercase text-blue-200/80" style={{ animationDelay: '3600ms' }}>STANDUPINDO CILEGON</div>
             </section>}
 
             {activeSlide === 'numbers' && <section className="relative flex min-h-full flex-col pb-2">
               <p className="text-[3.5rem] font-black leading-none text-white">{year}</p><h1 className="mt-1 text-xl font-extrabold text-cyan-200">Ternyata ramai juga.</h1>
-              <div className="mt-5 grid grid-cols-2 gap-3">{[
+              <div className="recap-sequence recap-sequence-late mt-5 grid grid-cols-2 gap-3">{[
                 { value: stats.openMicCount, label: 'OPEN MIC', Icon: Mic2 },
                 { value: stats.eventCount, label: 'EVENT', Icon: CalendarDays },
                 { value: stats.totalPerformerCount, label: 'KOMIKA TAMPIL', Icon: Users },
                 { value: stats.appearanceCount, label: 'PENAMPILAN', Icon: Star },
-              ].map(({ value, label, Icon }) => <div key={label} className="flex min-h-28 flex-col items-center justify-center rounded-2xl bg-white px-2 py-3 text-center text-[#0b1f44] shadow-[0_10px_24px_rgba(2,8,23,0.18)]"><Icon className="h-6 w-6 text-blue-600" strokeWidth={2.4} /><strong className="mt-1 text-3xl font-black leading-none">{formatCount(value)}</strong><span className="mt-1 text-[9px] font-extrabold uppercase">{label}</span></div>)}</div>
+              ].map(({ value, label, Icon }, statisticIndex) => <div key={label} className="flex min-h-28 flex-col items-center justify-center rounded-2xl bg-white px-2 py-3 text-center text-[#0b1f44] shadow-[0_10px_24px_rgba(2,8,23,0.18)]"><Icon className="h-6 w-6 text-blue-600" strokeWidth={2.4} /><AnimatedCount value={value} reducedMotion={reducedMotion} startDelay={1600 + statisticIndex * 1000} className="mt-1 text-3xl font-black leading-none" /><span className="mt-1 text-[9px] font-extrabold uppercase">{label}</span></div>)}</div>
               <div className="relative mt-auto flex h-24 items-end justify-center overflow-hidden pt-4" aria-hidden="true">
                 <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_100%,rgba(56,189,248,0.2),transparent_68%)]" />
                 <div className="absolute inset-x-0 bottom-0 flex h-20 items-end justify-around opacity-65">
@@ -220,20 +251,23 @@ export function AnnualRecapStory({ year, stats, closingNarrative, musicUrl, onCl
             </section>}
 
             {activeSlide === 'people' && <section className="relative flex min-h-full flex-col pb-2">
-              <p className="text-[11px] font-black uppercase leading-4 text-cyan-200">MEREKA YANG NAIK KE PANGGUNG</p><div className="mt-2 flex items-end gap-2"><strong className="text-[5.3rem] font-black leading-[0.82] text-white">{formatCount(stats.totalPerformerCount)}</strong><span className="bg-gradient-to-r from-cyan-300 via-emerald-300 to-amber-300 bg-clip-text pb-1 text-xl font-extrabold text-transparent">komika</span></div><p className="mt-2 text-sm font-medium text-blue-100">dari komunitas, luar komunitas, dan umum tampil sepanjang {year}.</p>
-              <div className="mt-6 grid grid-cols-2 gap-3"><div className="rounded-2xl bg-white px-3 py-3 text-[#0b1f44] shadow-lg"><strong className="block text-3xl font-black">{formatCount(stats.firstTimePerformerCount)}</strong><p className="mt-1 text-[10px] leading-4">orang pertama kali tercatat tampil di <span className="font-extrabold text-cyan-700">Standupindo Cilegon</span> tahun ini.</p></div><div className="rounded-2xl bg-white px-3 py-3 text-[#0b1f44] shadow-lg"><strong className="block text-3xl font-black">{formatCount(stats.newMemberCount)}</strong><p className="mt-1 text-[10px] leading-4">member baru bergabung bersama <span className="font-extrabold text-cyan-700">Standupindo Cilegon</span>.</p></div></div>
-              <div className="mt-7"><p className="text-[10px] font-black uppercase tracking-wide text-cyan-200">3 KOMIKA INTERNAL TERAKTIF DI OPEN MIC</p><div className="mt-2 grid grid-cols-3 gap-2">{stats.topInternalPerformers.map((performer, performerIndex) => <article key={performer.id} className="relative aspect-[3/5] min-w-0 overflow-hidden rounded-[18px] border-2 border-blue-300/80 bg-slate-900 shadow-[0_0_14px_rgba(37,99,235,0.28)]">{performer.photo ? <img src={performer.photo} alt={performer.name} className="absolute inset-0 h-full w-full object-cover object-top" /> : <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-blue-300 via-blue-600 to-indigo-950 text-4xl font-black text-white">{performer.name.charAt(0)}</div>}<div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(30,64,175,0.02)_20%,rgba(29,78,216,0.16)_48%,rgba(30,58,138,0.8)_76%,rgba(15,23,80,0.98)_100%)]" /><span className={`absolute left-2 top-2 flex h-8 w-8 items-center justify-center rounded-full border-2 shadow-lg ${['border-amber-100 bg-amber-300 text-amber-950', 'border-slate-100 bg-slate-200 text-slate-800', 'border-orange-100 bg-orange-300 text-orange-950'][performerIndex]}`}><Medal className="h-6 w-6" /><span className="absolute text-[9px] font-black">{performerIndex + 1}</span></span><div className="absolute inset-x-0 bottom-0 min-w-0 px-2 pb-2.5 text-white"><h2 className="line-clamp-2 break-words text-xs font-black leading-tight drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)]">{performer.name}</h2><p className="mt-1 text-[9px] font-semibold text-blue-100">{formatCount(performer.count)} penampilan</p></div></article>)}{stats.topInternalPerformers.length === 0 && <p className="col-span-3 py-8 text-center text-xs text-blue-100">Belum ada komika internal yang tercatat tampil.</p>}</div></div>
+              <p className="text-[11px] font-black uppercase leading-4 text-cyan-200">MEREKA YANG NAIK KE PANGGUNG</p><div className="mt-2 flex items-end gap-2"><AnimatedCount value={stats.totalPerformerCount} reducedMotion={reducedMotion} className="text-[5.3rem] font-black leading-[0.82] text-white" /><span className="bg-gradient-to-r from-cyan-300 via-emerald-300 to-amber-300 bg-clip-text pb-1 text-xl font-extrabold text-transparent">komika</span></div><p className="mt-2 text-sm font-medium text-blue-100">dari komunitas, luar komunitas, dan umum tampil sepanjang {year}.</p>
+              <div className="recap-sequence recap-sequence-late mt-6 grid grid-cols-2 gap-3"><div className="rounded-2xl bg-white px-3 py-3 text-[#0b1f44] shadow-lg"><strong className="block text-3xl font-black">{formatCount(stats.firstTimePerformerCount)}</strong><p className="mt-1 text-[10px] leading-4">orang pertama kali tercatat tampil di <span className="font-extrabold text-cyan-700">Standupindo Cilegon</span> tahun ini.</p></div><div className="rounded-2xl bg-white px-3 py-3 text-[#0b1f44] shadow-lg"><strong className="block text-3xl font-black">{formatCount(stats.newMemberCount)}</strong><p className="mt-1 text-[10px] leading-4">member baru bergabung bersama <span className="font-extrabold text-cyan-700">Standupindo Cilegon</span>.</p></div></div>
+              <div className="recap-sequence recap-sequence-later mt-7"><p className="text-[10px] font-black uppercase tracking-wide text-cyan-200">3 KOMIKA INTERNAL TERAKTIF DI OPEN MIC</p><div className="recap-sequence recap-sequence-last recap-sequence-reverse mt-2 grid grid-cols-3 gap-2">{stats.topInternalPerformers.map((performer, performerIndex) => <article key={performer.id} className="relative aspect-[3/5] min-w-0 overflow-hidden rounded-[18px] border-2 border-blue-300/80 bg-slate-900 shadow-[0_0_14px_rgba(37,99,235,0.28)]">{performer.photo ? <img src={performer.photo} alt={performer.name} className="recap-performer-photo absolute inset-0 h-full w-full object-cover object-top" /> : <div className="recap-performer-photo absolute inset-0 flex items-center justify-center bg-gradient-to-br from-blue-300 via-blue-600 to-indigo-950 text-4xl font-black text-white">{performer.name.charAt(0)}</div>}<div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(30,64,175,0.02)_20%,rgba(29,78,216,0.16)_48%,rgba(30,58,138,0.8)_76%,rgba(15,23,80,0.98)_100%)]" /><span className={`absolute left-2 top-2 flex h-8 w-8 items-center justify-center rounded-full border-2 shadow-lg ${['border-amber-100 bg-amber-300 text-amber-950', 'border-slate-100 bg-slate-200 text-slate-800', 'border-orange-100 bg-orange-300 text-orange-950'][performerIndex]}`}><Medal className="h-6 w-6" /><span className="absolute text-[9px] font-black">{performerIndex + 1}</span></span><div className="absolute inset-x-0 bottom-0 min-w-0 px-2 pb-2.5 text-white"><h2 className="line-clamp-2 break-words text-xs font-black leading-tight drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)]">{performer.name}</h2><p className="mt-1 text-[9px] font-semibold text-blue-100">{formatCount(performer.count)} penampilan</p></div></article>)}{stats.topInternalPerformers.length === 0 && <p className="col-span-3 py-8 text-center text-xs text-blue-100">Belum ada komika internal yang tercatat tampil.</p>}</div></div>
             </section>}
 
             {activeSlide === 'communities' && <section className="relative flex min-h-full flex-col pb-2">
               <p className="text-[10px] font-black uppercase tracking-wide text-cyan-200">PANGGUNG KITA RAMAI-RAMAI</p>
               <h1 className="mt-2 max-w-[18rem] text-3xl font-black uppercase leading-tight text-white">KOMUNITAS TAMU</h1>
               <p className="mt-2 max-w-[19rem] text-xs leading-5 text-blue-100">Komunitas dari luar Standupindo Cilegon yang ikut meramaikan panggung.</p>
-              <div className="mt-5 overflow-hidden rounded-2xl bg-white text-[#0b1f44] shadow-[0_16px_36px_rgba(0,0,0,0.22)]">
-                {stats.topCommunities.slice(0, 3).map((community, communityIndex) => <div key={community.name} className={`flex min-h-[4.5rem] items-center gap-3 px-4 py-3 ${communityIndex ? 'border-t border-slate-200' : ''}`}><span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-lg font-black ${['bg-amber-300 text-amber-900', 'bg-slate-200 text-slate-600', 'bg-orange-200 text-orange-800'][communityIndex]}`}><Trophy className="h-5 w-5" /></span><span className="min-w-0 flex-1 text-xs font-extrabold">{community.name}</span><strong className="shrink-0 text-right"><span className="block text-xl font-black leading-none">{formatCount(community.count)}</span><span className="text-[9px] font-semibold text-slate-500">kali tampil</span></strong></div>)}
-                {stats.topCommunities.length === 0 && <p className="px-4 py-6 text-sm text-slate-500">Belum ada komunitas tamu tercatat.</p>}
+              <div className="mt-5 flex flex-col gap-2">
+                {stats.topCommunities.slice(0, 3).map((community, communityIndex) => {
+                  const cardDelay = 2400 + communityIndex * 2000;
+                  return <div key={community.name} className="recap-community-row flex min-h-[4.5rem] items-center gap-3 rounded-2xl bg-white px-4 py-3 text-[#0b1f44] shadow-[0_10px_24px_rgba(2,8,23,0.18)]" style={{ animationDelay: `${cardDelay}ms` }}><span className={`recap-community-icon flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-lg font-black ${['bg-amber-300 text-amber-900', 'bg-slate-200 text-slate-600', 'bg-orange-200 text-orange-800'][communityIndex]}`} style={{ animationDelay: `${cardDelay + 400}ms` }}><Trophy className="h-5 w-5" /></span><span className="recap-community-copy min-w-0 flex-1 text-xs font-extrabold" style={{ animationDelay: `${cardDelay + 800}ms` }}>{community.name}</span><div className="recap-community-copy shrink-0 text-right" style={{ animationDelay: `${cardDelay + 800}ms` }}><AnimatedCount value={community.count} reducedMotion={reducedMotion} startDelay={cardDelay + 800} className="block text-xl font-black leading-none" /><span className="text-[9px] font-semibold text-slate-500">kali tampil</span></div></div>;
+                })}
+                {stats.topCommunities.length === 0 && <p className="px-4 py-6 text-sm text-blue-100">Belum ada komunitas tamu tercatat.</p>}
               </div>
-              <div className="mt-4 flex items-center gap-3 rounded-2xl border border-cyan-200/20 bg-cyan-300/10 px-4 py-3 text-blue-50"><Users className="h-5 w-5 shrink-0 text-cyan-300" /><strong className="min-w-0 flex-1 text-[10px] font-black uppercase leading-tight tracking-wide text-cyan-200">Komika umum / independen</strong><span className="shrink-0 text-right"><strong className="block text-xl font-black leading-none">{formatCount(stats.independentAppearanceCount)}</strong><span className="text-[9px] font-semibold text-blue-100">kali tampil</span></span></div>
+              <div className="mt-4 flex items-center gap-3 rounded-2xl border border-cyan-200/20 bg-cyan-300/10 px-4 py-3 text-blue-50" style={{ animationDelay: '8400ms' }}><Users className="h-5 w-5 shrink-0 text-cyan-300" /><strong className="min-w-0 flex-1 text-[10px] font-black uppercase leading-tight tracking-wide text-cyan-200">Komika umum / independen</strong><span className="shrink-0 text-right"><AnimatedCount value={stats.independentAppearanceCount} reducedMotion={reducedMotion} startDelay={8400} className="block text-xl font-black leading-none" /><span className="text-[9px] font-semibold text-blue-100">kali tampil</span></span></div>
             </section>}
 
             {activeSlide === 'yearline' && <section className="relative flex min-h-full flex-col pb-2">
@@ -242,24 +276,25 @@ export function AnnualRecapStory({ year, stats, closingNarrative, musicUrl, onCl
                 const normalizedMonth = busiestMonth?.month.toLocaleLowerCase('id-ID').replace('.', '');
                 const isBusiest = activity > 0 && [monthLabel.toLocaleLowerCase('id-ID'), `${monthLabel.toLocaleLowerCase('id-ID')}.`].includes(normalizedMonth ?? '');
                 const width = largestActivity > 0 ? Math.max(activity ? 12 : 0, (activity / largestActivity) * 100) : 0;
-                return <div key={monthLabel} className="grid min-h-[1.25rem] flex-1 grid-cols-[2.5rem_1fr_1.5rem] items-center gap-2"><span className={`text-[9px] font-bold ${isBusiest ? 'text-cyan-200' : 'text-blue-100'}`}>{monthLabel}</span><div className="h-2.5 overflow-hidden rounded-full bg-blue-950/90 ring-1 ring-white/10"><div className={`h-full rounded-full ${isBusiest ? 'bg-cyan-300 shadow-[0_0_14px_rgba(34,211,238,0.6)]' : 'bg-gradient-to-r from-blue-700 to-sky-400'}`} style={{ width: `${width}%` }} /></div><span className={`text-right text-[9px] font-bold ${isBusiest ? 'text-cyan-200' : 'text-cyan-100'}`}>{activity || ''}</span></div>;
-              })}</div><div className="mt-3 flex items-center justify-between gap-2 border-t border-white/15 pt-2 text-[9px]"><span className="font-bold uppercase text-blue-200">Bulan tersibuk</span><strong className="text-cyan-200">{busiestMonth ? `${busiestMonth.month} · ${formatCount(busiestMonth.count)} kegiatan` : 'Belum ada kegiatan'}</strong></div>
+                const animationDelay = `${2400 + monthIndex * 250}ms`;
+                return <div key={monthLabel} className="recap-month-row grid min-h-[1.25rem] flex-1 grid-cols-[2.5rem_1fr_1.5rem] items-center gap-2" style={{ animationDelay }}><span className={`text-[9px] font-bold ${isBusiest ? 'text-cyan-200' : 'text-blue-100'}`}>{monthLabel}</span><div className="h-2.5 overflow-hidden rounded-full bg-blue-950/90 ring-1 ring-white/10"><div className={`recap-month-bar h-full rounded-full ${isBusiest ? 'bg-cyan-300 shadow-[0_0_14px_rgba(34,211,238,0.6)]' : 'bg-gradient-to-r from-blue-700 to-sky-400'}`} style={{ width: `${width}%`, animationDelay }} /></div><span className={`text-right text-[9px] font-bold ${isBusiest ? 'text-cyan-200' : 'text-cyan-100'}`}>{activity || ''}</span></div>;
+              })}</div><div className="mt-3 flex items-center justify-between gap-2 border-t border-white/15 pt-2 text-[9px] text-right" style={{ animationDelay: '6000ms' }}><span className="font-bold uppercase text-blue-200">Bulan tersibuk</span><strong className="text-cyan-200">{busiestMonth ? `${busiestMonth.month} · ${formatCount(busiestMonth.count)} kegiatan` : 'Belum ada kegiatan'}</strong></div>
             </section>}
 
             {activeSlide === 'spotlight' && <section className="relative flex min-h-full flex-col pb-2">
               <h1 className="max-w-[17rem] text-2xl font-black uppercase leading-tight text-white">PALING RAMAI TAHUN INI</h1>
               <div className="mt-3 flex min-h-0 flex-1 flex-col gap-3">
-                <article className="recap-slide-enter flex min-h-0 flex-1 flex-col items-center border-b border-white/15 pb-2" style={{ animationDelay: '80ms' }}>
+                <article className="recap-slide-enter flex min-h-0 flex-1 flex-col items-center border-b border-white/15 pb-2" style={{ animationDelay: '1600ms' }}>
                   <div className="shrink-0 px-2 pt-1 text-center text-white">
                     <div className="flex items-baseline justify-center gap-2"><strong className="text-4xl font-black leading-none">{stats.topOpenMics[0] ? formatCount(stats.topOpenMics[0].appearanceCount) : '0'}</strong><span className="text-[10px] font-black uppercase tracking-wide text-cyan-200">KOMIKA TAMPIL</span></div>
                     <p className="mt-1 truncate text-[10px] text-blue-100">Hadir di <strong className="font-extrabold text-white">{stats.topOpenMics[0]?.title ?? 'Open Mic'}</strong></p>
                   </div>
                   {stats.topOpenMics[0]?.poster && <div className="flex min-h-0 w-full flex-1 items-center justify-center pt-2"><img src={stats.topOpenMics[0].poster} alt={`Poster ${stats.topOpenMics[0].title}`} className="max-h-full max-w-full object-contain drop-shadow-[0_10px_20px_rgba(0,0,0,0.3)]" /></div>}
                 </article>
-                <article className="recap-slide-enter flex min-h-0 flex-1 flex-col items-center pt-1" style={{ animationDelay: '220ms' }}>
+                <article className="recap-slide-enter flex min-h-0 flex-1 flex-col items-center pt-1" style={{ animationDelay: '2700ms' }}>
                   <div className="shrink-0 px-2 text-center text-white">
-                    <div className="flex items-baseline justify-center gap-2"><strong className="text-4xl font-black leading-none">{stats.spotlightEvent ? formatCount(stats.spotlightEvent.ticketsSold) : '—'}</strong><span className="text-[10px] font-black uppercase tracking-wide text-cyan-200">PENONTON</span></div>
-                    <p className="mt-1 truncate text-[10px] text-blue-100">Hadir di <strong className="font-extrabold text-white">{stats.spotlightEvent?.title ?? 'Event'}</strong></p>
+                    <div className="flex items-baseline justify-center gap-2"><strong className="text-4xl font-black leading-none">{stats.spotlightEvent ? formatCount(stats.spotlightEvent.ticketsSold) : stats.totalTicketsSold === null ? '—' : '0'}</strong><span className="text-[10px] font-black uppercase tracking-wide text-cyan-200">PENONTON</span></div>
+                    <p className="mt-1 truncate text-[10px] text-blue-100">{stats.spotlightEvent ? <>Hadir di <strong className="font-extrabold text-white">{stats.spotlightEvent.title}</strong></> : stats.totalTicketsSold === null ? 'Data tiket belum tersedia' : 'Belum ada tiket terjual'}</p>
                   </div>
                   {(stats.spotlightEvent?.poster || stats.spotlightEvent?.photo) && <div className="flex min-h-0 w-full flex-1 items-center justify-center pt-2"><img src={stats.spotlightEvent.poster || stats.spotlightEvent.photo || ''} alt={`Poster ${stats.spotlightEvent?.title ?? 'Event'}`} className="max-h-full max-w-full object-contain drop-shadow-[0_10px_20px_rgba(0,0,0,0.3)]" /></div>}
                 </article>
@@ -270,7 +305,7 @@ export function AnnualRecapStory({ year, stats, closingNarrative, musicUrl, onCl
               <p className="text-[10px] font-black uppercase tracking-wide text-cyan-200">OPEN MIC</p>
               <h1 className="mt-1 max-w-[19rem] text-xl font-black uppercase leading-tight text-white">3 PANGGUNG OPEN MIC PALING RAMAI</h1>
               <div className="mt-4 flex min-h-0 flex-1 flex-col gap-3">
-                {stats.topOpenMics.map((openMic, openMicIndex) => <article key={openMic.id} className="recap-slide-enter flex min-h-0 flex-1 overflow-hidden rounded-2xl border border-white/20 bg-white text-[#0b1f44] shadow-lg" style={{ animationDelay: `${openMicIndex * 100}ms` }}>
+                {stats.topOpenMics.map((openMic, openMicIndex) => <article key={openMic.id} className="recap-slide-enter flex min-h-0 flex-1 overflow-hidden rounded-2xl border border-white/20 bg-white text-[#0b1f44] shadow-lg" style={{ animationDelay: `${1600 + openMicIndex * 1000}ms` }}>
                   <div className="relative flex w-[38%] shrink-0 items-center justify-center bg-slate-950 p-2">{openMic.poster && <img src={openMic.poster} alt={`Poster ${openMic.title}`} className="max-h-full max-w-full object-contain" />}<span className="absolute left-2 top-2 rounded-md bg-cyan-300 px-2 py-1 text-[9px] font-black text-[#071a35]">0{openMicIndex + 1}</span></div>
                   <div className="flex min-w-0 flex-1 flex-col p-3"><span className="text-[8px] font-black uppercase tracking-wide text-blue-700">OPEN MIC</span><h2 className="mt-1 line-clamp-3 break-words text-sm font-black leading-tight">{openMic.title}</h2><div className="mt-2 space-y-1 text-[9px] font-semibold leading-tight text-slate-600"><p className="flex items-start gap-1.5"><CalendarDays className="h-3 w-3 shrink-0 text-blue-600" /><span>{formatDate(openMic.date)}</span></p><p className="flex items-start gap-1.5"><MapPin className="h-3 w-3 shrink-0 text-blue-600" /><span>{openMic.venue}{openMic.location ? ` · ${openMic.location}` : ''}</span></p></div><div className="mt-auto flex flex-1 flex-col items-center justify-center pt-2"><strong className="text-4xl font-black leading-none">{formatCount(openMic.appearanceCount)}</strong><span className="mt-1 text-center text-[9px] font-black uppercase tracking-wide text-blue-700">KOMIKA TAMPIL</span></div></div>
                 </article>)}

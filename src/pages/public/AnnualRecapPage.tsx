@@ -5,6 +5,8 @@ import { supabase } from '@/lib/supabase';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { AnnualRecapStory } from '@/pages/public/AnnualRecapStoryView';
 
+const LOADING_RECAP_PHOTO = '/assets/images/Loading%20Annual%20Recap2.jfif';
+
 export function AnnualRecapPage({ router, year }: { router: Router; year: string }) {
   const [record, setRecord] = useState<AnnualRecapRecord | null>(null);
   const [stats, setStats] = useState<AnnualRecapStats | null>(null);
@@ -70,7 +72,18 @@ export function AnnualRecapPage({ router, year }: { router: Router; year: string
   }, [validYear, yearNumber]);
 
   if (loading) {
-    return <div className="flex min-h-screen items-center justify-center bg-slate-950 text-sm text-slate-300">Memuat Annual Recap...</div>;
+    return (
+      <div className="relative flex min-h-dvh items-center justify-center overflow-hidden bg-[#071a35] px-6 text-white" role="status" aria-live="polite">
+        <img src={LOADING_RECAP_PHOTO} alt="" aria-hidden="true" className="absolute inset-0 h-full w-full object-cover" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#041026]/65 via-[#041026]/45 to-[#041026]/75" aria-hidden="true" />
+        <div className="absolute inset-x-0 top-[7%] z-10 flex flex-col items-center px-6 text-center drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">
+          <img src="/assets/images/standup-indo-logo.png" alt="Logo Standupindo" className="h-auto w-32 object-contain drop-shadow-md" />
+          <p className="text-[10px] font-extrabold uppercase text-cyan-200">MEMUAT</p>
+          <p className="mt-1 text-2xl font-black uppercase leading-none text-white">JEJAK TAWA</p>
+          <p className="mt-1 text-xs font-bold uppercase text-blue-100">STANDUPINDO CILEGON</p>
+        </div>
+      </div>
+    );
   }
 
   if (loadError || !record || !stats) {

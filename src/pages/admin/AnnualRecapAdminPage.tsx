@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type ChangeEvent } from 'react';
-import { CheckCircle2, Eye, EyeOff, FileText, Music2, Save, Sparkles, Trash2, Upload } from 'lucide-react';
+import { CheckCircle2, ChevronDown, Eye, EyeOff, FileText, Music2, Save, Search, Sparkles, Trash2, Upload } from 'lucide-react';
 import { AnnualRecapStory } from '@/pages/public/AnnualRecapStoryView';
+import { WorkspacePageHeader } from '@/components/admin/WorkspacePageHeader';
 import { DEFAULT_RECAP_CLOSING, loadAnnualRecapStats, type AnnualRecapRecord, type AnnualRecapStats } from '@/lib/annual-recap';
 import { supabase } from '@/lib/supabase';
 
@@ -13,10 +14,11 @@ const AUDIO_CONTENT_TYPES: Record<string, string> = {
   webm: 'audio/webm',
 };
 
-export function AnnualRecapAdminPage({ onNotice, onBack }: { onNotice: (message: string) => void; onBack?: () => void }) {
+export function AnnualRecapAdminPage({ onNotice }: { onNotice: (message: string) => void }) {
   const currentYear = new Date().getFullYear();
   const [selectedYear, setSelectedYear] = useState(currentYear);
   const [yearInput, setYearInput] = useState(String(currentYear));
+  const [yearSearch, setYearSearch] = useState('');
   const [records, setRecords] = useState<AnnualRecapRecord[]>([]);
   const [record, setRecord] = useState<AnnualRecapRecord | null>(null);
   const [closingNarrative, setClosingNarrative] = useState(DEFAULT_RECAP_CLOSING);
@@ -35,6 +37,9 @@ export function AnnualRecapAdminPage({ onNotice, onBack }: { onNotice: (message:
   const validYearInput = /^\d{4}$/.test(yearInput)
     && Number(yearInput) >= 1900
     && Number(yearInput) <= currentYear;
+  const availableYears = [...new Set([currentYear, selectedYear, ...records.map((item) => item.year)])]
+    .sort((first, second) => second - first);
+  const filteredRecords = records.filter((item) => String(item.year).includes(yearSearch.trim()));
 
   useEffect(() => {
     let active = true;
@@ -228,117 +233,126 @@ export function AnnualRecapAdminPage({ onNotice, onBack }: { onNotice: (message:
   }
 
   return (
-    <div className="space-y-5">
-      <div className="flex items-center justify-between gap-3">
-        <div>
-          <p className="text-[10px] font-black uppercase tracking-[0.18em] text-blue-600">Admin Penuh</p>
-          <h1 className="mt-1 text-2xl font-extrabold text-slate-900">Annual Recap</h1>
-        </div>
-        {onBack && (
-          <button type="button" onClick={onBack} className="btn-secondary">Kembali</button>
-        )}
-      </div>
+    <div className="space-y-4 pb-6 sm:space-y-6">
+      <WorkspacePageHeader eyebrow="Menu Lainnya" title="Annual Recap" subtitle="Kelola cerita dan publikasi recap per tahun." />
 
-      <section className="space-y-4 border-y border-slate-200 py-5">
-        <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
-          <div className="space-y-2">
-            <label htmlFor="annual-recap-year" className="text-sm font-semibold text-slate-700">Tahun recap</label>
-            <div className="flex gap-2">
-              <input id="annual-recap-year" type="number" inputMode="numeric" min="1900" max={currentYear} value={yearInput} onChange={(event) => setYearInput(event.target.value)} className="input-field max-w-36" />
-              <button type="button" onClick={openSelectedYear} disabled={!validYearInput || loading} className="btn-secondary">Buka tahun</button>
+      <section className="space-y-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5" aria-labelledby="annual-recap-year-heading">
+        <div>
+          <p className="text-[10px] font-extrabold uppercase text-blue-600">Pengaturan</p>
+          <h2 id="annual-recap-year-heading" className="mt-1 text-lg font-extrabold text-slate-900">Pilih tahun recap</h2>
+        </div>
+        <div className="grid gap-3 sm:grid-cols-2">
+          <div className="space-y-1.5">
+            <label htmlFor="annual-recap-year" className="label-field">Buka tahun lain</label>
+            <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-2">
+              <input id="annual-recap-year" type="text" inputMode="numeric" list="annual-recap-year-options" maxLength={4} value={yearInput} onChange={(event) => setYearInput(event.target.value.replace(/\D/g, '').slice(0, 4))} className="input-field min-w-0 text-base" aria-describedby="annual-recap-year-help" />
+              <button type="button" onClick={openSelectedYear} disabled={!validYearInput || loading} className="btn-secondary px-3">Buka</button>
             </div>
+            <datalist id="annual-recap-year-options">{availableYears.map((year) => <option key={year} value={year} />)}</datalist>
+            <p id="annual-recap-year-help" className="text-xs text-slate-500">Masukkan tahun 4 digit, maksimal {currentYear}.</p>
           </div>
 
-          <label className="space-y-2 text-sm font-semibold text-slate-700">
-            <span>Recap tersimpan</span>
-            <select value={selectedYear} onChange={(event) => { const year = Number(event.target.value); setSelectedYear(year); setYearInput(String(year)); }} className="input-field">
-              {[...new Set([currentYear, selectedYear, ...records.map((item) => item.year)])]
-                .sort((first, second) => second - first)
-                .map((year) => <option key={year} value={year}>{year}{records.some((item) => item.year === year) ? ` · ${records.find((item) => item.year === year)?.published ? 'Published' : 'Draft'}` : ' · Belum dibuat'}</option>)}
+          <label className="block space-y-1.5">
+            <span className="label-field">Pilih recap tersimpan</span>
+            <select value={selectedYear} onChange={(event) => { const year = Number(event.target.value); setSelectedYear(year); setYearInput(String(year)); }} className="input-field text-base">
+              {availableYears.map((year) => <option key={year} value={year}>{year}{records.some((item) => item.year === year) ? ` · ${records.find((item) => item.year === year)?.published ? 'Published' : 'Draft'}` : ' · Belum dibuat'}</option>)}
             </select>
           </label>
         </div>
 
-        <div className="flex flex-wrap gap-2 border-t border-slate-200 pt-4">
-          <button type="button" onClick={() => void saveRecord()} disabled={saving || publishing || musicUploading || loading || !validYearInput} className="btn-secondary">
-            <Save className="h-4 w-4" /> {saving ? 'Menyimpan...' : record?.published ? 'Simpan perubahan' : 'Simpan draft'}
-          </button>
-          <button type="button" onClick={() => void handlePublish()} disabled={saving || publishing || musicUploading || loading || statsError || !validYearInput} className="btn-primary">
-            <CheckCircle2 className="h-4 w-4" /> {publishing ? 'Memproses...' : 'Publish'}
-          </button>
-          <button type="button" onClick={() => void handleUnpublish()} disabled={saving || publishing || loading || !record?.published} className="btn-secondary">
-            <EyeOff className="h-4 w-4" /> Unpublish
-          </button>
-          <button type="button" onClick={() => setPreviewOpen(true)} disabled={loading || statsError || !stats} className="btn-secondary">
-            <Eye className="h-4 w-4" /> Preview
-          </button>
+        <div className="space-y-2 border-t border-slate-200 pt-4">
+          <p className="text-xs font-bold text-slate-700">Aksi recap</p>
+          <div className="grid grid-cols-2 gap-2">
+            <button type="button" onClick={() => void saveRecord()} disabled={saving || publishing || musicUploading || loading || !validYearInput} className="btn-secondary w-full justify-center px-2">
+              <Save className="h-4 w-4" /> {saving ? 'Menyimpan...' : record?.published ? 'Simpan perubahan' : 'Simpan draft'}
+            </button>
+            <button type="button" onClick={() => setPreviewOpen(true)} disabled={loading || statsError || !stats} className="btn-secondary w-full justify-center px-2">
+              <Eye className="h-4 w-4" /> Preview
+            </button>
+            <button type="button" onClick={() => void handlePublish()} disabled={saving || publishing || musicUploading || loading || statsError || !validYearInput} className="btn-primary col-span-2 w-full justify-center">
+              <CheckCircle2 className="h-4 w-4" /> {publishing ? 'Memproses...' : record?.published ? 'Simpan & publish' : 'Publish recap'}
+            </button>
+            {record?.published && <button type="button" onClick={() => void handleUnpublish()} disabled={saving || publishing || loading} className="btn-secondary col-span-2 w-full justify-center"><EyeOff className="h-4 w-4" />Unpublish recap</button>}
+          </div>
         </div>
-        {(loadError || statsError) && <p role="alert" className="text-sm text-red-700">{loadError ? 'Data database Annual Recap gagal dimuat.' : 'Sumber statistik gagal dibaca; preview dan publish dinonaktifkan.'}</p>}
+        {(loadError || statsError) && <p role="alert" className="rounded-xl bg-red-50 px-3 py-2 text-sm text-red-700">{loadError ? 'Data database Annual Recap gagal dimuat.' : 'Sumber statistik gagal dibaca; preview dan publish dinonaktifkan.'}</p>}
       </section>
 
-      <section className="space-y-3 border-b border-slate-200 pb-5" aria-label="Musik Annual Recap">
-        <div className="flex items-center gap-2 text-slate-700"><Music2 className="h-4 w-4 text-blue-600" /><h2 className="text-xs font-black uppercase tracking-[0.18em]">Musik Story</h2></div>
-        <p className="text-xs text-slate-500">MP3, M4A, AAC, OGG, WAV, atau WebM · Maks. 25 MB · musik berhenti setelah Story selesai.</p>
-        <input ref={musicInputRef} type="file" accept=".mp3,.m4a,.aac,.ogg,.wav,.webm,audio/mpeg,audio/mp4,audio/aac,audio/ogg,audio/wav,audio/webm" onChange={(event) => void handleMusicUpload(event)} className="hidden" />
-        <div className="flex flex-wrap items-center gap-2">
-          <button type="button" onClick={() => musicInputRef.current?.click()} disabled={loading || musicUploading} className="btn-secondary"><Upload className="h-4 w-4" />{musicUploading ? 'Mengunggah musik...' : musicUrl ? 'Ganti musik' : 'Upload musik'}</button>
-          {musicUrl && <button type="button" onClick={() => { setMusicUrl(''); onNotice('Musik dihapus dari perubahan. Simpan untuk menerapkan.'); }} disabled={musicUploading} className="btn-secondary"><Trash2 className="h-4 w-4" />Hapus musik</button>}
-        </div>
-        {musicUrl && <audio controls preload="metadata" src={musicUrl} className="h-10 w-full max-w-md" />}
+      <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white" aria-label="Musik Annual Recap">
+        <details className="group" open={Boolean(musicUrl)}>
+          <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 [&::-webkit-details-marker]:hidden">
+            <span className="flex min-w-0 items-center gap-3">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-700"><Music2 className="h-5 w-5" /></span>
+              <span className="min-w-0">
+                <span className="block text-sm font-bold text-slate-900">Musik Story</span>
+                <span className="block truncate text-xs text-slate-500">{musicUrl ? 'Musik terpasang' : 'Opsional · belum ada musik'}</span>
+              </span>
+            </span>
+            <ChevronDown className="h-5 w-5 shrink-0 text-slate-500 transition-transform group-open:rotate-180" />
+          </summary>
+          <div className="space-y-3 border-t border-slate-200 px-4 py-4">
+            <p className="text-xs leading-5 text-slate-500">MP3, M4A, AAC, OGG, WAV, atau WebM · Maks. 25 MB. Musik berhenti setelah Story selesai.</p>
+            <input ref={musicInputRef} type="file" accept=".mp3,.m4a,.aac,.ogg,.wav,.webm,audio/mpeg,audio/mp4,audio/aac,audio/ogg,audio/wav,audio/webm" onChange={(event) => void handleMusicUpload(event)} className="hidden" />
+            <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+              <button type="button" onClick={() => musicInputRef.current?.click()} disabled={loading || musicUploading} className="btn-secondary w-full justify-center sm:w-auto"><Upload className="h-4 w-4" />{musicUploading ? 'Mengunggah musik...' : musicUrl ? 'Ganti musik' : 'Upload musik'}</button>
+              {musicUrl && <button type="button" onClick={() => { setMusicUrl(''); onNotice('Musik dihapus dari perubahan. Simpan untuk menerapkan.'); }} disabled={musicUploading} className="btn-secondary w-full justify-center sm:w-auto"><Trash2 className="h-4 w-4" />Hapus musik</button>}
+            </div>
+            {musicUrl && <audio controls preload="metadata" src={musicUrl} className="h-10 w-full" />}
+          </div>
+        </details>
       </section>
 
-      <div className="grid gap-5 lg:grid-cols-[1.2fr_0.8fr]">
-        <div className="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
+      <div className="grid gap-4 xl:grid-cols-[1.2fr_0.8fr]">
+        <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5" aria-labelledby="annual-recap-closing-heading">
           <div className="mb-3 flex items-center gap-2 text-blue-700">
             <Sparkles className="h-4 w-4" />
-            <span className="text-xs font-black uppercase tracking-[0.18em]">Narasi Penutup</span>
+            <h2 id="annual-recap-closing-heading" className="text-sm font-bold">Narasi penutup</h2>
           </div>
-          <textarea value={closingNarrative} onChange={(event) => setClosingNarrative(event.target.value)} disabled={loading || loadError} className="input-field min-h-[160px]" placeholder="Tulis narasi penutup jika ingin mengganti default." />
-          <p className="mt-2 text-xs text-slate-500">Kosongkan untuk menggunakan default narasi standar.</p>
-        </div>
+          <textarea value={closingNarrative} onChange={(event) => setClosingNarrative(event.target.value)} disabled={loading || loadError} className="input-field min-h-[180px] text-base leading-relaxed" placeholder="Tulis narasi penutup jika ingin mengganti default." />
+          <p className="mt-2 text-xs leading-5 text-slate-500">Kosongkan untuk menggunakan narasi standar.</p>
+        </section>
 
-        <div className="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
-          <div className="mb-4 flex items-center gap-2 text-slate-700">
+        <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5" aria-labelledby="annual-recap-status-heading">
+          <div className="mb-3 flex items-center gap-2 text-slate-700">
             <FileText className="h-4 w-4 text-blue-600" />
-            <span className="text-xs font-black uppercase tracking-[0.18em]">Status</span>
+            <h2 id="annual-recap-status-heading" className="text-sm font-bold">Status recap</h2>
           </div>
-
-          <div className="space-y-3 text-sm text-slate-600">
-            <div className="flex items-center justify-between rounded-2xl bg-slate-50 px-3 py-2">
-              <span>Tahun</span>
-              <strong className="text-slate-900">{selectedYear}</strong>
-            </div>
-            <div className="flex items-center justify-between rounded-2xl bg-slate-50 px-3 py-2">
-              <span>Publikasi</span>
-              <strong className={record?.published ? 'text-emerald-700' : 'text-slate-500'}>{record?.published ? 'Published' : 'Draft'}</strong>
-            </div>
-            <div className="flex items-center justify-between rounded-2xl bg-slate-50 px-3 py-2">
-              <span>Penampilan terverifikasi</span>
-              <strong className="text-slate-900">{stats?.appearanceCount.toLocaleString('id-ID') ?? '—'}</strong>
-            </div>
-            <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-3 py-4 text-xs leading-5 text-slate-500">
-              Hanya Admin Penuh dapat mengelola recap. Simpan perubahan mempertahankan status publikasi; publish dan unpublish dilakukan lewat aksi terpisah.
-            </div>
-          </div>
-        </div>
+          <dl className="divide-y divide-slate-100 text-sm">
+            <div className="flex items-center justify-between gap-3 py-3"><dt className="text-slate-600">Tahun</dt><dd className="font-bold text-slate-900">{selectedYear}</dd></div>
+            <div className="flex items-center justify-between gap-3 py-3"><dt className="text-slate-600">Publikasi</dt><dd><span className={`rounded-full px-2.5 py-1 text-xs font-bold ${record?.published ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-600'}`}>{record?.published ? 'Published' : 'Draft'}</span></dd></div>
+            <div className="flex items-center justify-between gap-3 py-3"><dt className="text-slate-600">Penampilan terverifikasi</dt><dd className="font-bold text-slate-900">{stats?.appearanceCount.toLocaleString('id-ID') ?? '—'}</dd></div>
+          </dl>
+          <p className="mt-2 border-t border-slate-100 pt-3 text-xs leading-5 text-slate-500">Simpan perubahan tidak mengubah status publikasi. Gunakan Publish atau Unpublish untuk mengaturnya.</p>
+        </section>
       </div>
 
       <section className="space-y-3" aria-label="Semua Annual Recap">
-        <div className="flex items-center justify-between">
-          <h2 className="text-sm font-bold text-slate-800">Semua tahun</h2>
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <h2 className="text-base font-bold text-slate-900">Semua tahun</h2>
+            <p className="mt-0.5 text-xs text-slate-500">Pilih tahun tersimpan untuk mengedit.</p>
+          </div>
           {recordsLoading && <span className="text-xs text-slate-500">Memuat...</span>}
         </div>
-        {records.length > 0 ? (
-          <div className="divide-y divide-slate-200 border-y border-slate-200">
-            {records.map((item) => (
-              <button key={item.id ?? item.year} type="button" onClick={() => { setSelectedYear(item.year); setYearInput(String(item.year)); }} className={`flex w-full items-center justify-between gap-3 py-3 text-left ${selectedYear === item.year ? 'text-blue-800' : 'text-slate-700'}`}>
-                <span className="font-semibold">{item.year}</span>
-                <span className={`text-xs font-semibold ${item.published ? 'text-emerald-700' : 'text-slate-500'}`}>{item.published ? 'Published' : 'Draft'}</span>
+        {records.length > 0 && (
+          <label className="relative block">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+            <input type="search" inputMode="numeric" value={yearSearch} onChange={(event) => setYearSearch(event.target.value.replace(/\D/g, '').slice(0, 4))} placeholder="Cari tahun, mis. 2025" aria-label="Cari tahun recap tersimpan" className="input-field pl-10" />
+          </label>
+        )}
+        {filteredRecords.length > 0 ? (
+          <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white divide-y divide-slate-100">
+            {filteredRecords.map((item) => (
+              <button key={item.id ?? item.year} type="button" onClick={() => { setSelectedYear(item.year); setYearInput(String(item.year)); }} aria-current={selectedYear === item.year ? 'true' : undefined} className={`flex min-h-14 w-full items-center justify-between gap-3 px-4 py-3 text-left transition-colors ${selectedYear === item.year ? 'bg-blue-50 text-blue-900' : 'text-slate-700 hover:bg-slate-50'}`}>
+                <span className="font-bold">{item.year}</span>
+                <span className={`rounded-full px-2.5 py-1 text-xs font-bold ${item.published ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-600'}`}>{item.published ? 'Published' : 'Draft'}</span>
               </button>
             ))}
           </div>
+        ) : !recordsLoading && records.length > 0 ? (
+          <p className="rounded-xl bg-slate-50 px-4 py-5 text-sm text-slate-500">Tidak ada recap untuk tahun tersebut.</p>
         ) : !recordsLoading && !loadError ? (
-          <p className="text-sm text-slate-500">Belum ada Annual Recap tersimpan.</p>
+          <p className="rounded-xl bg-slate-50 px-4 py-5 text-sm text-slate-500">Belum ada Annual Recap tersimpan.</p>
         ) : null}
       </section>
     </div>

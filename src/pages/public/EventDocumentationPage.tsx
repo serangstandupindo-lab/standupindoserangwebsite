@@ -218,6 +218,13 @@ export function EventDocumentationPage({ router, slug, settings }: EventDocument
   const selectedLightboxPhoto = lightboxIndex === null ? null : galleryPhotos[lightboxIndex];
   const lightboxPhoto = selectedLightboxPhoto && !failedImages.has(selectedLightboxPhoto) ? selectedLightboxPhoto : null;
   const lightboxPosition = lightboxPhoto ? availablePhotos.indexOf(lightboxPhoto) + 1 : 0;
+  const lightboxPhotoIndex = lightboxPosition - 1;
+  const peekPreviousPhoto = lightboxPhotoIndex >= 0 && availablePhotos.length > 1
+    ? availablePhotos[(lightboxPhotoIndex - 1 + availablePhotos.length) % availablePhotos.length]
+    : undefined;
+  const peekNextPhoto = lightboxPhotoIndex >= 0 && availablePhotos.length > 1
+    ? availablePhotos[(lightboxPhotoIndex + 1) % availablePhotos.length]
+    : undefined;
   return (
     <div className="min-h-screen overflow-hidden bg-[#030712] text-white">
       <section className="relative isolate flex min-h-[min(780px,88svh)] flex-col justify-between overflow-hidden border-b border-white/10">
@@ -345,7 +352,15 @@ export function EventDocumentationPage({ router, slug, settings }: EventDocument
           src={lightboxPhoto}
           alt={`${event.title} — foto ${lightboxPosition} dari ${availablePhotos.length}`}
           open
-          positionLabel={`${lightboxPosition} / ${availablePhotos.length}`}
+          hideNavigationControls
+          edgeToEdge
+          peekPreviousSrc={peekPreviousPhoto}
+          peekNextSrc={peekNextPhoto}
+          pagination={{
+            currentIndex: lightboxPosition - 1,
+            total: availablePhotos.length,
+            onSelect: (index) => setLightboxIndex(galleryPhotos.indexOf(availablePhotos[index])),
+          }}
           onClose={() => setLightboxIndex(null)}
           onPrevious={availablePhotos.length > 1 ? () => moveLightbox(-1) : undefined}
           onNext={availablePhotos.length > 1 ? () => moveLightbox(1) : undefined}
