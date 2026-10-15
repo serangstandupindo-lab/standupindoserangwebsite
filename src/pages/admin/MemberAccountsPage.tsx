@@ -33,6 +33,7 @@ export function MemberAccountsPage({ komika, onNotice }: { komika: Komika[]; onN
   const [resetSearch, setResetSearch] = useState('');
   const [resetPickerOpen, setResetPickerOpen] = useState(false);
   const [resetPassword, setResetPassword] = useState('');
+  const [showResetPassword, setShowResetPassword] = useState(false);
   const [resetSaving, setResetSaving] = useState(false);
   const [showAllAccounts, setShowAllAccounts] = useState(false);
   const selectedKomika = komika.find((profile) => profile.id === komikaId);
@@ -87,6 +88,7 @@ export function MemberAccountsPage({ komika, onNotice }: { komika: Komika[]; onN
     if (error || data?.error) { onNotice(error?.message ?? data?.error ?? 'Password akun gagal direset.'); return; }
     setResetTarget(null);
     setResetPassword('');
+    setShowResetPassword(false);
     onNotice(`Password ${resetTarget.email ?? 'akun member'} berhasil direset.`);
   }
 
@@ -193,16 +195,16 @@ export function MemberAccountsPage({ komika, onNotice }: { komika: Komika[]; onN
           <p className="mt-1 text-xs text-slate-500">Pilih akun member lalu buat password baru minimal 6 karakter.</p>
           <div className="mt-3 grid gap-2 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto]">
             <div className="relative">
-              <input value={resetTarget ? `${resetTarget.profile?.stage_name ?? 'Akun member'} · ${resetTarget.email ?? 'tanpa email'}` : resetSearch} onChange={(event) => { setResetTarget(null); setResetSearch(event.target.value); setResetPickerOpen(true); }} onFocus={() => setResetPickerOpen(true)} className="input-field" placeholder="Cari nama atau email member" autoComplete="off" aria-label="Cari akun untuk reset password" />
+              <input value={resetTarget ? `${resetTarget.profile?.stage_name ?? 'Akun member'} · ${resetTarget.email ?? 'tanpa email'}` : resetSearch} onChange={(event) => { setResetTarget(null); setResetPassword(''); setShowResetPassword(false); setResetSearch(event.target.value); setResetPickerOpen(true); }} onFocus={() => setResetPickerOpen(true)} className="input-field" placeholder="Cari nama atau email member" autoComplete="off" aria-label="Cari akun untuk reset password" />
               {resetPickerOpen && <>
                 <button type="button" className="fixed inset-0 z-20 cursor-default" onClick={() => setResetPickerOpen(false)} aria-label="Tutup pilihan akun reset password" />
                 <div className="absolute left-0 right-0 top-full z-30 mt-2 max-h-56 overflow-y-auto rounded-xl border border-blue-100 bg-white p-1.5 shadow-lg">
-                  {filteredResetAccounts.map((account) => <button key={account.id} type="button" onClick={() => { setResetTarget(account); setResetSearch(''); setResetPickerOpen(false); setResetPassword(''); }} className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-left transition hover:bg-blue-50"><span className="min-w-0"><span className="block truncate text-sm font-bold text-slate-800">{account.profile?.stage_name ?? 'Akun member'}</span><span className="block truncate text-xs text-slate-500">{account.email ?? 'Email belum tersedia'}</span></span>{resetTarget?.id === account.id && <Check className="h-4 w-4 shrink-0 text-blue-600" />}</button>)}
+                  {filteredResetAccounts.map((account) => <button key={account.id} type="button" onClick={() => { setResetTarget(account); setResetSearch(''); setResetPickerOpen(false); setResetPassword(''); setShowResetPassword(false); }} className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-left transition hover:bg-blue-50"><span className="min-w-0"><span className="block truncate text-sm font-bold text-slate-800">{account.profile?.stage_name ?? 'Akun member'}</span><span className="block truncate text-xs text-slate-500">{account.email ?? 'Email belum tersedia'}</span></span>{resetTarget?.id === account.id && <Check className="h-4 w-4 shrink-0 text-blue-600" />}</button>)}
                   {filteredResetAccounts.length === 0 && <p className="px-3 py-3 text-sm text-slate-500">Akun member tidak ditemukan.</p>}
                 </div>
               </>}
             </div>
-            <input type="password" value={resetPassword} onChange={(event) => setResetPassword(event.target.value)} className="input-field" placeholder="Password baru" minLength={6} autoComplete="new-password" aria-label="Password baru" />
+            <div className="relative"><input type={showResetPassword ? 'text' : 'password'} value={resetPassword} onChange={(event) => setResetPassword(event.target.value)} className="input-field !pr-12" placeholder="Password baru" minLength={6} autoComplete="new-password" aria-label="Password baru" /><button type="button" onClick={() => setShowResetPassword((visible) => !visible)} className="absolute right-2 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-100 hover:text-blue-700" aria-label={showResetPassword ? 'Sembunyikan password' : 'Tampilkan password'} aria-pressed={showResetPassword} title={showResetPassword ? 'Sembunyikan password' : 'Tampilkan password'}>{showResetPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}</button></div>
             <button type="button" onClick={() => void resetAccountPassword()} disabled={!resetTarget || resetPassword.length < 6 || resetSaving} className="btn-primary whitespace-nowrap disabled:cursor-not-allowed disabled:opacity-50">{resetSaving ? 'Menyimpan...' : 'Reset Password'}</button>
           </div>
         </div>}
@@ -216,7 +218,7 @@ export function MemberAccountsPage({ komika, onNotice }: { komika: Komika[]; onN
           </div>
           <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
             <button type="button" onClick={() => setDeleteTarget(null)} className="btn-secondary w-full sm:w-auto">Batal</button>
-            <button type="button" onClick={() => deleteTarget && void deleteAccount(deleteTarget)} disabled={Boolean(togglingId)} className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-red-600 px-4 py-2.5 text-sm font-extrabold text-white shadow-[0_8px_18px_rgba(220,38,38,0.2)] transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"><Trash2 className="h-4 w-4" /> Hapus Akun</button>
+            <button type="button" onClick={() => deleteTarget && void deleteAccount(deleteTarget)} disabled={Boolean(togglingId)} className="btn-danger w-full sm:w-auto"><Trash2 className="h-4 w-4" /> Hapus Akun</button>
           </div>
         </div>
       </Modal>

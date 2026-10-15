@@ -70,7 +70,7 @@ export function CommunityJoinPage({ router }: { router: Router }) {
               <CheckCircle2 className="mx-auto h-10 w-10 text-green-600" />
               <h2 className="mt-3 text-xl font-extrabold text-slate-900">Pendaftaran diterima</h2>
               <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500">Data kamu sudah masuk. Admin akan menghubungi melalui WhatsApp setelah meninjau pendaftaran.</p>
-              <button onClick={() => router.navigate('/')} className="btn-primary mt-5">Kembali ke Beranda</button>
+              <button onClick={() => router.navigate('/')} className="btn-secondary mt-5">Kembali ke Beranda</button>
             </div>
           ) : (
             <form data-scroll-reveal onSubmit={submit} className="scroll-reveal card space-y-4 p-4 sm:p-6">

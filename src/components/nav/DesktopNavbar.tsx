@@ -12,7 +12,11 @@ const LINKS = [
 
 export function DesktopNavbar({ router, settings }: { router: Router; settings: SiteSettings }) {
   const isActive = (to: string) =>
-    to === '/' ? router.path === '/' : router.path.startsWith(to);
+    to === '/'
+      ? router.path === '/'
+      : to === '/more'
+        ? router.path === '/more' || (router.path.startsWith('/more/') && router.path !== '/more/kerja-sama')
+        : router.path.startsWith(to);
 
   return (
     <header className="relative sticky top-0 z-40 overflow-hidden border-b border-blue-900/40 bg-blue-700/95 text-white shadow-[0_4px_20px_rgba(15,23,42,0.16)] backdrop-blur-md before:absolute before:inset-x-0 before:top-0 before:h-0.5 before:bg-gradient-to-r before:from-sky-300 before:via-white before:to-yellow-300">
@@ -22,7 +26,7 @@ export function DesktopNavbar({ router, settings }: { router: Router; settings: 
             <img src="/assets/images/Standupindo%20Serang%20Logo.png" alt="Logo Standupindo Serang" className="block h-full w-full object-contain" />
           </span>
           <span className="hidden text-[15px] font-black tracking-[-0.02em] text-white sm:inline sm:text-[15px]">
-            <span className="site-brand-light-leak-text" data-light-leak={settings.site_short_name.replace(/\s+SERANG$/i, '')}>{settings.site_short_name.replace(/\s+SERANG$/i, '')}</span>
+            <span className="site-brand-light-leak-text" data-light-leak={settings.site_short_name}>{settings.site_short_name}</span>
           </span>
           <span className="flex flex-col text-left text-[14px] font-black leading-[0.95] tracking-[-0.025em] text-white sm:hidden">
             <span className="site-brand-light-leak-text" data-light-leak="STANDUPINDO">STANDUPINDO</span>
@@ -30,7 +34,7 @@ export function DesktopNavbar({ router, settings }: { router: Router; settings: 
           </span>
         </button>
 
-        <nav className="hidden items-center gap-1 rounded-2xl border border-white/20 bg-blue-800/50 p-1 md:flex">
+        <nav className="hidden items-center gap-1 rounded-2xl border border-white/20 bg-blue-800/50 p-1 lg:flex">
           {LINKS.map((l) => (
             <button
               key={l.to}
@@ -46,13 +50,13 @@ export function DesktopNavbar({ router, settings }: { router: Router; settings: 
           ))}
         </nav>
 
-        <button onClick={() => router.navigate('/open-mic')} className="btn-primary hidden md:inline-flex !rounded-xl !px-4 !py-2.5">
+        <button onClick={() => router.navigate('/open-mic')} className="btn-primary hidden lg:inline-flex !rounded-xl !px-4 !py-2.5">
           <Mic className="h-4 w-4" /> Daftar Open Mic
         </button>
 
         <button
           onClick={() => router.navigate('/more')}
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-white/60 bg-white/10 text-white shadow-sm transition hover:border-white hover:bg-white/20 sm:h-10 sm:w-10 md:hidden"
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-white/60 bg-white/10 text-white shadow-sm transition hover:border-white hover:bg-white/20 sm:h-10 sm:w-10 lg:hidden"
           aria-label="Menu"
         >
           <Menu className="h-5 w-5" />

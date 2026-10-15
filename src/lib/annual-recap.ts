@@ -40,7 +40,31 @@ type AttendedRegistration = {
 };
 type KomikaProfile = { id: string; stage_name: string; photo: string | null; photo_card: string | null };
 type PublicTicketSalesStats = { totalTicketsSold: number; events: Array<{ eventId: string; ticketsSold: number }> };
-const EVENT_PERFORMER_ROLES = ['lineup', 'opener', 'guest_star', 'special_show'];
+// Include stage acts and hosts; judges are not counted as performer appearances.
+const EVENT_PERFORMER_ROLES = ['lineup', 'opener', 'guest_star', 'mc_host', 'special_show', 'other'];
+const YEARLY_MEMBER_PAGE_SIZE = 500;
+
+async function countNewMembers(year: number) {
+  const yearPattern = new RegExp(`(?:^|\\D)${year}(?:\\D|$)`);
+  let count = 0;
+  let pageFrom = 0;
+
+  while (true) {
+    const { data, error } = await supabase.from('komika')
+      .select('id, joined_at')
+      .eq('published', true)
+      .eq('status', 'active')
+      .ilike('joined_at', `%${year}%`)
+      .order('id', { ascending: true })
+      .range(pageFrom, pageFrom + YEARLY_MEMBER_PAGE_SIZE - 1);
+    if (error) throw error;
+
+    const members = data ?? [];
+    count += members.filter((member) => yearPattern.test(member.joined_at ?? '')).length;
+    if (members.length < YEARLY_MEMBER_PAGE_SIZE) return count;
+    pageFrom += YEARLY_MEMBER_PAGE_SIZE;
+  }
+}
 
 export const DEFAULT_RECAP_CLOSING = 'Untuk semua komika yang naik ke panggung, semua komunitas yang ikut meramaikan, dan semua orang yang datang, menonton, mendukung, serta membuat Standupindo Serang terus berjalan.';
 
@@ -76,22 +100,19 @@ export async function loadAnnualRecapStats(year: number): Promise<AnnualRecapSta
   const currentYear = Number(getJakartaDate().slice(0, 4));
   const untilDate = year === currentYear ? getJakartaDate() : yearEnd;
 
-  const [openMicResult, eventResult, attendanceHistoryResult, newMemberResult] = await Promise.all([
+  const [openMicResult, eventResult, attendanceHistoryResult, newMemberCount] = await Promise.all([
     supabase.from('open_mics').select('id, title, date, venue, location, poster')
       .eq('published', true).neq('status', 'cancelled').gte('date', fromDate).lt('date', untilDate).order('date', { ascending: true }),
     supabase.from('events').select('id, title, date, poster, documentation_photos')
       .eq('published', true).neq('status', 'cancelled').gte('date', fromDate).lt('date', untilDate).order('date', { ascending: true }),
     supabase.from('open_mics').select('id, date')
       .eq('published', true).neq('status', 'cancelled').lt('date', untilDate),
-    supabase.from('komika').select('id', { count: 'exact', head: true })
-      .eq('published', true).eq('status', 'active').eq('joined_at', String(year)),
+    countNewMembers(year),
   ]);
 
   if (openMicResult.error) throw openMicResult.error;
   if (eventResult.error) throw eventResult.error;
   if (attendanceHistoryResult.error) throw attendanceHistoryResult.error;
-  if (newMemberResult.error) throw newMemberResult.error;
-
   const openMics = (openMicResult.data ?? []) as RecapOpenMic[];
   const events = (eventResult.data ?? []) as RecapEvent[];
   const historicalOpenMics = attendanceHistoryResult.data ?? [];
@@ -133,7 +154,7 @@ export async function loadAnnualRecapStats(year: number): Promise<AnnualRecapSta
 
   const normalizePerformerName = (name: string) => name.trim().replace(/\s+/g, ' ').toLocaleLowerCase('id-ID');
   const komikaIdByName = new Map<string, string | null>();
-  currentRegistrations.forEach((registration) => {
+  registrations.forEach((registration) => {
     if (!registration.komika_id) return;
     const profileName = profilesById.get(registration.komika_id)?.stage_name;
     [registration.stage_name, profileName ?? ''].forEach((name) => {
@@ -167,16 +188,21 @@ export async function loadAnnualRecapStats(year: number): Promise<AnnualRecapSta
   const performerCounts = new Map<string, { id: string; name: string; count: number; photo: string | null }>();
   const communityCounts = new Map<string, { name: string; count: number }>();
   const openMicAppearanceCounts = new Map<string, number>();
-  const earliestPerformanceByKomika = new Map<string, string>();
+  const earliestPerformanceByPerformer = new Map<string, string>();
   const independentLabels = new Set(['umum', 'independen', 'independent', 'tanpa komunitas']);
   const internalCommunityLabels = new Set(['standupindo serang', 'komunitas standupindo serang']);
   let independentAppearanceCount = 0;
 
   registrations.forEach((registration) => {
     const performanceDate = dateByOpenMicId.get(registration.open_mic_id);
-    if (performanceDate && registration.komika_id) {
-      const previousDate = earliestPerformanceByKomika.get(registration.komika_id);
-      if (!previousDate || performanceDate < previousDate) earliestPerformanceByKomika.set(registration.komika_id, performanceDate);
+    if (performanceDate) {
+      const normalizedName = normalizePerformerName(registration.stage_name);
+      const linkedKomikaId = registration.komika_id ?? (normalizedName ? komikaIdByName.get(normalizedName) : null);
+      const identity = linkedKomikaId ? `komika:${linkedKomikaId}` : normalizedName ? `name:${normalizedName}` : null;
+      if (identity) {
+        const previousDate = earliestPerformanceByPerformer.get(identity);
+        if (!previousDate || performanceDate < previousDate) earliestPerformanceByPerformer.set(identity, performanceDate);
+      }
     }
 
     if (!currentOpenMicIds.has(registration.open_mic_id)) return;
@@ -260,7 +286,7 @@ export async function loadAnnualRecapStats(year: number): Promise<AnnualRecapSta
   const spotlightEntry = [...ticketsSoldByEvent.entries()].sort((first, second) => second[1] - first[1])[0];
   const spotlightEventRow = spotlightEntry && spotlightEntry[1] > 0 ? eventById.get(spotlightEntry[0]) : null;
   const spotlightDocumentation = eventPhotos.find((photo) => photo.eventId === spotlightEventRow?.id)?.url ?? null;
-  const firstTimePerformerCount = [...earliestPerformanceByKomika.values()]
+  const firstTimePerformerCount = [...earliestPerformanceByPerformer.values()]
     .filter((date) => date >= fromDate && date < untilDate).length;
 
   return {
@@ -269,7 +295,7 @@ export async function loadAnnualRecapStats(year: number): Promise<AnnualRecapSta
     appearanceCount: currentRegistrations.length + eventLineups.length,
     totalPerformerCount: performerIdentities.size,
     firstTimePerformerCount,
-    newMemberCount: newMemberResult.count ?? 0,
+    newMemberCount,
     monthlyActivity: monthlyCounts.map((count, index) => ({
       month: new Intl.DateTimeFormat('id-ID', { month: 'short' }).format(new Date(2020, index, 1)),
       count,

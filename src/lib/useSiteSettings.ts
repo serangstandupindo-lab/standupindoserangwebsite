@@ -18,9 +18,9 @@ const FALLBACK_SETTINGS: SiteSettings = {
   whatsapp_partnership_name: '',
   whatsapp_ticket: '',
   whatsapp_ticket_name: '',
-  instagram_url: '',
-  tiktok_url: '',
-  youtube_url: '',
+  instagram_url: 'https://www.instagram.com/standupindo_srg/',
+  tiktok_url: 'https://www.tiktok.com/@standupindo_serang',
+  youtube_url: 'https://www.youtube.com/@standupindoserang',
   address: 'Serang, Banten',
   short_description: 'Menjadi ruang berkumpulnya komika, penikmat komedi, dan insan kreatif untuk berbagi tawa, mengasah kemampuan, serta saling mendukung dalam berkarya. Bersama-sama membangun ekosistem stand-up comedy yang aktif, inklusif, dan terus berkembang di Serang.',
   affiliation_name: 'Standupindo',
@@ -28,9 +28,23 @@ const FALLBACK_SETTINGS: SiteSettings = {
   affiliation_logo_url: '/assets/images/image.png',
 };
 
+export const SITE_SETTINGS_UPDATED_EVENT = 'standupindo:site-settings-updated';
+
+export function publishSiteSettingsUpdate(settings: SiteSettings) {
+  window.dispatchEvent(new CustomEvent<SiteSettings>(SITE_SETTINGS_UPDATED_EVENT, { detail: settings }));
+}
+
 export function useSiteSettings() {
   const [settings, setSettings] = useState<SiteSettings>(FALLBACK_SETTINGS);
   const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const handleSettingsUpdate = (event: Event) => {
+      setSettings((event as CustomEvent<SiteSettings>).detail);
+    };
+    window.addEventListener(SITE_SETTINGS_UPDATED_EVENT, handleSettingsUpdate);
+    return () => window.removeEventListener(SITE_SETTINGS_UPDATED_EVENT, handleSettingsUpdate);
+  }, []);
 
   useEffect(() => {
     let active = true;

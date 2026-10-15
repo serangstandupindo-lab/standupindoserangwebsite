@@ -1,14 +1,16 @@
 import { Instagram } from 'lucide-react';
 import { useSiteSettings } from '@/lib/useSiteSettings';
+import { getSocialProfileHandle, getSocialProfileUrl } from '@/lib/social-profile';
 
 export function InstagramFollowLink() {
   const { settings } = useSiteSettings();
-  if (!settings.instagram_url) return null;
-  const username = settings.instagram_url.replace(/\/+$/, '').split('/').pop()?.replace(/^@/, '');
+  const instagramUrl = getSocialProfileUrl(settings.instagram_url, 'instagram');
+  if (!instagramUrl) return null;
+  const username = getSocialProfileHandle(settings.instagram_url, 'instagram');
 
   return (
     <a
-      href={settings.instagram_url}
+      href={instagramUrl}
       target="_blank"
       rel="noopener noreferrer"
       className="group inline-flex w-fit items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-600 shadow-sm transition hover:border-pink-200 hover:bg-pink-50 hover:text-pink-700 focus:outline-none focus:ring-2 focus:ring-pink-200 focus:ring-offset-2"

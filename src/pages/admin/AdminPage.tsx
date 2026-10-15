@@ -4,6 +4,7 @@ import type { Router } from '@/lib/router';
 import type { ApplicationStatus, AttendanceStatus, CommunityApplication, EventItem, EventPartnership, EventParticipant, EventTicket, EvaluatorAssignment, Komika, MemberOpenMicHistoryStatus, MemberOpenMicHistorySubmission, OpenMic, OpenMicRegistration, Partner, SiteSettings, TicketOrder, TicketOrderStatus } from '@/lib/types';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/lib/auth-context';
+import { publishSiteSettingsUpdate } from '@/lib/useSiteSettings';
 import { formatDate, formatPrice, getEventStatus, getOpenMicNumbers, getOpenMicStatus, normalizeWhatsappNumber, slugify, waLink } from '@/lib/format';
 import { generateTicketOrderWhatsAppUrl } from '@/lib/whatsapp';
 import { Modal } from '@/components/ui/Modal';
@@ -719,7 +720,7 @@ function NotificationBell({
         aria-haspopup="dialog"
       >
         <Bell className="h-5 w-5" />
-        {unreadCount > 0 && <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-red-600 px-1 text-[10px] font-extrabold text-white">{unreadCount > 99 ? '99+' : unreadCount}</span>}
+        {unreadCount > 0 && <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-blue-600 px-1 text-[10px] font-extrabold text-white">{unreadCount > 99 ? '99+' : unreadCount}</span>}
       </button>
 
       {open && (
@@ -961,7 +962,7 @@ export function AdminPage({ router, settings }: Props) {
           <div className="flex items-center gap-3">
             <NotificationBell inverse notifications={notifications} unreadCount={unreadCount} onNavigate={navigateSection} onMarkAsRead={markAsRead} onMarkAllAsRead={markAllNotificationsAsRead} />
             <span className="text-sm text-blue-100">{user?.email}</span>
-            <button type="button" onClick={async () => { await signOut(); router.navigate('/admin/login'); }} className="inline-flex items-center gap-2 rounded-xl bg-red-600 px-3 py-2 text-xs font-extrabold text-white shadow-sm transition hover:bg-red-700" title="Keluar dari Admin Panel">
+            <button type="button" onClick={async () => { await signOut(); router.navigate('/admin/login'); }} className="inline-flex items-center gap-2 rounded-xl bg-white/10 px-3 py-2 text-xs font-extrabold text-white transition hover:bg-white/20" title="Keluar dari Admin Panel">
               <LogOut className="h-4 w-4" />
               Keluar
             </button>
@@ -989,7 +990,7 @@ export function AdminPage({ router, settings }: Props) {
           </div>
           <div className="flex gap-3">
             <button type="button" onClick={() => setDeleteTarget(null)} className="btn-secondary flex-1">Batal</button>
-            <button type="button" onClick={() => void confirmDeleteRow()} className="flex-1 rounded-xl bg-red-600 px-4 py-3 text-sm font-extrabold text-white transition hover:bg-red-700">Ya, Hapus {deleteTarget?.table === 'open_mics' ? 'Open Mic' : deleteTarget?.table === 'events' ? 'Event' : 'Data'}</button>
+            <button type="button" onClick={() => void confirmDeleteRow()} className="btn-danger flex-1 !min-h-11">Ya, Hapus {deleteTarget?.table === 'open_mics' ? 'Open Mic' : deleteTarget?.table === 'events' ? 'Event' : 'Data'}</button>
           </div>
         </div>
       </Modal>
@@ -998,7 +999,7 @@ export function AdminPage({ router, settings }: Props) {
           <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm font-semibold leading-6 text-red-700">Data pesanan tiket ini akan dihapus permanen dan tidak dapat dikembalikan.</div>
           <div className="flex gap-3">
             <button type="button" onClick={() => setTicketDeleteTarget(null)} className="btn-secondary flex-1">Batal</button>
-            <button type="button" onClick={() => void confirmDeleteTicketOrder()} className="flex-1 rounded-xl bg-red-600 px-4 py-3 text-sm font-extrabold text-white transition hover:bg-red-700">Ya, Hapus Pesanan</button>
+            <button type="button" onClick={() => void confirmDeleteTicketOrder()} className="btn-danger flex-1 !min-h-11">Ya, Hapus Pesanan</button>
           </div>
         </div>
       </Modal>
@@ -1030,7 +1031,7 @@ export function AdminPage({ router, settings }: Props) {
                 <button key={item.key} onClick={() => navigateSection(item.key)} className={`flex w-full items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold transition ${sidebarCollapsed ? 'justify-center px-2' : ''} ${(item.key === 'more' ? isMoreNavigationActive(section, isTicketAdmin, isQrScanner) : section === item.key) ? 'bg-blue-50 text-blue-700' : 'text-slate-600 hover:bg-slate-100'}`} title={sidebarCollapsed ? item.label : undefined}>
                   <Icon className="h-5 w-5" />
                   {!sidebarCollapsed && <span className="flex-1 text-left">{item.label}</span>}
-                  {showPendingBadge && <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-red-600 px-1.5 text-[11px] font-extrabold leading-none text-white" aria-label="Data menunggu review">{menuBadgeCount > 99 ? '99+' : menuBadgeCount}</span>}
+                  {showPendingBadge && <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-amber-100 px-1.5 text-[11px] font-extrabold leading-none text-amber-900 ring-1 ring-inset ring-amber-300" aria-label="Data menunggu review">{menuBadgeCount > 99 ? '99+' : menuBadgeCount}</span>}
                 </button>
               );
             })}
@@ -1039,7 +1040,7 @@ export function AdminPage({ router, settings }: Props) {
             <button onClick={() => router.navigate('/')} className={`flex w-full items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold text-slate-500 transition hover:bg-slate-100 hover:text-blue-700 ${sidebarCollapsed ? 'justify-center px-2' : ''}`} title={sidebarCollapsed ? 'Lihat Website' : undefined}>
               <ExternalLink className="h-5 w-5" /> {!sidebarCollapsed && 'Lihat Website'}
             </button>
-            <button onClick={async () => { await signOut(); router.navigate('/admin/login'); }} className={`mt-2 flex w-full items-center gap-3 rounded-xl bg-red-600 px-3 py-3 text-sm font-semibold text-white transition hover:bg-red-700 ${sidebarCollapsed ? 'justify-center px-2' : ''}`} title="Keluar" aria-label="Keluar dari Admin Panel">
+            <button onClick={async () => { await signOut(); router.navigate('/admin/login'); }} className={`mt-2 flex w-full items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 ${sidebarCollapsed ? 'justify-center px-2' : ''}`} title="Keluar" aria-label="Keluar dari Admin Panel">
               <LogOut className="h-5 w-5" /> {!sidebarCollapsed && 'Keluar'}
             </button>
           </div>
@@ -1145,7 +1146,7 @@ export function AdminPage({ router, settings }: Props) {
               >
                 <span className={`mobile-nav-icon relative flex h-9 w-9 items-center justify-center rounded-xl transition-all duration-300 ${isActive ? 'mobile-nav-icon-active bg-blue-600 text-white shadow-[0_8px_18px_rgba(29,94,219,0.3)]' : 'text-slate-400'}`}>
                   <Icon className="h-5 w-5" />
-                  {showPendingBadge && <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-600 px-1 text-[9px] font-extrabold leading-none text-white" aria-label="Data menunggu review">{menuBadgeCount > 99 ? '99+' : menuBadgeCount}</span>}
+                  {showPendingBadge && <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-amber-100 px-1 text-[9px] font-extrabold leading-none text-amber-900 ring-1 ring-inset ring-amber-300" aria-label="Data menunggu review">{menuBadgeCount > 99 ? '99+' : menuBadgeCount}</span>}
                 </span>
                 <span className={`mobile-nav-label text-[10px] font-semibold ${isActive ? 'mobile-nav-label-active text-blue-700' : 'text-slate-400'}`}>
                   {item.label}
@@ -2227,7 +2228,7 @@ function OpenMicManagement({ rows, registrations, loading, showRegistrants = tru
                   </td>
                   <td className="px-5 py-4">
                     <div className="flex justify-end gap-1">
-                      {showRegistrants && <button onClick={() => onViewRegistrants(m)} className="relative rounded-lg p-2 text-slate-500 hover:bg-blue-50 hover:text-blue-700" title="Lihat Pendaftar"><Users className="h-4 w-4" />{registrations.filter((registration) => registration.open_mic_id === m.id && registration.status === 'pending').length > 0 && <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-600 px-1 text-[9px] font-extrabold leading-none text-white">{registrations.filter((registration) => registration.open_mic_id === m.id && registration.status === 'pending').length}</span>}</button>}
+                      {showRegistrants &&                       <button onClick={() => onViewRegistrants(m)} className="relative rounded-lg p-2 text-slate-500 hover:bg-blue-50 hover:text-blue-700" title="Lihat Pendaftar"><Users className="h-4 w-4" />{registrations.filter((registration) => registration.open_mic_id === m.id && registration.status === 'pending').length > 0 && <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-amber-100 px-1 text-[9px] font-extrabold leading-none text-amber-900 ring-1 ring-inset ring-amber-300">{registrations.filter((registration) => registration.open_mic_id === m.id && registration.status === 'pending').length}</span>}</button>}
                       <button onClick={() => onEdit(m)} className="rounded-lg p-2 text-slate-500 hover:bg-blue-50 hover:text-blue-700" title="Edit"><Pencil className="h-4 w-4" /></button>
                       <button onClick={() => onDelete(m.id)} className="rounded-lg p-2 text-slate-500 hover:bg-red-50 hover:text-red-700" title="Hapus"><Trash2 className="h-4 w-4" /></button>
                     </div>
@@ -2266,7 +2267,7 @@ function OpenMicManagement({ rows, registrations, loading, showRegistrants = tru
               </button>
             </div>
             {expandedRows.has(m.id) && <div className="mt-4 flex items-center gap-2 border-t border-slate-100 pt-3">
-              {showRegistrants && <button onClick={() => onViewRegistrants(m)} className="relative flex-1 rounded-lg bg-slate-100 py-2.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-200">Pendaftar{registrations.filter((registration) => registration.open_mic_id === m.id && registration.status === 'pending').length > 0 && <span className="ml-1.5 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-red-600 px-1 text-[9px] font-extrabold leading-none text-white">{registrations.filter((registration) => registration.open_mic_id === m.id && registration.status === 'pending').length}</span>}</button>}
+              {showRegistrants && <button onClick={() => onViewRegistrants(m)} className="relative flex-1 rounded-lg bg-slate-100 py-2.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-200">Pendaftar{registrations.filter((registration) => registration.open_mic_id === m.id && registration.status === 'pending').length > 0 && <span className="ml-1.5 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-amber-100 px-1 text-[9px] font-extrabold leading-none text-amber-900 ring-1 ring-inset ring-amber-300">{registrations.filter((registration) => registration.open_mic_id === m.id && registration.status === 'pending').length}</span>}</button>}
               <button type="button" onClick={() => onEdit(m)} className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-50 text-blue-700 transition hover:bg-blue-100" title="Edit Open Mic" aria-label={`Edit ${m.title}`}><Pencil className="h-4 w-4" /></button>
               <button type="button" onClick={() => onDelete(m.id)} className="flex h-10 w-10 items-center justify-center rounded-lg bg-red-50 text-red-700 transition hover:bg-red-100" title="Hapus Open Mic" aria-label={`Hapus ${m.title}`}><Trash2 className="h-4 w-4" /></button>
             </div>}
@@ -2451,7 +2452,7 @@ function EventManagement({ rows, loading, pendingCounts, canManageTickets, initi
                   </td>
                   <td className="px-5 py-4">
                     <div className="flex justify-end gap-1">
-                      {getEventStatus(e.status, e.date) !== 'completed' && e.registration_status === 'open' && <button onClick={() => onViewParticipants(e)} className="relative rounded-lg p-2 text-slate-500 hover:bg-green-50 hover:text-green-700" title="Lihat Pendaftar" aria-label={`Lihat pendaftar ${e.title}`}><UserPlus className="h-4 w-4" />{pendingCounts[e.id] > 0 && <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-600 px-1 text-[9px] font-extrabold leading-none text-white">{pendingCounts[e.id]}</span>}</button>}
+                      {getEventStatus(e.status, e.date) !== 'completed' && e.registration_status === 'open' && <button onClick={() => onViewParticipants(e)} className="relative rounded-lg p-2 text-slate-500 hover:bg-blue-50 hover:text-blue-700" title="Lihat Pendaftar" aria-label={`Lihat pendaftar ${e.title}`}><UserPlus className="h-4 w-4" />{pendingCounts[e.id] > 0 && <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-amber-100 px-1 text-[9px] font-extrabold leading-none text-amber-900 ring-1 ring-inset ring-amber-300">{pendingCounts[e.id]}</span>}</button>}
                       {canManageTickets && getEventStatus(e.status, e.date) !== 'completed' && <button onClick={() => onManageTickets(e)} className="rounded-lg p-2 text-slate-500 hover:bg-amber-50 hover:text-amber-700" title="Kelola Tiket" aria-label={`Kelola tiket ${e.title}`}><TicketIcon className="h-4 w-4" /></button>}
                       <button onClick={() => onManagePartnerships(e)} className="rounded-lg p-2 text-slate-500 hover:bg-violet-50 hover:text-violet-700" title="Kelola Partner" aria-label={`Kelola partner ${e.title}`}><Users className="h-4 w-4" /></button>
                       <button onClick={() => onManageLineup(e)} className="rounded-lg p-2 text-slate-500 hover:bg-amber-50 hover:text-amber-700" title="Pengisi Acara" aria-label={`Pengisi Acara ${e.title}`}><Mic className="h-4 w-4" /></button>
@@ -2492,7 +2493,7 @@ function EventManagement({ rows, loading, pendingCounts, canManageTickets, initi
                 </button>
               </div>
               <div className="mt-4 flex gap-2">
-                {!completed && e.registration_status === 'open' && <button onClick={() => onViewParticipants(e)} aria-label={`Lihat pendaftar ${e.title}`} title={`Pendaftar${pendingCounts[e.id] > 0 ? ` (${pendingCounts[e.id]} menunggu)` : ''}`} className="relative flex h-10 min-w-0 flex-1 items-center justify-center rounded-lg bg-green-50 text-green-700 transition hover:bg-green-100"><UserPlus className="h-4 w-4" />{pendingCounts[e.id] > 0 && <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-600 px-1 text-[9px] font-extrabold leading-none text-white">{pendingCounts[e.id]}</span>}</button>}
+                {!completed && e.registration_status === 'open' && <button onClick={() => onViewParticipants(e)} aria-label={`Lihat pendaftar ${e.title}`} title={`Pendaftar${pendingCounts[e.id] > 0 ? ` (${pendingCounts[e.id]} menunggu)` : ''}`} className="relative flex h-10 min-w-0 flex-1 items-center justify-center rounded-lg bg-blue-50 text-blue-700 transition hover:bg-blue-100"><UserPlus className="h-4 w-4" />{pendingCounts[e.id] > 0 && <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-amber-100 px-1 text-[9px] font-extrabold leading-none text-amber-900 ring-1 ring-inset ring-amber-300">{pendingCounts[e.id]}</span>}</button>}
                 {!completed && canManageTickets && <button onClick={() => onManageTickets(e)} aria-label={`Kelola tiket ${e.title}`} title="Kelola tiket" className="flex h-10 min-w-0 flex-1 items-center justify-center rounded-lg bg-amber-50 text-amber-700 transition hover:bg-amber-100"><TicketIcon className="h-4 w-4" /></button>}
                 <button onClick={() => onManagePartnerships(e)} aria-label={`Kelola partner ${e.title}`} title="Kelola partner" className="flex h-10 min-w-0 flex-1 items-center justify-center rounded-lg bg-violet-50 text-violet-700 transition hover:bg-violet-100"><Users className="h-4 w-4" /></button>
                 <button onClick={() => onManageLineup(e)} aria-label={`Pengisi Acara ${e.title}`} title="Pengisi Acara" className="flex h-10 min-w-0 flex-1 items-center justify-center rounded-lg bg-amber-50 text-amber-700 transition hover:bg-amber-100"><Mic className="h-4 w-4" /></button>
@@ -2875,6 +2876,7 @@ function KomikaManagement({ rows, registrations, openMics, attendanceCounts, loa
   const [accountAction, setAccountAction] = useState<{ mode: 'create' | 'manage'; komika: Komika } | null>(null);
   const [accountEmail, setAccountEmail] = useState('');
   const [accountPassword, setAccountPassword] = useState('');
+  const [showAccountPassword, setShowAccountPassword] = useState(false);
   const [accountActionSaving, setAccountActionSaving] = useState(false);
   const [search, setSearch] = useState('');
   const [folder, setFolder] = useState<'active' | 'archived'>('active');
@@ -2891,6 +2893,7 @@ function KomikaManagement({ rows, registrations, openMics, attendanceCounts, loa
   function openAccountAction(mode: 'create' | 'manage', komika: Komika) {
     setAccountEmail('');
     setAccountPassword('');
+    setShowAccountPassword(false);
     setAccountAction({ mode, komika });
   }
 
@@ -2923,6 +2926,7 @@ function KomikaManagement({ rows, registrations, openMics, attendanceCounts, loa
       setAccountAction(null);
       setAccountEmail('');
       setAccountPassword('');
+      setShowAccountPassword(false);
       await onReload();
       onNotice(mode === 'create' ? 'Akun login berhasil dibuat dan ditautkan ke Komika.' : 'Password akun login berhasil direset.');
     } catch (error) {
@@ -3070,11 +3074,11 @@ function KomikaManagement({ rows, registrations, openMics, attendanceCounts, loa
           <div className="flex gap-2 border-t border-slate-100 pt-3"><button type="button" onClick={() => setAccountAction(null)} disabled={accountActionSaving} className="btn-secondary flex-1">Batal</button><button type="submit" disabled={accountActionSaving} className="btn-primary flex-1"><UserPlus className="h-4 w-4" />{accountActionSaving ? 'Membuat...' : 'Buat Akun'}</button></div>
         </form>}
       </Modal>
-      <Modal open={accountAction?.mode === 'manage'} onClose={() => { if (!accountActionSaving) setAccountAction(null); }} title="Kelola Akun Login" size="sm">
+      <Modal open={accountAction?.mode === 'manage'} onClose={() => { if (!accountActionSaving) { setAccountAction(null); setAccountPassword(''); setShowAccountPassword(false); } }} title="Kelola Akun Login" size="sm">
         {accountAction?.mode === 'manage' && <div className="space-y-4">
           <div className="rounded-xl bg-emerald-50 p-3 text-sm text-emerald-900"><p className="font-bold">{accountAction.komika.stage_name}</p><p className="mt-0.5 flex items-center gap-1.5 text-xs text-emerald-700"><Link2 className="h-3.5 w-3.5" />Akun login terhubung</p></div>
-          <form onSubmit={submitAccountAction} className="space-y-3"><div><label className="label-field" htmlFor="komika-reset-password">Password baru</label><input id="komika-reset-password" type="password" required minLength={6} autoComplete="new-password" value={accountPassword} onChange={(event) => setAccountPassword(event.target.value)} className="input-field" placeholder="Minimal 6 karakter" /></div><button type="submit" disabled={accountActionSaving || accountPassword.length < 6} className="btn-primary w-full justify-center"><KeyRound className="h-4 w-4" />{accountActionSaving ? 'Menyimpan...' : 'Reset Password'}</button></form>
-          <div className="flex gap-2 border-t border-slate-100 pt-3"><button type="button" onClick={() => setAccountAction(null)} disabled={accountActionSaving} className="btn-secondary flex-1">Tutup</button><button type="button" onClick={() => void deleteLinkedLogin()} disabled={accountActionSaving} className="inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-xl bg-rose-50 px-4 py-2.5 text-sm font-bold text-rose-700 transition hover:bg-rose-100 disabled:opacity-60"><Trash2 className="h-4 w-4" />Hapus Akun</button></div>
+          <form onSubmit={submitAccountAction} className="space-y-3"><div><label className="label-field" htmlFor="komika-reset-password">Password baru</label><div className="relative"><input id="komika-reset-password" type={showAccountPassword ? 'text' : 'password'} required minLength={6} autoComplete="new-password" value={accountPassword} onChange={(event) => setAccountPassword(event.target.value)} className="input-field !pr-12" placeholder="Minimal 6 karakter" /><button type="button" onClick={() => setShowAccountPassword((visible) => !visible)} className="absolute right-2 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-100 hover:text-blue-700" aria-label={showAccountPassword ? 'Sembunyikan password' : 'Tampilkan password'} aria-pressed={showAccountPassword} title={showAccountPassword ? 'Sembunyikan password' : 'Tampilkan password'}>{showAccountPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}</button></div></div><button type="submit" disabled={accountActionSaving || accountPassword.length < 6} className="btn-primary w-full justify-center"><KeyRound className="h-4 w-4" />{accountActionSaving ? 'Menyimpan...' : 'Reset Password'}</button></form>
+          <div className="flex gap-2 border-t border-slate-100 pt-3"><button type="button" onClick={() => { setAccountAction(null); setAccountPassword(''); setShowAccountPassword(false); }} disabled={accountActionSaving} className="btn-secondary flex-1">Tutup</button><button type="button" onClick={() => void deleteLinkedLogin()} disabled={accountActionSaving} className="inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-xl bg-rose-50 px-4 py-2.5 text-sm font-bold text-rose-700 transition hover:bg-rose-100 disabled:opacity-60"><Trash2 className="h-4 w-4" />Hapus Akun</button></div>
         </div>}
       </Modal>
 
@@ -3616,7 +3620,7 @@ function EvaluatorAssignmentView({ openMics, komika, assignments, currentUserId,
 
 function MorePage({ onNavigate, onSignOut, ticketOrderUnreadCount, applicationUnreadCount, isAdmin, isOpenMicAdmin, isEventAdmin, isTicketAdmin, isQrScanner }: { onNavigate: (s: Section) => void; onSignOut: () => void; ticketOrderUnreadCount: number; applicationUnreadCount: number; isAdmin: boolean; isOpenMicAdmin: boolean; isEventAdmin: boolean; isTicketAdmin: boolean; isQrScanner: boolean }) {
   const items: { label: string; icon: typeof BarChart3; onClick: () => void; section?: Section; badge?: number; mobileOnly?: boolean }[] = [
-    ...((isAdmin || isOpenMicAdmin) ? [{ label: 'Jadwal Serang Comedy Sharing (CCS)', icon: CalendarDays, onClick: () => onNavigate('ccs-schedule'), section: 'ccs-schedule' as Section }] : []),
+    ...((isAdmin || isOpenMicAdmin) ? [{ label: 'Jadwal Serang Sharing', icon: CalendarDays, onClick: () => onNavigate('ccs-schedule'), section: 'ccs-schedule' as Section }] : []),
     ...(isAdmin ? [{ label: 'Annual Recap', icon: BarChart3, onClick: () => onNavigate('annual-recap'), section: 'annual-recap' as Section, mobileOnly: true }] : []),
     ...(isEventAdmin ? [{ label: 'Akun Admin Tiket / QR', icon: ShieldPlus, onClick: () => onNavigate('admin-accounts'), section: 'admin-accounts' as Section }] : []),
     ...(isTicketAdmin ? [{ label: 'Informasi Pembayaran', icon: TicketIcon, onClick: () => onNavigate('payment-info'), section: 'payment-info' as Section }] : []),
@@ -3642,17 +3646,17 @@ function MorePage({ onNavigate, onSignOut, ticketOrderUnreadCount, applicationUn
               <button key={item.label} onClick={item.onClick} className={`flex w-full items-center gap-3 px-5 py-4 text-left transition hover:bg-slate-50 ${item.mobileOnly ? 'lg:hidden' : ''}`}>
                 <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-50 text-blue-600"><Icon className="h-5 w-5" /></span>
                 <span className="flex-1 text-sm font-semibold text-slate-800">{item.label}</span>
-                {item.badge ? <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-red-600 px-1.5 text-[10px] font-extrabold text-white">{item.badge > 99 ? '99+' : item.badge}</span> : null}
+                {item.badge ? <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-amber-100 px-1.5 text-[10px] font-extrabold text-amber-900 ring-1 ring-inset ring-amber-300">{item.badge > 99 ? '99+' : item.badge}</span> : null}
                 <ChevronRight className="h-4 w-4 text-slate-400" />
               </button>
             );
           })}
         </div>
         <div className="border-t border-slate-100">
-          <button onClick={onSignOut} className="flex w-full items-center gap-3 px-5 py-4 text-left transition hover:bg-red-50">
-            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-red-50 text-red-600"><LogOut className="h-5 w-5" /></span>
-            <span className="flex-1 text-sm font-semibold text-red-600">Keluar</span>
-            <ChevronRight className="h-4 w-4 text-red-300" />
+          <button onClick={onSignOut} className="flex w-full items-center gap-3 px-5 py-4 text-left transition hover:bg-slate-50">
+            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-100 text-slate-600"><LogOut className="h-5 w-5" /></span>
+            <span className="flex-1 text-sm font-semibold text-slate-700">Keluar</span>
+            <ChevronRight className="h-4 w-4 text-slate-400" />
           </button>
         </div>
       </div>
@@ -3724,8 +3728,9 @@ function AdminFormModal({ kind, editing, venueHistory, saving, onClose, onSaving
     const row = editing as Record<string, unknown> | null;
     if (row) {
       setForm({ ...Object.fromEntries(Object.entries(row).map(([k, v]) => [k === 'instagram_url' ? k : k === 'tiktok_url' ? k : k, k === 'instagram_url' ? formatInstagramHandle(String(v ?? '')) : k === 'tiktok_url' ? formatTikTokHandle(String(v ?? '')) : Array.isArray(v) ? v.join(', ') : String(v ?? '')])) });
-      if (Array.isArray(row.documentation_photos)) {
-        setForm((current) => ({ ...current, documentation_photos: row.documentation_photos.join('\n') }));
+      const documentationPhotos = row.documentation_photos;
+      if (Array.isArray(documentationPhotos)) {
+        setForm((current) => ({ ...current, documentation_photos: documentationPhotos.join('\n') }));
       }
     } else if (kind === 'komika') {
       setForm({ full_name: '', whatsapp: '', stage_name: '', photo: '', photo_card: '', bio: '', instagram_url: '', tiktok_url: '', youtube_url: '', specialties: '', joined_at: '', status: 'active', published: 'true' });
@@ -4541,6 +4546,7 @@ function SettingsPanel({ settings, onSaved, onNotice }: { settings: SiteSettings
     const { error } = await supabase.from('site_settings').update(form).eq('id', 1);
     setSaving(false);
     if (error) { onNotice('Gagal menyimpan pengaturan.'); return; }
+    publishSiteSettingsUpdate(form);
     onNotice('Pengaturan berhasil disimpan.');
     onSaved();
   }
@@ -4581,7 +4587,7 @@ function SettingsPanel({ settings, onSaved, onNotice }: { settings: SiteSettings
         </section>
 
         <section className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-200/70 sm:p-5">
-          <div className="mb-4"><h2 className="text-base font-bold text-slate-900">Sosial Media & Lokasi</h2><p className="mt-1 text-xs leading-5 text-slate-500">Link ini digunakan pada halaman Kontak, footer, dan profil komunitas.</p></div>
+          <div className="mb-4"><h2 className="text-base font-bold text-slate-900">Sosial Media & Lokasi</h2><p className="mt-1 text-xs leading-5 text-slate-500">Isi URL profil lengkap atau handle seperti @standupindo_srg. Perubahan dipakai di halaman Kontak, footer, dan popup Follow Instagram secara otomatis.</p></div>
           <div className="grid gap-4 sm:grid-cols-2">
             {renderField(['instagram_url', 'Instagram URL', 'text'])}
             {renderField(['tiktok_url', 'TikTok URL', 'text'])}

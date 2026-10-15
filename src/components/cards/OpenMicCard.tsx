@@ -68,7 +68,7 @@ export function OpenMicCard({ mic, openMicNumber, confirmedCount, lineup = [], r
                 <button onClick={() => router.navigate(`/open-mic/${mic.slug}/daftar`)} className="inline-flex !min-h-9 items-center justify-center gap-1 rounded-lg bg-gradient-to-r from-blue-700 to-blue-600 !px-2.5 !py-1.5 text-[10px] font-extrabold text-white shadow-[0_4px_10px_rgba(215,25,32,0.3)] transition hover:-translate-y-0.5 hover:from-blue-800 hover:to-blue-700 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2">Daftar <ArrowRight className="h-3 w-3" /></button>
               )}
               {currentStatus === 'upcoming' && isFull && !closed && (
-                <button disabled className="btn-secondary !min-h-8 !rounded-lg !border-red-200 !bg-red-50 !px-2 !py-1.5 text-[10px] font-bold !text-red-600">Penuh</button>
+                <button disabled className="btn-secondary !min-h-8 !rounded-lg !border-amber-200 !bg-amber-50 !px-2 !py-1.5 text-[10px] font-bold !text-amber-800">Penuh</button>
               )}
               {closed && currentStatus === 'upcoming' && (
                 <button disabled className="btn-secondary !min-h-8 !rounded-lg !px-2 !py-1.5 text-[10px] font-bold !text-slate-400">Ditutup</button>
@@ -163,7 +163,7 @@ export function OpenMicCard({ mic, openMicNumber, confirmedCount, lineup = [], r
               <button onClick={() => router.navigate(`/open-mic/${mic.slug}/daftar`)} className={`inline-flex min-h-10 flex-1 items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-blue-700 to-blue-600 px-3 py-2 text-xs font-extrabold text-white shadow-[0_8px_18px_rgba(29,78,216,0.3)] transition hover:-translate-y-0.5 hover:from-blue-800 hover:to-blue-700 hover:shadow-[0_10px_22px_rgba(29,78,216,0.38)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 sm:text-sm ${isCompleted ? '!rounded-lg' : ''}`}>Daftar <ArrowRight className="h-4 w-4" /></button>
             )}
             {currentStatus === 'upcoming' && isFull && !closed && (
-              <button disabled className="btn-secondary flex-1 !px-3 !py-2 text-[12px] font-semibold !text-red-600 !border-red-200 !bg-red-50 sm:!text-sm">Slot Penuh</button>
+              <button disabled className="btn-secondary flex-1 !px-3 !py-2 text-[12px] font-semibold !text-amber-800 !border-amber-200 !bg-amber-50 sm:!text-sm">Slot Penuh</button>
             )}
             {closed && currentStatus === 'upcoming' && (
               <button disabled className="btn-secondary flex-1 !px-3 !py-2 text-[12px] font-semibold !text-slate-400 sm:!text-sm">Ditutup</button>

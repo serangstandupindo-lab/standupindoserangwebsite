@@ -59,6 +59,22 @@
     --bg-light: #FFF8F5;
     --text-dark: #0F172A;
     --white: #FFFFFF;
+    --color-brand: #D71920;
+    --color-primary: #1D4ED8;
+    --color-primary-hover: #1E40AF;
+    --color-success: #15803D;
+    --color-success-bg: #F0FDF4;
+    --color-warning: #B45309;
+    --color-warning-bg: #FFFBEB;
+    --color-danger: #B91C1C;
+    --color-danger-bg: #FEF2F2;
+    --color-info: #1D4ED8;
+    --color-info-bg: #EFF6FF;
+    --color-neutral: #475569;
+    --color-border: #CBD5E1;
+    --color-surface: #FFFFFF;
+    --color-text: #0F172A;
+    --color-text-muted: #64748B;
     --safe-bottom: env(safe-area-inset-bottom, 0px);
     --safe-top: env(safe-area-inset-top, 0px);
   }
@@ -122,14 +138,31 @@
   }
 
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-bold text-white shadow-[0_10px_20px_rgba(215,25,32,0.24)] transition-all duration-200 hover:shadow-[0_12px_24px_rgba(215,25,32,0.32)] focus:outline-none focus:ring-2 focus:ring-offset-2 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60;
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-bold text-white transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60;
     min-height: 44px;
-    background: linear-gradient(135deg, var(--brand-primary), var(--brand-secondary));
-    --tw-ring-color: var(--brand-primary);
+    background-color: var(--color-primary);
+    box-shadow: 0 10px 20px rgb(29 78 216 / 20%);
+    --tw-ring-color: var(--color-primary);
   }
 
   .btn-primary:hover {
-    background: linear-gradient(135deg, var(--brand-secondary), var(--brand-primary));
+    background-color: var(--color-primary-hover);
+    box-shadow: 0 12px 24px rgb(30 64 175 / 24%);
+  }
+
+  .btn-primary:disabled {
+    box-shadow: none;
+  }
+
+  .btn-danger {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-bold text-white transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60;
+    min-height: 44px;
+    background-color: var(--color-danger);
+    --tw-ring-color: var(--color-danger);
+  }
+
+  .btn-danger:hover {
+    background-color: #991B1B;
   }
 
   .admin-login-page {
@@ -194,12 +227,12 @@
   }
 
   .btn-secondary {
-    @apply inline-flex items-center justify-center gap-2 rounded-xl border border-blue-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-800 shadow-sm transition-all duration-200 hover:border-blue-400 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60;
+    @apply inline-flex items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-bold text-slate-800 shadow-sm transition-all duration-200 hover:border-slate-400 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60;
     min-height: 44px;
   }
 
   .btn-ghost {
-    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-bold text-slate-700 transition-all duration-200 hover:bg-blue-50 hover:text-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-300 active:scale-[0.98];
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-bold text-slate-700 transition-all duration-200 hover:bg-slate-100 hover:text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60;
   }
 
   .mobile-nav-item-active {
@@ -1509,9 +1542,10 @@
 
 .recap-device-texture {
   background-image:
-    linear-gradient(145deg, rgba(215, 25, 32, 0.16), transparent 52%),
-    repeating-linear-gradient(132deg, transparent 0 38px, rgba(255, 104, 104, 0.055) 39px 40px, transparent 41px 78px);
-  opacity: 0.72;
+    linear-gradient(145deg, rgba(124, 17, 27, 0.32), transparent 58%),
+    radial-gradient(ellipse at 82% 24%, rgba(215, 25, 32, 0.18), transparent 56%),
+    repeating-linear-gradient(132deg, transparent 0 38px, rgba(255, 201, 40, 0.035) 39px 40px, transparent 41px 78px);
+  opacity: 0.9;
 }
 
 .recap-slide-enter {

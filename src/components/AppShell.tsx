@@ -7,6 +7,7 @@ import { Instagram, Youtube, MapPin, MessageCircle } from 'lucide-react';
 import { waLink } from '@/lib/format';
 import { AppCredit } from './AppCredit';
 import { FollowInstagramPopup } from './FollowInstagramPopup';
+import { getSocialProfileUrl } from '@/lib/social-profile';
 
 function TikTokIcon({ className }: { className?: string }) {
   return (
@@ -27,6 +28,7 @@ const NAV = [
   { to: '/open-mic', label: 'Open Mic' },
   { to: '/event', label: 'Event' },
   { to: '/komika', label: 'Komika' },
+  { to: '/more/kerja-sama', label: 'Partner' },
   { to: '/more', label: 'More' },
 ];
 
@@ -97,26 +99,28 @@ export function AppShell({ router, settings, children }: AppShellProps) {
                   <span>{settings.site_name}</span>
                 </span>
               </div>
-              <p className="mt-3 max-w-xl text-sm font-semibold leading-6 text-slate-700">Menjadi ruang berkumpulnya komika, penikmat komedi, dan insan kreatif untuk berbagi tawa, mengasah kemampuan, serta saling mendukung dalam berkarya. Bersama-sama membangun ekosistem stand-up comedy yang aktif, inklusif, dan terus berkembang di Serang.</p>
+              <p className="mt-3 max-w-xl text-sm font-semibold leading-6 text-slate-700">{settings.short_description || 'Menjadi ruang berkumpulnya komika, penikmat komedi, dan insan kreatif untuk berbagi tawa, mengasah kemampuan, serta saling mendukung dalam berkarya.'}</p>
               <div className="mt-4 flex flex-wrap items-center gap-2">
-                {settings.instagram_url && (
-                  <a href={settings.instagram_url} target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-slate-600 transition hover:bg-blue-600 hover:text-white">
+                {getSocialProfileUrl(settings.instagram_url, 'instagram') && (
+                  <a href={getSocialProfileUrl(settings.instagram_url, 'instagram')!} target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-slate-600 transition hover:bg-blue-600 hover:text-white">
                     <Instagram className="h-4 w-4" />
                   </a>
                 )}
-                {settings.tiktok_url && (
-                  <a href={settings.tiktok_url} target="_blank" rel="noopener noreferrer" aria-label="TikTok" className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-slate-600 transition hover:bg-blue-600 hover:text-white">
+                {getSocialProfileUrl(settings.tiktok_url, 'tiktok') && (
+                  <a href={getSocialProfileUrl(settings.tiktok_url, 'tiktok')!} target="_blank" rel="noopener noreferrer" aria-label="TikTok" className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-slate-600 transition hover:bg-blue-600 hover:text-white">
                     <TikTokIcon className="h-4 w-4" />
                   </a>
                 )}
-                {settings.youtube_url && (
-                  <a href={settings.youtube_url} target="_blank" rel="noopener noreferrer" aria-label="YouTube" className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-slate-600 transition hover:bg-blue-600 hover:text-white">
+                {getSocialProfileUrl(settings.youtube_url, 'youtube') && (
+                  <a href={getSocialProfileUrl(settings.youtube_url, 'youtube')!} target="_blank" rel="noopener noreferrer" aria-label="YouTube" className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-slate-600 transition hover:bg-blue-600 hover:text-white">
                     <Youtube className="h-4 w-4" />
                   </a>
                 )}
-                <a href={waLink(settings.whatsapp_admin)} target="_blank" rel="noopener noreferrer" aria-label="WhatsApp" className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-slate-600 transition hover:bg-blue-600 hover:text-white">
-                  <MessageCircle className="h-4 w-4" />
-                </a>
+                {(settings.whatsapp_admin || settings.whatsapp_registration) && (
+                  <a href={waLink(settings.whatsapp_admin || settings.whatsapp_registration || '')} target="_blank" rel="noopener noreferrer" aria-label="WhatsApp" className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-slate-600 transition hover:bg-blue-600 hover:text-white">
+                    <MessageCircle className="h-4 w-4" />
+                  </a>
+                )}
                 {settings.affiliation_name && settings.affiliation_website && settings.affiliation_logo_url && (
                   <div className="ml-2 flex items-center gap-2.5">
                     <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-slate-400">Bagian Dari</span>

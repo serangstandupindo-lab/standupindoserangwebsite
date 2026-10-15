@@ -251,7 +251,7 @@ export function OpenMicRegisterPage({ router, slug }: Props) {
               </div>
 
               <p className="mt-5 text-xs text-slate-400">Simpan Registration ID kamu untuk mengecek status pendaftaran.</p>
-              <button onClick={() => router.navigate('/open-mic')} className="btn-primary mt-6 w-full">
+              <button onClick={() => router.navigate('/open-mic')} className="btn-secondary mt-6 w-full">
                 Kembali ke Open Mic
               </button>
             </div>
@@ -415,7 +415,7 @@ export function OpenMicRegisterPage({ router, slug }: Props) {
             <h3 className="text-lg font-extrabold text-slate-900">Kamu sudah terdaftar di Open Mic ini</h3>
             <p className="mt-1 text-sm leading-6 text-slate-500">Pendaftaran kamu masih menunggu konfirmasi admin atau sudah masuk ke lineup.</p>
           </div>
-          <button type="button" onClick={() => router.navigate(`/open-mic/${slug}`)} className="btn-primary w-full">Lihat Detail Open Mic</button>
+          <button type="button" onClick={() => router.navigate(`/open-mic/${slug}`)} className="btn-secondary w-full">Lihat Detail Open Mic</button>
         </div>
       </Modal>
     </div>

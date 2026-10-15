@@ -5,7 +5,7 @@ import { supabase } from '@/lib/supabase';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { AnnualRecapStory } from '@/pages/public/AnnualRecapStoryView';
 
-const LOADING_RECAP_PHOTO = '/assets/images/Loading%20Annual%20Recap2.jfif';
+const LOADING_RECAP_PHOTO = '/assets/images/Loading%20Annual%20Recap2.png';
 
 export function AnnualRecapPage({ router, year }: { router: Router; year: string }) {
   const [record, setRecord] = useState<AnnualRecapRecord | null>(null);

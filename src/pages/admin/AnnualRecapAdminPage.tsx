@@ -320,7 +320,11 @@ export function AnnualRecapAdminPage({ onNotice }: { onNotice: (message: string)
           <dl className="divide-y divide-slate-100 text-sm">
             <div className="flex items-center justify-between gap-3 py-3"><dt className="text-slate-600">Tahun</dt><dd className="font-bold text-slate-900">{selectedYear}</dd></div>
             <div className="flex items-center justify-between gap-3 py-3"><dt className="text-slate-600">Publikasi</dt><dd><span className={`rounded-full px-2.5 py-1 text-xs font-bold ${record?.published ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-600'}`}>{record?.published ? 'Published' : 'Draft'}</span></dd></div>
-            <div className="flex items-center justify-between gap-3 py-3"><dt className="text-slate-600">Penampilan terverifikasi</dt><dd className="font-bold text-slate-900">{stats?.appearanceCount.toLocaleString('id-ID') ?? '—'}</dd></div>
+            <div className="flex items-center justify-between gap-3 py-3"><dt className="text-slate-600">Open Mic</dt><dd className="font-bold text-slate-900">{stats?.openMicCount.toLocaleString('id-ID') ?? '—'}</dd></div>
+            <div className="flex items-center justify-between gap-3 py-3"><dt className="text-slate-600">Event</dt><dd className="font-bold text-slate-900">{stats?.eventCount.toLocaleString('id-ID') ?? '—'}</dd></div>
+            <div className="flex items-center justify-between gap-3 py-3"><dt className="text-slate-600">Komika unik tampil</dt><dd className="font-bold text-slate-900">{stats?.totalPerformerCount.toLocaleString('id-ID') ?? '—'}</dd></div>
+            <div className="flex items-center justify-between gap-3 py-3"><dt className="text-slate-600">Total penampilan</dt><dd className="font-bold text-slate-900">{stats?.appearanceCount.toLocaleString('id-ID') ?? '—'}</dd></div>
+            <div className="flex items-center justify-between gap-3 py-3"><dt className="text-slate-600">Member baru</dt><dd className="font-bold text-slate-900">{stats?.newMemberCount.toLocaleString('id-ID') ?? '—'}</dd></div>
           </dl>
           <p className="mt-2 border-t border-slate-100 pt-3 text-xs leading-5 text-slate-500">Simpan perubahan tidak mengubah status publikasi. Gunakan Publish atau Unpublish untuk mengaturnya.</p>
         </section>

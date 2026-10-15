@@ -89,19 +89,19 @@ function drawKomikaPhoto(context: CanvasRenderingContext2D, image: HTMLImageElem
   context.save();
   roundedRect(context, frameX, frameY, frameWidth, frameHeight, 14);
   context.clip();
-  context.fillStyle = '#0f172a';
+  context.fillStyle = '#fff8ed';
   context.fillRect(frameX, frameY, frameWidth, frameHeight);
   context.drawImage(image, frameX + (frameWidth - imageWidth) / 2, frameY, imageWidth, imageHeight);
   context.restore();
 
-  context.strokeStyle = 'rgba(147, 197, 253, 0.85)';
+  context.strokeStyle = 'rgba(255, 201, 74, 0.75)';
   context.lineWidth = 1.5;
   roundedRect(context, frameX + 0.75, frameY + 0.75, frameWidth - 1.5, frameHeight - 1.5, 13);
   context.stroke();
 }
 
 function drawMicrophone(context: CanvasRenderingContext2D, x: number, y: number, size: number) {
-  context.fillStyle = '#dbeafe';
+  context.fillStyle = '#fff1cb';
   context.beginPath();
   context.arc(x + size / 2, y + size / 2, size / 2, 0, Math.PI * 2);
   context.fill();
@@ -121,6 +121,66 @@ function drawMicrophone(context: CanvasRenderingContext2D, x: number, y: number,
   context.stroke();
 }
 
+function drawGoldFlourish(context: CanvasRenderingContext2D, x: number, y: number, width: number, height: number) {
+  context.save();
+  roundedRect(context, x, y, width, height, 18);
+  context.clip();
+  context.strokeStyle = 'rgba(255, 201, 74, 0.22)';
+  context.lineCap = 'round';
+  context.lineWidth = 28;
+  context.beginPath();
+  context.moveTo(x + width - 190, y + height + 12);
+  context.lineTo(x + width + 18, y + height - 150);
+  context.stroke();
+  context.lineWidth = 15;
+  context.beginPath();
+  context.moveTo(x + width - 125, y + height + 12);
+  context.lineTo(x + width + 38, y + height - 112);
+  context.stroke();
+  context.restore();
+}
+
+function drawEventIcon(context: CanvasRenderingContext2D, type: 'calendar' | 'clock' | 'pin', x: number, y: number, size: number) {
+  context.save();
+  context.strokeStyle = '#b5122c';
+  context.fillStyle = '#b5122c';
+  context.lineWidth = 5;
+  context.lineCap = 'round';
+  context.lineJoin = 'round';
+  if (type === 'calendar') {
+    roundedRect(context, x + 3, y + 7, size - 6, size - 10, 5);
+    context.stroke();
+    context.beginPath();
+    context.moveTo(x + 3, y + 17);
+    context.lineTo(x + size - 3, y + 17);
+    context.moveTo(x + 11, y + 3);
+    context.lineTo(x + 11, y + 11);
+    context.moveTo(x + size - 11, y + 3);
+    context.lineTo(x + size - 11, y + 11);
+    context.stroke();
+  } else if (type === 'clock') {
+    context.beginPath();
+    context.arc(x + size / 2, y + size / 2, size / 2 - 4, 0, Math.PI * 2);
+    context.stroke();
+    context.beginPath();
+    context.moveTo(x + size / 2, y + 9);
+    context.lineTo(x + size / 2, y + size / 2);
+    context.lineTo(x + size - 10, y + size / 2 + 5);
+    context.stroke();
+  } else {
+    context.beginPath();
+    context.moveTo(x + size / 2, y + size - 1);
+    context.bezierCurveTo(x + size / 2 - 2, y + size * 0.72, x + 3, y + size * 0.48, x + 3, y + size * 0.31);
+    context.arc(x + size / 2, y + size * 0.31, size / 2 - 3, Math.PI, 0);
+    context.bezierCurveTo(x + size - 3, y + size * 0.48, x + size / 2 + 2, y + size * 0.72, x + size / 2, y + size - 1);
+    context.stroke();
+    context.beginPath();
+    context.arc(x + size / 2, y + size * 0.31, 4, 0, Math.PI * 2);
+    context.fill();
+  }
+  context.restore();
+}
+
 function instagramHandle(value: string | null) {
   return (value ?? '')
     .trim()
@@ -132,27 +192,54 @@ function instagramHandle(value: string | null) {
 
 function drawHeader(context: CanvasRenderingContext2D, communityLogo: HTMLImageElement | null, affiliationLogo: HTMLImageElement | null) {
   const background = context.createLinearGradient(0, 0, WIDTH, HEIGHT);
-  background.addColorStop(0, '#eaf6ff');
-  background.addColorStop(0.5, '#f8fcff');
-  background.addColorStop(1, '#e6f4ff');
+  background.addColorStop(0, '#fffaf2');
+  background.addColorStop(0.52, '#fffdf9');
+  background.addColorStop(1, '#fff7e8');
   context.fillStyle = background;
   context.fillRect(0, 0, WIDTH, HEIGHT);
-  context.fillStyle = '#d9ebff';
+  context.fillStyle = 'rgba(255, 212, 113, 0.16)';
   context.beginPath();
-  context.arc(0, 0, 260, 0, Math.PI * 2);
+  context.arc(WIDTH + 100, 460, 300, 0, Math.PI * 2);
   context.fill();
-  context.fillStyle = 'rgba(255, 255, 255, 0.48)';
+  context.fillStyle = 'rgba(255, 220, 137, 0.16)';
   context.beginPath();
-  context.arc(WIDTH + 80, 420, 300, 0, Math.PI * 2);
+  context.arc(60, 1390, 300, 0, Math.PI * 2);
   context.fill();
-  context.fillStyle = 'rgba(191, 224, 255, 0.34)';
+
+  context.fillStyle = '#ffc94a';
   context.beginPath();
-  context.arc(70, 1420, 290, 0, Math.PI * 2);
+  context.moveTo(0, 166);
+  context.bezierCurveTo(90, 205, 174, 208, 260, 190);
+  context.lineTo(0, 258);
+  context.closePath();
+  context.fill();
+  const headerGradient = context.createLinearGradient(0, 0, WIDTH, 210);
+  headerGradient.addColorStop(0, '#8b1424');
+  headerGradient.addColorStop(0.56, '#690b18');
+  headerGradient.addColorStop(1, '#4f0712');
+  context.fillStyle = headerGradient;
+  context.beginPath();
+  context.moveTo(0, 0);
+  context.lineTo(WIDTH, 0);
+  context.lineTo(WIDTH, 154);
+  context.bezierCurveTo(920, 211, 838, 180, 714, 170);
+  context.bezierCurveTo(510, 151, 382, 219, 185, 198);
+  context.bezierCurveTo(100, 189, 42, 183, 0, 166);
+  context.closePath();
+  context.fill();
+
+  context.fillStyle = 'rgba(45, 3, 12, 0.16)';
+  context.beginPath();
+  context.moveTo(0, 0);
+  context.lineTo(790, 0);
+  context.bezierCurveTo(665, 69, 602, 170, 352, 181);
+  context.bezierCurveTo(205, 190, 89, 151, 0, 121);
+  context.closePath();
   context.fill();
 
   const leftAccent = context.createLinearGradient(0, 1770, 190, HEIGHT);
-  leftAccent.addColorStop(0, '#60b5ff');
-  leftAccent.addColorStop(1, '#1474e8');
+  leftAccent.addColorStop(0, '#ffd35c');
+  leftAccent.addColorStop(1, '#e8a92d');
   context.fillStyle = leftAccent;
   context.beginPath();
   context.moveTo(0, 1792);
@@ -162,8 +249,8 @@ function drawHeader(context: CanvasRenderingContext2D, communityLogo: HTMLImageE
   context.fill();
 
   const rightAccent = context.createLinearGradient(WIDTH, 1780, WIDTH - 180, HEIGHT);
-  rightAccent.addColorStop(0, '#74c7ff');
-  rightAccent.addColorStop(1, '#2084ed');
+  rightAccent.addColorStop(0, '#9a1828');
+  rightAccent.addColorStop(1, '#650b18');
   context.fillStyle = rightAccent;
   context.beginPath();
   context.moveTo(WIDTH, 1782);
@@ -180,25 +267,22 @@ function drawHeader(context: CanvasRenderingContext2D, communityLogo: HTMLImageE
     if (!watermarkContext) throw new Error('Watermark logo tidak dapat dibuat di perangkat ini.');
     drawContainedImage(watermarkContext, communityLogo, 0, 0, watermark.width, watermark.height);
     watermarkContext.globalCompositeOperation = 'source-in';
-    watermarkContext.fillStyle = '#D71920';
+    watermarkContext.fillStyle = '#b5122c';
     watermarkContext.fillRect(0, 0, watermark.width, watermark.height);
 
     context.save();
-    context.globalAlpha = 0.035;
+    context.globalAlpha = 0.025;
     context.drawImage(watermark, 70, 210);
     context.restore();
   }
 
-  context.fillStyle = '#0b2b6b';
-  context.fillRect(0, 145, WIDTH, 5);
-
-  if (communityLogo) drawContainedImage(context, communityLogo, 52, 24, 110, 110);
-  context.fillStyle = '#08245c';
+  if (communityLogo) drawContainedImage(context, communityLogo, 52, 32, 112, 112);
+  context.fillStyle = '#ffffff';
   context.textAlign = 'left';
   context.font = '800 28px Arial, sans-serif';
-  context.fillText('STANDUPINDO', 176, 68);
+  context.fillText('STANDUPINDO', 184, 76);
   context.font = '700 25px Arial, sans-serif';
-  context.fillText('SERANG', 176, 103);
+  context.fillText('SERANG', 184, 111);
   if (affiliationLogo) drawContainedImage(context, affiliationLogo, 850, 24, 175, 110);
   else {
     context.textAlign = 'right';
@@ -229,61 +313,68 @@ function paginatePerformers(performers: CanvasLineup[]) {
 
 function drawEvent(context: CanvasRenderingContext2D, mic: OpenMic, poster: HTMLImageElement | null) {
   const x = 54;
-  const y = 180;
+  const y = 220;
   const posterWidth = 340;
-  const posterHeight = 270;
+  const posterHeight = 340;
   context.shadowColor = 'rgba(215, 25, 32, 0.12)';
   context.shadowBlur = 22;
   context.shadowOffsetY = 8;
-  const cardGradient = context.createLinearGradient(x, y, x + 972, y + 310);
+  const cardGradient = context.createLinearGradient(x, y, x + 972, y + 380);
   cardGradient.addColorStop(0, '#ffffff');
-  cardGradient.addColorStop(1, '#f0f8ff');
+  cardGradient.addColorStop(1, '#fffaf0');
   context.fillStyle = cardGradient;
-  roundedRect(context, x, y, 972, 310, 28);
+  roundedRect(context, x, y, 972, 380, 28);
   context.fill();
   context.shadowColor = 'transparent';
   context.shadowBlur = 0;
   context.shadowOffsetY = 0;
-  context.strokeStyle = '#dbeafe';
+  context.strokeStyle = '#ffebc5';
   context.lineWidth = 3;
   context.stroke();
+  drawGoldFlourish(context, x, y, 972, 380);
 
   context.save();
-  roundedRect(context, x + 14, y + 14, posterWidth, posterHeight, 20);
+  roundedRect(context, x + 14, y + 20, posterWidth, posterHeight, 20);
   context.clip();
-  context.fillStyle = '#eaf3ff';
-  context.fillRect(x + 14, y + 14, posterWidth, posterHeight);
-  if (poster) drawContainedImage(context, poster, x + 14, y + 14, posterWidth, posterHeight);
+  context.fillStyle = '#fff1d3';
+  context.fillRect(x + 14, y + 20, posterWidth, posterHeight);
+  if (poster) drawContainedImage(context, poster, x + 14, y + 20, posterWidth, posterHeight);
   else {
     context.fillStyle = '#B5121B';
     context.font = '700 24px Arial, sans-serif';
     context.textAlign = 'center';
-    context.fillText('POSTER OPEN MIC', x + 14 + posterWidth / 2, y + 155, posterWidth - 24);
+    context.fillText('POSTER OPEN MIC', x + 14 + posterWidth / 2, y + 190, posterWidth - 24);
     context.textAlign = 'left';
   }
   context.restore();
 
   const infoX = 438;
-  context.fillStyle = '#D71920';
+  context.fillStyle = '#ffc94a';
+  roundedRect(context, infoX, y + 27, 144, 42, 21);
+  context.fill();
+  context.fillStyle = '#68101b';
   context.font = '800 20px Arial, sans-serif';
-  context.fillText('OPEN MIC', infoX, y + 48);
-  const titleLines = wrapText(context, mic.title, 540, '800 44px Arial, sans-serif').slice(0, 2);
-  context.fillStyle = '#08245c';
-  context.font = '800 44px Arial, sans-serif';
-  titleLines.forEach((line, index) => context.fillText(line, infoX, y + 96 + index * 45, 540));
-  const detailsY = y + 178;
-  context.fillStyle = '#334155';
+  context.fillText('OPEN MIC', infoX + 18, y + 55);
+  const titleLines = wrapText(context, mic.title, 540, '800 52px Arial, sans-serif').slice(0, 2);
+  context.fillStyle = '#570b19';
+  context.font = '800 52px Arial, sans-serif';
+  titleLines.forEach((line, index) => context.fillText(line, infoX, y + 119 + index * 45, 540));
+  const detailsY = y + (titleLines.length > 1 ? 223 : 183);
+  context.fillStyle = '#570b19';
   context.font = '700 27px Arial, sans-serif';
-  context.fillText(formatDate(mic.date), infoX, detailsY);
+  drawEventIcon(context, 'calendar', infoX, detailsY - 24, 36);
+  context.fillText(formatDate(mic.date), infoX + 64, detailsY + 4);
+  drawEventIcon(context, 'clock', infoX, detailsY + 24, 36);
   context.font = '600 27px Arial, sans-serif';
-  context.fillText(`${mic.time} WIB`, infoX, detailsY + 42);
-  const locationLines = wrapText(context, `${mic.venue}${mic.location ? `, ${mic.location}` : ''}`, 540, '500 23px Arial, sans-serif').slice(0, 2);
+  context.fillText(`${mic.time} WIB`, infoX + 64, detailsY + 52);
+  drawEventIcon(context, 'pin', infoX, detailsY + 71, 36);
+  const locationLines = wrapText(context, `${mic.venue}${mic.location ? `, ${mic.location}` : ''}`, 476, '500 23px Arial, sans-serif').slice(0, 2);
   context.font = '500 26px Arial, sans-serif';
-  locationLines.forEach((line, index) => context.fillText(line, infoX, detailsY + 84 + index * 34, 540));
+  locationLines.forEach((line, index) => context.fillText(line, infoX + 64, detailsY + 100 + index * 32, 476));
 }
 
 function drawPerformerCard(context: CanvasRenderingContext2D, performer: CanvasLineup, number: number, x: number, y: number, width: number, height: number) {
-  context.shadowColor = 'rgba(215, 25, 32, 0.1)';
+  context.shadowColor = 'rgba(122, 35, 22, 0.1)';
   context.shadowBlur = 12;
   context.shadowOffsetY = 4;
   context.fillStyle = '#ffffff';
@@ -292,21 +383,22 @@ function drawPerformerCard(context: CanvasRenderingContext2D, performer: CanvasL
   context.shadowColor = 'transparent';
   context.shadowBlur = 0;
   context.shadowOffsetY = 0;
-  context.strokeStyle = '#dbeafe';
+  context.strokeStyle = '#ffebcf';
   context.lineWidth = 2;
   context.stroke();
+  drawGoldFlourish(context, x, y, width, height);
 
-  const avatarSize = Math.min(width > 700 ? 240 : 104, Math.max(62, Math.min(height - 36, height * 0.42)));
+  const avatarSize = Math.min(width > 700 ? 240 : 104, Math.max(62, Math.min(height - 36, height * 0.55)));
   const avatarX = x + 24;
-  const photoHeight = Math.min(140, height - 16);
-  const photoWidth = photoHeight * 3 / 5;
+  const photoHeight = Math.min(180, height - 16);
+  const photoWidth = photoHeight * 4 / 5;
   const avatarWidth = performer.photo ? photoWidth : avatarSize;
   const avatarHeight = performer.photo ? photoHeight : avatarSize;
   const avatarY = y + (height - avatarHeight) / 2;
   if (performer.photo) {
     drawKomikaPhoto(context, performer.photo, avatarX, avatarY, avatarWidth, avatarHeight);
   } else {
-    context.fillStyle = '#eff6ff';
+    context.fillStyle = '#fff5dd';
     roundedRect(context, avatarX, avatarY, avatarWidth, avatarHeight, 18);
     context.fill();
     drawMicrophone(context, avatarX, avatarY, avatarWidth);
@@ -314,8 +406,8 @@ function drawPerformerCard(context: CanvasRenderingContext2D, performer: CanvasL
 
   const textX = x + avatarWidth + (performer.photo ? 64 : 40);
   const textWidth = width - avatarWidth - (performer.photo ? 160 : 136);
-  let nameFontSize = Math.min(64, Math.max(24, Math.round(height * 0.1)));
-  const detailFontSize = Math.min(25, Math.max(16, Math.round(height * 0.085)));
+  let nameFontSize = Math.min(70, Math.max(24, Math.round(height * 0.14)));
+  const detailFontSize = Math.min(28, Math.max(16, Math.round(height * 0.085)));
   const detailLineHeight = detailFontSize + 5;
   let nameLines: string[] = [];
   let nameLineHeight = nameFontSize + 4;
@@ -329,7 +421,7 @@ function drawPerformerCard(context: CanvasRenderingContext2D, performer: CanvasL
     if (!fits) nameFontSize -= 1;
   }
   const textTop = y + (height - textHeight) / 2;
-  context.fillStyle = '#B5121B';
+  context.fillStyle = '#b5122c';
   roundedRect(context, x + width - 60, y + 12, 48, 36, 18);
   context.fill();
   context.fillStyle = '#ffffff';
@@ -337,13 +429,13 @@ function drawPerformerCard(context: CanvasRenderingContext2D, performer: CanvasL
   context.textAlign = 'center';
   context.fillText(String(number).padStart(2, '0'), x + width - 36, y + 37);
   context.textAlign = 'left';
-  context.fillStyle = '#08245c';
+  context.fillStyle = '#570b19';
   context.font = `700 ${nameFontSize}px Arial, sans-serif`;
   nameLines.forEach((line, lineIndex) => {
     context.fillText(line, textX, textTop + nameFontSize + lineIndex * nameLineHeight, textWidth);
   });
   let detailY = textTop + nameLines.length * nameLineHeight + 12 + detailFontSize;
-  context.fillStyle = '#D71920';
+  context.fillStyle = '#c30e3b';
   context.font = `500 ${detailFontSize}px Arial, sans-serif`;
   if (performer.instagram) {
     context.fillText(`@${performer.instagram}`, textX, detailY, textWidth);
@@ -353,7 +445,7 @@ function drawPerformerCard(context: CanvasRenderingContext2D, performer: CanvasL
     context.fillText('Instagram tidak tersedia', textX, detailY, textWidth);
     detailY += detailLineHeight;
   }
-  context.fillStyle = performer.community ? '#475569' : '#64748b';
+  context.fillStyle = performer.community ? '#52586d' : '#777985';
   context.fillText(performer.community || 'Komunitas tidak dicantumkan', textX, detailY, textWidth);
 }
 
@@ -401,8 +493,8 @@ async function createLineupImages(
     ...performer,
     photo: performer.komika_id ? memberPhotos.get(performer.komika_id) ?? null : null,
   })), photos);
-  const listTop = 570;
-  const listBottom = 1815;
+  const listTop = 750;
+  const listBottom = 1690;
   const listHeight = listBottom - listTop;
   const pages = paginatePerformers(prepared);
   const blobs: Blob[] = [];
@@ -417,27 +509,27 @@ async function createLineupImages(
     drawHeader(context, communityLogo, affiliationLogo);
     drawEvent(context, mic, poster);
 
-    drawMicrophone(context, 54, 500, 64);
-    context.fillStyle = '#08245c';
-    context.font = '800 30px Arial, sans-serif';
+    drawMicrophone(context, 54, 620, 64);
+    context.fillStyle = '#570b19';
+    context.font = '800 34px Arial, sans-serif';
     context.textAlign = 'left';
-    context.fillText(`LINEUP KOMIKA PERFORM · ${pageIndex + 1}/${pages.length}`, 132, 541);
+    context.fillText(`LINEUP KOMIKA PERFORM · ${pageIndex + 1}/${pages.length}`, 132, 661);
     const countLabel = `TOTAL ${prepared.length} KOMIKA`;
     context.font = '800 18px Arial, sans-serif';
     const badgeWidth = Math.max(168, context.measureText(countLabel).width + 38);
-    context.fillStyle = 'rgba(219, 237, 255, 0.9)';
-    roundedRect(context, WIDTH - 54 - badgeWidth, 500, badgeWidth, 48, 24);
+    context.fillStyle = 'rgba(255, 241, 203, 0.96)';
+    roundedRect(context, WIDTH - 54 - badgeWidth, 620, badgeWidth, 48, 24);
     context.fill();
-    context.fillStyle = '#B5121B';
+    context.fillStyle = '#b5122c';
     context.textAlign = 'center';
     context.font = '800 17px Arial, sans-serif';
-    context.fillText(countLabel, WIDTH - 54 - badgeWidth / 2, 530);
+    context.fillText(countLabel, WIDTH - 54 - badgeWidth / 2, 650);
     context.textAlign = 'left';
     const underlineGradient = context.createLinearGradient(132, 0, 300, 0);
-    underlineGradient.addColorStop(0, '#1474e8');
-    underlineGradient.addColorStop(1, '#6bbcff');
+    underlineGradient.addColorStop(0, '#f4b52e');
+    underlineGradient.addColorStop(1, '#ffdc78');
     context.fillStyle = underlineGradient;
-    roundedRect(context, 132, 552, 142, 5, 2);
+    roundedRect(context, 132, 672, 142, 5, 2);
     context.fill();
 
     const hasPagination = prepared.length > 20;
@@ -456,15 +548,15 @@ async function createLineupImages(
       const right = columns === 2 ? pagePerformers[leftIndex + 1] : undefined;
       rowHeights.push(Math.max(left.height, right?.height ?? 0));
     }
-    const standardPagedCardHeight = Math.max(108, (listHeight - 9 * 8) / 10);
+    const standardPagedCardHeight = Math.max(84, (listHeight - 9 * 8) / 10);
     const cardHeights = hasPagination
       ? rowHeights.map(() => standardPagedCardHeight)
       : columns === 1
       ? rowHeights.map((height) => Math.max(
         height,
         page.length === 1
-          ? Math.min(900, listHeight * 0.78)
-          : (listHeight - (rowCount - 1) * 16) / rowCount,
+          ? Math.min(760, listHeight * 0.78)
+          : (listHeight - (rowCount - 1) * 32) / rowCount,
       ))
       : rowHeights.map((height) => height + Math.max(
         0,
@@ -472,8 +564,10 @@ async function createLineupImages(
       ));
     const spaceBetweenRows = hasPagination
       ? Math.max(0, (listHeight - standardPagedCardHeight * 10) / 11)
+      : columns === 1 && rowCount > 1
+      ? 32
       : Math.max(0, (listHeight - cardHeights.reduce((sum, height) => sum + height, 0)) / (rowCount + 1));
-    let currentY = listTop + spaceBetweenRows;
+    let currentY = listTop + (columns === 1 && rowCount > 1 ? 0 : spaceBetweenRows);
     for (let row = 0; row < rowCount; row += 1) {
       const leftIndex = columns === 1 ? row : row * 2;
       const left = pagePerformers[leftIndex];
@@ -491,7 +585,7 @@ async function createLineupImages(
     }
     pageOffset += page.length;
 
-    context.fillStyle = '#B5121B';
+    context.fillStyle = '#8b1424';
     context.font = '700 20px Arial, sans-serif';
     const domain = window.location.hostname;
     const domainWidth = context.measureText(domain).width;
@@ -505,7 +599,7 @@ async function createLineupImages(
     context.moveTo(footerStart + footerWidth + 20, 1890);
     context.lineTo(1024, 1890);
     context.stroke();
-    context.fillStyle = '#334155';
+    context.fillStyle = '#570b19';
     context.textAlign = 'left';
     context.fillText(domain, footerStart, 1897);
     context.textAlign = 'left';

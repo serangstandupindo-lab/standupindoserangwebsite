@@ -16,11 +16,11 @@ const TYPES = [
 ];
 
 function PartnerMarqueeStrip({ partners, category }: { partners: Partner[]; category: 'sponsor' | 'support' | 'media_partner' }) {
-  if (partners.length === 0) return null;
-
   const [dragging, setDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState(0);
   const dragStartRef = useRef({ x: 0, offset: 0 });
+
+  if (partners.length === 0) return null;
 
   const labels = {
     sponsor: 'Sponsor',
@@ -102,7 +102,7 @@ export function PartnershipPage({ router, settings }: { router: Router; settings
     (async () => {
       const { data } = await supabase
         .from('partners')
-        .select('*')
+        .select('id, name, logo_url, website_url, category, is_published, sort_order, created_at, updated_at')
         .eq('is_published', true)
         .order('sort_order', { ascending: true })
         .order('name', { ascending: true });

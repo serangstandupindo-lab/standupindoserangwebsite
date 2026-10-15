@@ -155,7 +155,7 @@ export function MemberNotificationBell({ router }: { router: Router }) {
     <div ref={rootRef} className="relative">
       <button type="button" onClick={() => setOpen((value) => !value)} className="relative flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:border-blue-200 hover:text-blue-700" aria-label={`Notifikasi member${unreadCount ? `, ${groupedLabel} belum dibaca` : ''}`} aria-expanded={open}>
         <Bell className="h-5 w-5" />
-        {unreadCount > 0 && <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-red-600 px-1 text-[10px] font-extrabold text-white">{groupedLabel}</span>}
+        {unreadCount > 0 && <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-blue-600 px-1 text-[10px] font-extrabold text-white">{groupedLabel}</span>}
       </button>
       {open && (
         <div role="dialog" aria-label="Notifikasi member" className="fixed left-2 right-2 top-16 z-[60] max-h-[calc(100dvh-5rem)] overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_18px_45px_rgba(15,23,42,0.16)] sm:absolute sm:left-auto sm:right-0 sm:top-12 sm:w-[min(23rem,calc(100vw-1.5rem))] sm:max-h-none">

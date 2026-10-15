@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Check, CheckCheck, Eye, ExternalLink, Gift, KeyRound, MessageCircle, Printer, Search, ShieldCheck, Ticket as TicketIcon, Trash2, X } from 'lucide-react';
+import { Check, CheckCheck, Eye, Gift, KeyRound, MessageCircle, Printer, Search, ShieldCheck, Ticket as TicketIcon, Trash2, X } from 'lucide-react';
 import type { EventItem, TicketOrder } from '@/lib/types';
 import { formatPrice, getEventStatus } from '@/lib/format';
 import { supabase } from '@/lib/supabase';
@@ -67,6 +67,8 @@ function paymentSnapshotDetails(snapshot: Record<string, unknown> | null | undef
 
 function csvCell(value: string | number) {
   const text = String(value);
+  // Prefix formula-leading text, including control characters, to prevent CSV injection.
+  // eslint-disable-next-line no-control-regex
   const safeText = typeof value === 'string' && /^[\s\u0000-\u001F]*[=+\-@]/.test(text) ? `'${text}` : text;
   return `"${safeText.replace(/"/g, '""')}"`;
 }

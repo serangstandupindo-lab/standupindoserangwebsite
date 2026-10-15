@@ -6,9 +6,9 @@ interface StatusBadgeProps {
 
 const STYLES: Record<string, string> = {
   open: 'bg-green-50 text-green-700 ring-green-200',
-  closed: 'bg-red-50 text-red-700 ring-red-200',
+  closed: 'bg-slate-100 text-slate-700 ring-slate-200',
   upcoming: 'bg-blue-50 text-blue-700 ring-blue-200',
-  completed: 'bg-slate-200 text-slate-700 ring-slate-300',
+  completed: 'bg-green-50 text-green-700 ring-green-200',
   cancelled: 'bg-red-50 text-red-700 ring-red-200',
   pending: 'bg-amber-100 text-amber-800 ring-amber-300',
   confirmed: 'bg-green-50 text-green-700 ring-green-200',

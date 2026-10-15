@@ -331,7 +331,7 @@ export function TicketPaymentMethodsPage({ events, onBack }: { events: EventOpti
           <p className="rounded-xl bg-slate-50 px-3 py-2.5 text-xs leading-5 text-slate-600">Order yang sudah dibuat tetap menggunakan snapshot pembayaran sebelumnya.</p>
           <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
             <button type="button" onClick={() => setMethodToDelete(null)} disabled={saving} className="btn-secondary justify-center">Batal</button>
-            <button type="button" onClick={() => void confirmDeleteMethod()} disabled={saving} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-red-600 px-4 py-2 text-sm font-bold text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60"><Trash2 className="h-4 w-4" />{saving ? 'Menghapus...' : 'Ya, Hapus'}</button>
+            <button type="button" onClick={() => void confirmDeleteMethod()} disabled={saving} className="btn-danger"><Trash2 className="h-4 w-4" />{saving ? 'Menghapus...' : 'Ya, Hapus'}</button>
           </div>
         </div>
       </Modal>}

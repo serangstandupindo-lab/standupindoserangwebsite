@@ -404,8 +404,10 @@ export function TicketAdminTicketsPage() {
       }
       if (actionError || !data || typeof data.order_number !== 'string' || typeof data.access_code !== 'string'
         || typeof data.unit_price !== 'number' || typeof data.total_price !== 'number'
-        || !Array.isArray(data.tickets) || !data.tickets.every((ticket: unknown) => Boolean(ticket)
-          && typeof ticket.id === 'string' && typeof ticket.sequence_no === 'number' && typeof ticket.qr_token === 'string')
+        || !Array.isArray(data.tickets) || !data.tickets.every((ticket: unknown) => typeof ticket === 'object'
+          && ticket !== null && 'id' in ticket && typeof ticket.id === 'string'
+          && 'sequence_no' in ticket && typeof ticket.sequence_no === 'number'
+          && 'qr_token' in ticket && typeof ticket.qr_token === 'string')
         || typeof data.full_name !== 'string' || typeof data.category !== 'string'
         || !data.event || typeof data.event.title !== 'string' || typeof data.event.date !== 'string'
         || typeof data.whatsapp_message !== 'string') {

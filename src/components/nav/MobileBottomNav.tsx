@@ -12,7 +12,11 @@ const ITEMS = [
 
 export function MobileBottomNav({ router }: { router: Router }) {
   const isActive = (to: string) =>
-    to === '/' ? router.path === '/' : router.path.startsWith(to);
+    to === '/'
+      ? router.path === '/'
+      : to === '/more'
+        ? router.path === '/more' || router.path.startsWith('/more/')
+        : router.path.startsWith(to);
 
   return (
     <MobileBottomNavPortal

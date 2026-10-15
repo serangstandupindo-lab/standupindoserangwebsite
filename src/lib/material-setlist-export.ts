@@ -3,6 +3,8 @@ import type { MaterialSetlistItem } from '@/lib/types';
 import { parseMaterialContent } from '@/lib/material-content';
 
 function safeFilename(value: string) {
+  // Strip path separators and control characters from user-provided download names.
+  // eslint-disable-next-line no-control-regex
   return value.trim().replace(/[<>:"/\\|?*\u0000-\u001f]/g, '-').replace(/\s+/g, '-').slice(0, 80) || 'setlist';
 }
 

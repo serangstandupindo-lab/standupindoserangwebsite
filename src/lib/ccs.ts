@@ -1,5 +1,10 @@
 import type { CcsSchedule } from '@/lib/types';
 
+export function getSerangSharingTitle(title: string): string {
+  const cleanedTitle = title.trim().replace(/\s*\(CCS\)/gi, '').trim();
+  return /^(?:Serang|Cilegon) Comedy Sharing$/i.test(cleanedTitle) ? 'Serang Sharing' : cleanedTitle;
+}
+
 function getJakartaDateTime(date = new Date()): { date: string; time: string } {
   const parts = new Intl.DateTimeFormat('en-CA', {
     timeZone: 'Asia/Jakarta',

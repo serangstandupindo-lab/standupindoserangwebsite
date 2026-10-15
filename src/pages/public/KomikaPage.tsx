@@ -11,12 +11,19 @@ import { normalizeSpecialties } from '@/lib/format';
 
 export function KomikaPage({ router }: { router: Router }) {
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
   const [komika, setKomika] = useState<Komika[]>([]);
   const [search, setSearch] = useState('');
 
   useEffect(() => {
     (async () => {
-      const { data } = await supabase.from('komika').select('id, stage_name, slug, photo, photo_card, bio, instagram_url, tiktok_url, youtube_url, specialties, featured_order, status, published, created_at, updated_at').eq('published', true).eq('status', 'active');
+      const { data, error } = await supabase.from('komika').select('id, stage_name, slug, photo, photo_card, bio, instagram_url, tiktok_url, youtube_url, specialties, featured_order, status, published, created_at, updated_at').eq('published', true).eq('status', 'active');
+      if (error) {
+        console.error('Failed to load public komika list', error);
+        setLoadError(true);
+        setLoading(false);
+        return;
+      }
       const komikaList = (data as Komika[]) ?? [];
       const sortedKomika = [...komikaList].sort((a, b) => {
         const aOrder = a.featured_order ?? Number.MAX_SAFE_INTEGER;
@@ -49,6 +56,8 @@ export function KomikaPage({ router }: { router: Router }) {
         <div data-scroll-reveal className="scroll-reveal">
         {loading ? (
           <div className="grid gap-5 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4"><LoadingSkeleton count={8} /></div>
+        ) : loadError ? (
+          <EmptyState title="Daftar Komika belum dapat dimuat. Coba segarkan halaman." />
         ) : filtered.length === 0 ? (
           <EmptyState title="Belum ada komika yang ditemukan." />
         ) : (

@@ -50,6 +50,7 @@ function setOgTags(title: string, description: string, image: string, url: strin
 export function KomikaDetailPage({ router, slug }: Props) {
   const [loading, setLoading] = useState(true);
   const [komika, setKomika] = useState<Komika | null>(null);
+  const [loadError, setLoadError] = useState(false);
   const [lightbox, setLightbox] = useState(false);
   const [officialHistory, setOfficialHistory] = useState<OfficialStageHistoryEntry[]>([]);
   const [externalHistory, setExternalHistory] = useState<ExternalStageHistoryEntry[]>([]);
@@ -58,18 +59,20 @@ export function KomikaDetailPage({ router, slug }: Props) {
   useEffect(() => {
     (async () => {
       try {
-        const { data: slugData } = await supabase
+        const { data: slugData, error: slugError } = await supabase
           .from('komika')
           .select('id, stage_name, slug, photo, bio, karya_url, instagram_url, tiktok_url, youtube_url, specialties, status, published, created_at, updated_at')
           .eq('slug', slug);
+        if (slugError) throw slugError;
 
         let k = (slugData as Komika[] | null)?.find((item) => item.slug === slug) ?? null;
 
         if (!k) {
-          const { data: fallbackData } = await supabase
+          const { data: fallbackData, error: fallbackError } = await supabase
             .from('komika')
             .select('id, stage_name, slug, photo, bio, karya_url, instagram_url, tiktok_url, youtube_url, specialties, status, published, created_at, updated_at')
             .limit(200);
+          if (fallbackError) throw fallbackError;
 
           const rows = (fallbackData as Komika[] | null) ?? [];
           k = rows.find((item) => item.slug === slug && item.published && item.status === 'active') ?? null;
@@ -115,6 +118,7 @@ export function KomikaDetailPage({ router, slug }: Props) {
         );
       } catch (error) {
         console.error('KomikaDetailPage query crashed', error);
+        setLoadError(true);
         setKomika(null);
       } finally {
         setLoading(false);
@@ -134,8 +138,10 @@ export function KomikaDetailPage({ router, slug }: Props) {
   if (!komika) {
     return (
       <div className="animate-fade-in">
-        <PageHeader router={router} title="Komika tidak ditemukan" />
-        <div className="container-app py-8"><EmptyState title="Komika tidak ditemukan" /></div>
+        <PageHeader router={router} title={loadError ? 'Profil Komika gagal dimuat' : 'Komika tidak ditemukan'} />
+        <div className="container-app py-8">
+          <EmptyState title={loadError ? 'Profil Komika belum dapat dimuat. Coba segarkan halaman.' : 'Komika tidak ditemukan'} />
+        </div>
       </div>
     );
   }

@@ -52,7 +52,7 @@ export function MemberDesktopNav({ router, sticky = true, compact = false }: { r
               >
                 <span className="relative inline-flex">
                   <Icon className="h-4 w-4" />
-                  {notificationCount > 0 && <span className="absolute -right-2 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-600 px-1 text-[9px] font-extrabold text-white">{notificationCount > 99 ? '99+' : notificationCount}</span>}
+                  {notificationCount > 0 && <span className="absolute -right-2 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-blue-600 px-1 text-[9px] font-extrabold text-white">{notificationCount > 99 ? '99+' : notificationCount}</span>}
                 </span>
                 <span>{item.label}</span>
               </button>

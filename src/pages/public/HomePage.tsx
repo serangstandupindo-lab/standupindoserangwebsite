@@ -3,7 +3,6 @@ import { Mic, CalendarDays, ArrowRight, Sparkles, Handshake, Drama, Inbox } from
 import type { Router } from '@/lib/router';
 import type { OpenMic, EventItem, Komika, EventTicket, Partner } from '@/lib/types';
 import { supabase } from '@/lib/supabase';
-import { LOGO_URL } from '@/lib/types';
 import { OpenMicCard } from '@/components/cards/OpenMicCard';
 import { EventCard } from '@/components/cards/EventCard';
 import { KomikaCard } from '@/components/cards/KomikaCard';

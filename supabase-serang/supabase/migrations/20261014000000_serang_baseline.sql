@@ -206,7 +206,11 @@ ALTER TABLE events
   ADD COLUMN IF NOT EXISTS maps_url text;
 
 UPDATE site_settings
-SET whatsapp_admin = '', instagram_url = '', tiktok_url = '', youtube_url = '', address = 'Serang, Banten'
+SET whatsapp_admin = '',
+    instagram_url = 'https://www.instagram.com/standupindo_srg/',
+    tiktok_url = 'https://www.tiktok.com/@standupindo_serang',
+    youtube_url = 'https://www.youtube.com/@standupindoserang',
+    address = 'Serang, Banten'
 WHERE id = 1;
 
 -- Source migration: 20260903035903_add_social_affiliation_settings.sql
@@ -6599,7 +6603,7 @@ ALTER TABLE public.event_lineups
 -- Source migration: 20261012130000_create_ccs_schedules.sql
 CREATE TABLE IF NOT EXISTS public.ccs_schedules (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  title text NOT NULL DEFAULT 'Serang Comedy Sharing (CCS)'
+  title text NOT NULL DEFAULT 'Serang Sharing'
     CHECK (length(trim(title)) BETWEEN 1 AND 160),
   event_date date NOT NULL,
   start_time time without time zone NOT NULL,

@@ -43,12 +43,13 @@ Buat akun GitHub, Supabase, hosting (misalnya Vercel), dan Resend atas kepemilik
 | --- | --- | --- |
 | `VITE_SUPABASE_URL` | `.env` lokal dan Environment Variables hosting | Ya, konfigurasi publik |
 | `VITE_SUPABASE_ANON_KEY` / publishable key | `.env` lokal dan Environment Variables hosting | Boleh, tetapi lebih mudah isi langsung di file/dashboard |
-| `VITE_VAPID_PUBLIC_KEY` | Frontend `.env` dan Environment Variables hosting jika Push aktif | Boleh; ini public key |
 | `RESEND_API_KEY`, `RESEND_FROM` | Supabase Edge Function Secrets | Jangan kirim nilai API key di chat |
 | `TICKET_ACCESS_CODE_ENCRYPTION_KEY`, `TICKET_ACCESS_CODE_PEPPER`, `TICKET_ACCESS_RATE_LIMIT_PEPPER` | Supabase Edge Function Secrets | Jangan kirim nilainya di chat |
 | `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT`, `PUSH_WEBHOOK_SECRET` | Supabase Edge Function Secrets | Private key/webhook secret jangan dikirim di chat |
 | `event_open_mic_push_project_url`, `event_open_mic_push_service_role_key` | Supabase Vault, hanya jika scheduler Push diaktifkan | Jangan kirim service-role key di chat |
 | `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY` untuk Edge Functions | Disediakan otomatis oleh Supabase pada runtime function | Jangan menyalin ke frontend atau repository |
+
+Public VAPID key diambil aplikasi dari Edge Function `manage-push-subscription`; jangan menambahkan `VITE_VAPID_PUBLIC_KEY` ke frontend. Simpan pasangan VAPID server (`VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT`) hanya di Supabase Edge Function Secrets.
 
 Jika domain email belum diverifikasi di Resend, lewati pengiriman email saat uji. Email tiket/Free Pass belum bisa dinyatakan berhasil sampai `RESEND_API_KEY` dan `RESEND_FROM` memakai domain pengirim terverifikasi. Jika Push belum disiapkan, jangan deploy/aktifkan scheduler Push.
 

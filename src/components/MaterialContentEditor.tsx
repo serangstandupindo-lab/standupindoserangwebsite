@@ -98,18 +98,21 @@ function MaterialContentEditorView({ value, onChange }: MaterialContentEditorPro
   const [menuPosition, setMenuPosition] = useState({ left: 0, top: 0 });
 
   function readEditor(editor: HTMLDivElement) {
-    const blocks: MaterialContentBlock[] = Array.from(editor.childNodes).flatMap((node) => {
+    const blocks = Array.from(editor.childNodes).reduce<MaterialContentBlock[]>((result, node) => {
       if (!(node instanceof HTMLElement)) {
         const text = node.textContent ?? '';
-        return text ? [{ type: 'text' as const, text }] : [];
+        if (text) result.push({ type: 'text', text });
+        return result;
       }
       const tableObject = node.matches('[data-material-table-object]') ? node : node.querySelector<HTMLElement>('[data-material-table-object]');
       if (tableObject) {
         const rows = Array.from(tableObject.querySelectorAll('tr')).map((row) => Array.from(row.cells).map(plainText));
-        return rows.length ? [{ type: 'table' as const, rows }] : [];
+        if (rows.length) result.push({ type: 'table', rows });
+        return result;
       }
-      return [{ type: 'text' as const, text: plainText(node) }];
-    });
+      result.push({ type: 'text', text: plainText(node) });
+      return result;
+    }, []);
     onChange(serializeMaterialContent(blocks));
   }
 

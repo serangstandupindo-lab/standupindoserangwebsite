@@ -49,7 +49,7 @@ export function MemberBottomNav({ router }: { router: Router }) {
                 }`}
               >
                 <Icon className="h-5 w-5" />
-                {notificationCount > 0 && <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-600 px-1 text-[9px] font-extrabold text-white">{notificationCount > 99 ? '99+' : notificationCount}</span>}
+                {notificationCount > 0 && <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-blue-600 px-1 text-[9px] font-extrabold text-white">{notificationCount > 99 ? '99+' : notificationCount}</span>}
               </span>
               <span className={`mobile-nav-label text-[10px] font-semibold ${active ? 'mobile-nav-label-active text-blue-700' : 'text-slate-400'}`}>
                 {item.label}

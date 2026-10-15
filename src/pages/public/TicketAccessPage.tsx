@@ -304,7 +304,7 @@ export function TicketAccessPage({ router }: { router: Router }) {
             <p className="truncate text-sm font-black tracking-wide sm:text-base">STANDUPINDO</p>
             <p className="text-xs font-extrabold tracking-[0.12em] text-amber-200 sm:text-sm">SERANG</p>
           </div>
-          <button type="button" onClick={() => void logout()} aria-label="Keluar dari Tiket Saya" title="Keluar" className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-red-200/70 bg-white text-red-600 shadow-sm transition hover:bg-red-50 hover:text-red-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300 focus-visible:ring-offset-2 focus-visible:ring-offset-blue-700">
+          <button type="button" onClick={() => void logout()} aria-label="Keluar dari Tiket Saya" title="Keluar" className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white/30 bg-white/10 text-white shadow-sm transition hover:bg-white/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-blue-700">
             <LogOut className="h-5 w-5" />
           </button>
         </div>

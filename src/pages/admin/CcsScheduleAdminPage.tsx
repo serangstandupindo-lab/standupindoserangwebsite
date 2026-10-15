@@ -5,7 +5,7 @@ import { Modal } from '@/components/ui/Modal';
 import { WorkspacePageHeader } from '@/components/admin/WorkspacePageHeader';
 import { useAuth } from '@/lib/auth-context';
 import { supabase } from '@/lib/supabase';
-import { formatCcsDate, formatCcsTime, getCcsOccurrenceDate, getCcsRecurrenceLabel, getNextCcsWednesdayDate } from '@/lib/ccs';
+import { formatCcsDate, formatCcsTime, getCcsOccurrenceDate, getCcsRecurrenceLabel, getNextCcsWednesdayDate, getSerangSharingTitle } from '@/lib/ccs';
 import type { CcsSchedule } from '@/lib/types';
 
 function CcsTimePicker({ value, onChange }: { value: string; onChange: (value: string) => void }) {
@@ -98,7 +98,7 @@ type ScheduleForm = {
 };
 
 const EMPTY_FORM: ScheduleForm = {
-  title: 'Serang Comedy Sharing (CCS)',
+  title: 'Serang Sharing',
   event_date: getNextCcsWednesdayDate(),
   date_override: false,
   start_time: '',
@@ -110,7 +110,7 @@ const EMPTY_FORM: ScheduleForm = {
 
 function scheduleToForm(schedule: CcsSchedule): ScheduleForm {
   return {
-    title: schedule.title,
+    title: getSerangSharingTitle(schedule.title),
     event_date: getCcsOccurrenceDate(schedule),
     date_override: schedule.date_override,
     start_time: schedule.start_time?.slice(0, 5) ?? '',
@@ -144,7 +144,7 @@ export function CcsScheduleAdminPage() {
       .order('event_date', { ascending: false })
       .order('start_time', { ascending: false, nullsFirst: false });
     if (error) {
-      console.error('Daftar jadwal CCS gagal dimuat.', error);
+      console.error('Daftar jadwal Serang Sharing gagal dimuat.', error);
       setErrorMessage(`Jadwal gagal dimuat: ${error.message}`);
     } else {
       const nextSchedules = (data ?? []) as CcsSchedule[];
@@ -159,7 +159,7 @@ export function CcsScheduleAdminPage() {
   }, [isAdmin, isOpenMicAdmin, loadSchedules]);
 
   if (!isAdmin && !isOpenMicAdmin) {
-    return <div className="rounded-2xl border border-red-200 bg-red-50 p-5 text-sm font-bold text-red-700">Anda tidak memiliki akses untuk mengelola Jadwal CCS.</div>;
+    return <div className="rounded-2xl border border-red-200 bg-red-50 p-5 text-sm font-bold text-red-700">Anda tidak memiliki akses untuk mengelola Jadwal Serang Sharing.</div>;
   }
 
   function updateForm<K extends keyof ScheduleForm>(key: K, value: ScheduleForm[K]) {
@@ -216,11 +216,11 @@ export function CcsScheduleAdminPage() {
       : await supabase.from('ccs_schedules').insert(payload);
     setSaving(false);
     if (result.error) {
-      console.error('Jadwal CCS gagal disimpan.', result.error);
+      console.error('Jadwal Serang Sharing gagal disimpan.', result.error);
       setErrorMessage(`Jadwal gagal disimpan: ${result.error.message}`);
       return;
     }
-    setMessage(editingId ? 'Jadwal CCS berhasil diperbarui.' : 'Jadwal CCS berhasil ditambahkan.');
+    setMessage(editingId ? 'Jadwal Serang Sharing berhasil diperbarui.' : 'Jadwal Serang Sharing berhasil ditambahkan.');
     setIsFormOpen(false);
     setEditingId(null);
     await loadSchedules();
@@ -234,13 +234,13 @@ export function CcsScheduleAdminPage() {
     }).eq('id', schedule.id);
     if (error) {
       setUpdatingPublication(false);
-      console.error('Status publikasi Jadwal CCS gagal diperbarui.', error);
+      console.error('Status publikasi Jadwal Serang Sharing gagal diperbarui.', error);
       setErrorMessage(`Status publikasi gagal diperbarui: ${error.message}`);
       return;
     }
     setSchedules((current) => current.map((item) => item.id === schedule.id ? { ...item, is_published: !schedule.is_published } : item));
     setUpdatingPublication(false);
-    setMessage(schedule.is_published ? 'Jadwal CCS dinonaktifkan.' : 'Jadwal CCS dipublikasikan.');
+    setMessage(schedule.is_published ? 'Jadwal Serang Sharing dinonaktifkan.' : 'Jadwal Serang Sharing dipublikasikan.');
   }
 
   async function deleteSchedule(schedule: CcsSchedule) {
@@ -248,20 +248,20 @@ export function CcsScheduleAdminPage() {
     const { error } = await supabase.from('ccs_schedules').delete().eq('id', schedule.id);
     setDeleting(false);
     if (error) {
-      console.error('Jadwal CCS gagal dihapus.', error);
+      console.error('Jadwal Serang Sharing gagal dihapus.', error);
       setErrorMessage(`Jadwal gagal dihapus: ${error.message}`);
       setScheduleToDelete(null);
       return;
     }
     if (editingId === schedule.id) closeForm();
     setScheduleToDelete(null);
-    setMessage('Jadwal CCS berhasil dihapus.');
+    setMessage('Jadwal Serang Sharing berhasil dihapus.');
     await loadSchedules();
   }
 
   return (
     <div className="space-y-5">
-      <WorkspacePageHeader eyebrow="Menu Lainnya" title="Jadwal Serang Comedy Sharing (CCS)" subtitle="Atur jadwal Serang Comedy Sharing yang ditampilkan di halaman Home." />
+      <WorkspacePageHeader eyebrow="Menu Lainnya" title="Jadwal Serang Sharing" subtitle="Atur jadwal Serang Sharing yang ditampilkan di halaman Home." />
 
       {message && <p role="status" className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-800">{message}</p>}
       {errorMessage && <p role="alert" className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-800">{errorMessage}</p>}
@@ -274,7 +274,7 @@ export function CcsScheduleAdminPage() {
             <article key={schedule.id}>
               {schedule.poster_url && (
                 <div className="flex aspect-[4/3] max-h-[340px] items-center justify-center overflow-hidden bg-gradient-to-br from-blue-50 via-white to-indigo-100 p-4 sm:aspect-[16/7] sm:p-6">
-                  <img src={schedule.poster_url} alt={`Poster ${schedule.title}`} className="h-full w-full rounded-lg object-contain drop-shadow-[0_8px_14px_rgba(15,23,42,0.18)]" />
+                  <img src={schedule.poster_url} alt={`Poster ${getSerangSharingTitle(schedule.title)}`} className="h-full w-full rounded-lg object-contain drop-shadow-[0_8px_14px_rgba(15,23,42,0.18)]" />
                 </div>
               )}
               <div className="space-y-4 p-4 sm:p-5">
@@ -284,7 +284,7 @@ export function CcsScheduleAdminPage() {
                       <span className="rounded-full bg-blue-50 px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wide text-blue-700">{getCcsRecurrenceLabel(schedule)}</span>
                       <span className={`rounded-full px-2.5 py-1 text-[10px] font-extrabold uppercase ${schedule.is_published ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-600'}`}>{schedule.is_published ? 'Tampil di Home' : 'Disembunyikan'}</span>
                     </div>
-                    <h2 className="mt-2 text-lg font-black text-slate-950">{schedule.title}</h2>
+                    <h2 className="mt-2 text-lg font-black text-slate-950">{getSerangSharingTitle(schedule.title)}</h2>
                     <p className="mt-1 text-xs font-medium text-slate-500">Jadwal berikutnya · {formatCcsDate(getCcsOccurrenceDate(schedule))}{schedule.start_time ? ` · ${formatCcsTime(schedule.start_time)}` : ''}</p>
                   </div>
                 </div>
@@ -292,7 +292,7 @@ export function CcsScheduleAdminPage() {
                   <button type="button" onClick={() => startEditing(schedule)} aria-label="Edit pengaturan jadwal" title="Edit pengaturan" className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-blue-700 text-white transition hover:bg-blue-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2">
                     <Pencil className="h-4 w-4" />
                   </button>
-                  <button type="button" onClick={() => setScheduleToDelete(schedule)} aria-label="Hapus jadwal CCS" title="Hapus jadwal" className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-red-50 text-red-700 transition hover:bg-red-100">
+                  <button type="button" onClick={() => setScheduleToDelete(schedule)} aria-label="Hapus jadwal Serang Sharing" title="Hapus jadwal" className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-red-50 text-red-700 transition hover:bg-red-100">
                     <Trash2 className="h-4 w-4" />
                   </button>
                   <label className="ml-auto inline-flex min-h-10 cursor-pointer items-center gap-2.5 rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 transition hover:bg-white">
@@ -322,10 +322,10 @@ export function CcsScheduleAdminPage() {
       {!loading && schedules.length === 0 && !isFormOpen && (
         <section className="rounded-2xl border border-dashed border-blue-200 bg-white p-6 text-center shadow-sm">
           <CalendarDays className="mx-auto h-9 w-9 text-blue-500" />
-          <h2 className="mt-3 text-base font-extrabold text-slate-900">Jadwal CCS belum dibuat</h2>
+          <h2 className="mt-3 text-base font-extrabold text-slate-900">Jadwal Serang Sharing belum dibuat</h2>
           <p className="mt-1 text-sm text-slate-500">Buat satu jadwal rutin. Nanti cukup edit poster atau tempat bila ada perubahan.</p>
           <button type="button" onClick={startCreating} className="mt-4 inline-flex min-h-10 items-center justify-center gap-2 rounded-xl bg-blue-700 px-4 py-2 text-sm font-bold text-white transition hover:bg-blue-800">
-            <Plus className="h-4 w-4" /> Buat Jadwal CCS
+            <Plus className="h-4 w-4" /> Buat Jadwal
           </button>
         </section>
       )}
@@ -334,8 +334,8 @@ export function CcsScheduleAdminPage() {
       <form onSubmit={(event) => void saveSchedule(event)} className="space-y-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
         <div className="flex items-center justify-between gap-3">
           <div>
-            <h2 className="text-lg font-extrabold text-slate-900">{editingId ? 'Pengaturan Jadwal CCS' : 'Buat Jadwal CCS Mingguan'}</h2>
-            <p className="mt-1 text-xs text-slate-500">Satu jadwal rutin untuk CCS. Poster, tempat, dan hari rutin bisa diperbarui di sini.</p>
+            <h2 className="text-lg font-extrabold text-slate-900">{editingId ? 'Pengaturan Jadwal Serang Sharing' : 'Buat Jadwal Serang Sharing Mingguan'}</h2>
+            <p className="mt-1 text-xs text-slate-500">Atur poster, tempat, dan hari rutin Serang Sharing di sini.</p>
           </div>
           {schedules.length > 0 && <button type="button" onClick={closeForm} className="shrink-0 rounded-lg px-3 py-2 text-xs font-bold text-slate-600 hover:bg-slate-100">Batal</button>}
         </div>
@@ -361,7 +361,7 @@ export function CcsScheduleAdminPage() {
             <p className="mt-1 text-xs leading-5 text-slate-600">
               {form.date_override && form.event_date
                 ? `Hari rutin saat ini: ${getCcsRecurrenceLabel({ date_override: true, event_date: form.event_date })}.`
-                : 'Secara default CCS berlangsung setiap Rabu.'} Pilih tanggal untuk mengganti hari rutin ke depannya.
+                : 'Secara default Serang Sharing berlangsung setiap Rabu.'} Pilih tanggal untuk mengganti hari rutin ke depannya.
             </p>
           </div>
           <label className="flex min-h-11 cursor-pointer items-center gap-3 rounded-xl border border-blue-100 bg-white px-3 py-2 text-sm font-bold text-slate-800">
@@ -395,7 +395,7 @@ export function CcsScheduleAdminPage() {
         </div>
       </form>
       )}
-      <Modal open={Boolean(scheduleToDelete)} onClose={() => { if (!deleting) setScheduleToDelete(null); }} title="Hapus Jadwal CCS" titleEyebrow="Konfirmasi" size="sm">
+      <Modal open={Boolean(scheduleToDelete)} onClose={() => { if (!deleting) setScheduleToDelete(null); }} title="Hapus Jadwal Serang Sharing" titleEyebrow="Konfirmasi" size="sm">
         <div className="space-y-4">
           <div className="flex items-start gap-3 rounded-xl border border-red-100 bg-red-50 p-3">
             <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-red-600 shadow-sm">
@@ -404,7 +404,7 @@ export function CcsScheduleAdminPage() {
             <div>
               <p className="text-sm font-bold leading-5 text-slate-900">Yakin ingin menghapus jadwal ini?</p>
               <p className="mt-1 text-xs leading-5 text-slate-600">
-                Jadwal Serang Comedy Sharing (CCS){scheduleToDelete?.venue ? ` di ${scheduleToDelete.venue}` : ''} akan dihapus dan tidak lagi tampil di Home.
+                Jadwal Serang Sharing{scheduleToDelete?.venue ? ` di ${scheduleToDelete.venue}` : ''} akan dihapus dan tidak lagi tampil di Home.
               </p>
             </div>
           </div>

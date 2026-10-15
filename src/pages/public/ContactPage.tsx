@@ -1,9 +1,10 @@
-import { Instagram, MessageCircle, Youtube } from 'lucide-react';
+import { Instagram, MapPin, MessageCircle, Youtube } from 'lucide-react';
 import type { ReactNode } from 'react';
 import type { Router } from '@/lib/router';
 import type { SiteSettings } from '@/lib/types';
 import { PageHeader } from '@/components/PageHeader';
 import { waLink } from '@/lib/format';
+import { getSocialProfileUrl } from '@/lib/social-profile';
 
 function TikTokIcon({ className }: { className?: string }) {
   return (
@@ -41,42 +42,45 @@ function openYouTube(event: React.MouseEvent<HTMLAnchorElement>, webUrl: string)
 }
 
 export function ContactPage({ router, settings }: { router: Router; settings: SiteSettings }) {
-  const itemsWithEmpty: (SocialItem | null)[] = [
-    (settings.whatsapp_registration || settings.whatsapp_admin)
-      ? {
-          label: 'WhatsApp',
-          href: waLink(settings.whatsapp_registration || settings.whatsapp_admin),
-          ariaLabel: 'Hubungi Standupindo Serang melalui WhatsApp',
-          icon: <MessageCircle className="h-8 w-8" strokeWidth={1.8} />,
-        }
-      : null,
-    settings.instagram_url
-      ? {
+  const whatsappContacts = [
+    { label: 'WhatsApp', number: settings.whatsapp_admin },
+    { label: 'WhatsApp Pendaftaran', number: settings.whatsapp_registration },
+    { label: 'WhatsApp Kerja Sama', number: settings.whatsapp_partnership },
+    { label: 'WhatsApp Tiket', number: settings.whatsapp_ticket },
+  ].filter((contact): contact is { label: string; number: string } => Boolean(contact.number?.trim()));
+  const items: SocialItem[] = [
+    ...whatsappContacts.map((contact) => ({
+      label: contact.label,
+      href: waLink(contact.number),
+      ariaLabel: `${contact.label} Standupindo Serang`,
+      icon: <MessageCircle className="h-8 w-8" strokeWidth={1.8} />,
+    })),
+    ...(getSocialProfileUrl(settings.instagram_url, 'instagram')
+      ? [{
           label: 'Instagram',
-          href: settings.instagram_url,
+          href: getSocialProfileUrl(settings.instagram_url, 'instagram')!,
           ariaLabel: 'Kunjungi Instagram Standupindo Serang',
           icon: <Instagram className="h-8 w-8" strokeWidth={1.8} />,
-        }
-      : null,
-    settings.tiktok_url
-      ? {
+        }]
+      : []),
+    ...(getSocialProfileUrl(settings.tiktok_url, 'tiktok')
+      ? [{
           label: 'TikTok',
-          href: settings.tiktok_url,
+          href: getSocialProfileUrl(settings.tiktok_url, 'tiktok')!,
           ariaLabel: 'Kunjungi TikTok Standupindo Serang',
           icon: <TikTokIcon className="h-8 w-8" />,
-        }
-      : null,
-    settings.youtube_url
-      ? {
+        }]
+      : []),
+    ...(getSocialProfileUrl(settings.youtube_url, 'youtube')
+      ? [{
           label: 'YouTube',
-          href: settings.youtube_url,
+          href: getSocialProfileUrl(settings.youtube_url, 'youtube')!,
           ariaLabel: 'Kunjungi YouTube Standupindo Serang',
           icon: <Youtube className="h-8 w-8" strokeWidth={1.8} />,
-          nativeAppUrl: settings.youtube_url,
-        }
-      : null,
+          nativeAppUrl: getSocialProfileUrl(settings.youtube_url, 'youtube')!,
+        }]
+      : []),
   ];
-  const items = itemsWithEmpty.filter((item): item is SocialItem => item !== null);
 
   const hasAffiliation = Boolean(
     settings.affiliation_name && settings.affiliation_website && settings.affiliation_logo_url,
@@ -91,7 +95,7 @@ export function ContactPage({ router, settings }: { router: Router; settings: Si
             <div className="rounded-[24px] border border-blue-100 bg-white/90 p-5 text-center shadow-[0_10px_25px_rgba(215,25,32,0.06)]">
               <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-blue-600">Stay connected</p>
               <h1 className="mt-1 text-2xl font-black tracking-[-0.04em] text-slate-900 sm:text-3xl">Kontak & Sosial Media</h1>
-              <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500">Temukan kabar terbaru dan hubungi Standupindo Serang melalui kanal resmi kami.</p>
+              <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500">{settings.short_description.trim() || 'Temukan kabar terbaru dan hubungi Standupindo Serang melalui kanal resmi kami.'}</p>
             </div>
 
             {items.length > 0 && (
@@ -113,6 +117,18 @@ export function ContactPage({ router, settings }: { router: Router; settings: Si
                 </a>
               ))}
               </div>
+            )}
+
+            {settings.address.trim() && (
+              <section className="mt-6 flex items-start gap-3 rounded-2xl border border-slate-200 bg-white/90 p-4 sm:p-5" aria-label="Alamat komunitas">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-700">
+                  <MapPin className="h-5 w-5" />
+                </span>
+                <div className="min-w-0">
+                  <h2 className="text-sm font-bold text-slate-900">Lokasi</h2>
+                  <p className="mt-1 whitespace-pre-line text-sm leading-6 text-slate-600">{settings.address}</p>
+                </div>
+              </section>
             )}
 
             {hasAffiliation && (

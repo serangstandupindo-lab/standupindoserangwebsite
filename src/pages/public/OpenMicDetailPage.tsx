@@ -275,7 +275,7 @@ export function OpenMicDetailPage({ router, slug, showFloatingRegister = false }
                 </button>
               )}
               {currentStatus === 'upcoming' && isFull && !closed && (
-                <button disabled className="btn-secondary w-full !py-2.75 !text-red-600 !border-red-200 !bg-red-50 text-sm sm:!py-3 sm:text-base">
+                <button disabled className="btn-secondary w-full !py-2.75 !text-amber-800 !border-amber-200 !bg-amber-50 text-sm sm:!py-3 sm:text-base">
                   SLOT PENUH
                 </button>
               )}

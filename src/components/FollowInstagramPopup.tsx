@@ -5,6 +5,7 @@ import type { SiteSettings } from '@/lib/types';
 import { useAuth } from '@/lib/auth-context';
 import { LOGO_URL } from '@/lib/types';
 import { Modal } from '@/components/ui/Modal';
+import { getSocialProfileHandle, getSocialProfileUrl } from '@/lib/social-profile';
 
 const STORAGE_KEY = 'standupindo_follow_instagram_popup_v1';
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -31,7 +32,7 @@ function readRecord(): FollowPopupRecord | null {
     if (raw === null) return { ...EMPTY_RECORD };
     const parsed = JSON.parse(raw) as Partial<FollowPopupRecord> | null;
     if (!parsed || !Array.isArray(parsed.shownAt)
-      || (parsed.lastShownAt !== null && (!Number.isSafeInteger(parsed.lastShownAt) || parsed.lastShownAt < 0))
+      || (parsed.lastShownAt != null && (!Number.isSafeInteger(parsed.lastShownAt) || parsed.lastShownAt < 0))
       || !['shown', 'dismissed', 'followed', null].includes(parsed.lastAction ?? null)
       || !Number.isSafeInteger(parsed.cooldownUntil) || (parsed.cooldownUntil ?? -1) < 0
       || !parsed.shownAt.every((timestamp) => Number.isSafeInteger(timestamp) && timestamp > 0)) return null;
@@ -57,7 +58,9 @@ function writeRecord(record: FollowPopupRecord): boolean {
 
 function getInstagramUrl(value: string): string | null {
   try {
-    const url = new URL(value);
+    const profileUrl = getSocialProfileUrl(value, 'instagram');
+    if (!profileUrl) return null;
+    const url = new URL(profileUrl);
     if (url.protocol !== 'https:' || !['instagram.com', 'www.instagram.com'].includes(url.hostname.toLowerCase())) return null;
     return url.toString();
   } catch {
@@ -79,6 +82,7 @@ export function FollowInstagramPopup({ router, settings }: { router: Router; set
   const initialPath = useRef(router.path);
   const attempted = useRef(false);
   const instagramUrl = getInstagramUrl(settings.instagram_url);
+  const instagramHandle = getSocialProfileHandle(settings.instagram_url, 'instagram');
   const canShowOnRoute = !isTicketOrRegistrationRoute(router.path);
 
   useEffect(() => {
@@ -175,6 +179,7 @@ export function FollowInstagramPopup({ router, settings }: { router: Router; set
           <span className="mt-1 inline-flex items-center gap-1.5">
             <Instagram className="h-4 w-4 text-pink-600" /> Standupindo Serang
           </span>
+          {instagramHandle && <span className="mt-1 text-xs font-semibold text-slate-500">{instagramHandle}</span>}
         </h2>
         <a
           href={instagramUrl}
